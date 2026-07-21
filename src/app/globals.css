@@ -1,0 +1,259 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* ── Brand & Semantic Colors ─────────────────────────── */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* ── Anchor (딥틸) — 두 번째 브랜드 컬러 ──────────────────
+     헤더, 선택된 내비게이션, 링크, "깊이"가 필요한 면에 쓴다.
+     Primary(테라코타)가 행동을 부른다면 Anchor는 신뢰·안정을 준다.
+     bg-anchor / text-anchor 로 사용. */
+  --color-anchor: var(--anchor);
+  --color-anchor-foreground: var(--anchor-foreground);
+
+  /* ── Status Colors (아이콘/텍스트 병행 필수, 색상 단독 전달 금지) ── */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+
+  /* ── Charts ──────────────────────────────────────────── */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* ── Sidebar ─────────────────────────────────────────── */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* ── Typography ──────────────────────────────────────────
+     Google Fonts는 CJK를 subset 파라미터가 아니라 unicode-range
+     분할로 서빙한다. next/font의 `subsets`는 "무엇을 preload할지"만
+     정하므로 한글 글리프는 subsets: ['latin']이어도 렌더링된다.
+     (korean subset을 지원하는 폰트는 0개다.)
+
+     본문은 Noto Sans KR, 제목의 영문·숫자는 Nunito가 맡고
+     한글은 Noto Sans KR로 글리프 단위 폴백된다. */
+  --font-sans: var(--font-noto-sans-kr), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-nunito), var(--font-noto-sans-kr), ui-sans-serif,
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* ── Radius ──────────────────────────────────────────── */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+
+  /* ── Safe Area (WebView 노치/홈 인디케이터) ─────────────
+     pt-safe-top, pb-safe-bottom 등으로 사용. 웹에서는 0으로
+     계산되므로 그대로 둬도 안전하다. */
+  --spacing-safe-top: env(safe-area-inset-top);
+  --spacing-safe-bottom: env(safe-area-inset-bottom);
+  --spacing-safe-left: env(safe-area-inset-left);
+  --spacing-safe-right: env(safe-area-inset-right);
+}
+
+/* ══════════════════════════════════════════════════════════
+   Light Mode — "따뜻한 흙, 차분한 물"
+   테라코타(Primary) · 딥틸(Anchor) · 크림(배경)
+   반려인의 일상에 스며드는 편안한 대비. 고채도를 피한다.
+   ══════════════════════════════════════════════════════════ */
+:root {
+  /* 크림 — 종일 봐도 눈이 편한 따뜻한 오프화이트 */
+  --background: #f7f2ec;
+  --foreground: #1a1512;
+
+  --card: #ffffff;
+  --card-foreground: #1a1512;
+  --popover: #ffffff;
+  --popover-foreground: #1a1512;
+
+  /* 테라코타 — 주요 CTA, 활성 상태. #fff8f3 대비 4.2:1(대형/UI) */
+  --primary: #d9673f;
+  --primary-foreground: #fff8f3;
+
+  /* 웜 샌드 — 보조 버튼/칩 배경 */
+  --secondary: #ece3d6;
+  --secondary-foreground: #4a3f35;
+
+  /* 은은한 강조 배경 — 선택·활성 리스트 항목 */
+  --accent: #eae0d2;
+  --accent-foreground: #1a1512;
+
+  --muted: #efe8de;
+  --muted-foreground: #6b5f54;
+
+  /* 딥틸 — 헤더·링크·선택된 탭. 신뢰와 깊이 */
+  --anchor: #2e5d5a;
+  --anchor-foreground: #ffffff;
+
+  /* 경고·삭제. 흙빛 팔레트에 맞춘 벽돌빛 레드 */
+  --destructive: #d64545;
+  --destructive-foreground: #fff8f3;
+
+  --border: #e3d9cc;
+  --input: #e3d9cc;
+  --ring: #d9673f;
+
+  /* Status — 아이콘·텍스트 병행 필수 */
+  --success: #2e9e6b;
+  --success-foreground: #fff8f3;
+  --warning: #e8a33d;
+  --warning-foreground: #1a1512;
+  --info: #3b82c4;
+  --info-foreground: #fff8f3;
+
+  --chart-1: #d9673f;
+  --chart-2: #2e5d5a;
+  --chart-3: #e8a33d;
+  --chart-4: #3b82c4;
+  --chart-5: #a08d7a;
+
+  --radius: 0.625rem;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a1512;
+  --sidebar-primary: #d9673f;
+  --sidebar-primary-foreground: #fff8f3;
+  --sidebar-accent: #f2ebe1;
+  --sidebar-accent-foreground: #1a1512;
+  --sidebar-border: #e3d9cc;
+  --sidebar-ring: #d9673f;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Dark Mode
+   테라코타·딥틸을 어두운 배경에서 채도가 죽어 보이는 착시를
+   보정해 5~15% 밝게 올린다. 배경은 완전 검정 대신 따뜻한 흑갈색.
+   ══════════════════════════════════════════════════════════ */
+.dark {
+  --background: #141210;
+  --foreground: #f5f0ea;
+
+  --card: #1e1b19;
+  --card-foreground: #f5f0ea;
+  --popover: #1e1b19;
+  --popover-foreground: #f5f0ea;
+
+  --primary: #e8825c;
+  --primary-foreground: #201510;
+
+  --secondary: #2a2521;
+  --secondary-foreground: #f5f0ea;
+
+  --accent: #2e2823;
+  --accent-foreground: #f5f0ea;
+
+  --muted: #2a2521;
+  --muted-foreground: #a8998a;
+
+  --anchor: #4a8b85;
+  --anchor-foreground: #0f1817;
+
+  --destructive: #e5484d;
+  --destructive-foreground: #201510;
+
+  --border: #34302b;
+  --input: #34302b;
+  --ring: #e8825c;
+
+  --success: #43b581;
+  --success-foreground: #201510;
+  --warning: #e8a33d;
+  --warning-foreground: #201510;
+  --info: #4a9fd8;
+  --info-foreground: #201510;
+
+  --chart-1: #e8825c;
+  --chart-2: #4a8b85;
+  --chart-3: #e8a33d;
+  --chart-4: #4a9fd8;
+  --chart-5: #a08d7a;
+
+  --sidebar: #1e1b19;
+  --sidebar-foreground: #f5f0ea;
+  --sidebar-primary: #e8825c;
+  --sidebar-primary-foreground: #201510;
+  --sidebar-accent: #2e2823;
+  --sidebar-accent-foreground: #f5f0ea;
+  --sidebar-border: #34302b;
+  --sidebar-ring: #e8825c;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    /* 터치 시 파란 하이라이트 제거 — WebView에서 네이티브 느낌 */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    /* 모바일 주소창 높이 변화에 대응 */
+    min-height: 100dvh;
+    overscroll-behavior-y: none;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /*
+   * 조작 요소만 텍스트 선택을 막는다.
+   * 본문은 허용해야 한다 — 성분·후기·사전 내용을 복사할 수 있어야 하고,
+   * 정보 앱에서 선택을 막는 것은 사용자 적대적이다.
+   */
+  button,
+  [role="button"],
+  nav,
+  label {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+}
