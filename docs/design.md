@@ -40,7 +40,9 @@
 
 ## 3. 라우터 구조 (route groups)
 
-Static Export이므로 동적 라우트는 전부 `generateStaticParams` 필수, 개인화는 클라이언트에서 Supabase Auth로.
+> **상세 설계는 [router.md](router.md).** 아래는 요약이다.
+
+Static Export 하에서 **`dex/[slug]`만 동적 SSG**(`generateStaticParams`, 오프라인 번들)이고, `place`/`post` 상세는 런타임 콘텐츠라 동적 세그먼트 대신 **쿼리파라미터 + 클라이언트 fetch**로 간다. 개인화·인증 가드는 클라이언트에서 Supabase Auth로.
 
 ```
 src/app/
@@ -52,8 +54,8 @@ src/app/
 │   └── me/page.tsx         # 마이        (/me)
 ├── (full)/                 # 전체화면 (Bottom Nav 숨김, 뒤로가기 중심)
 │   ├── layout.tsx
-│   ├── place/[id]/page.tsx     # 장소 상세  (generateStaticParams)
-│   ├── post/[id]/page.tsx      # 글 상세
+│   ├── place/page.tsx          # 장소 상세  /place?id=  (클라 fetch)
+│   ├── post/page.tsx           # 글 상세    /post?id=   (클라 fetch)
 │   ├── post/new/page.tsx       # 글 작성
 │   ├── ingredient/page.tsx     # 성분 분석 검색
 │   ├── dex/page.tsx            # 사전 목록 (사이드바 진입)
