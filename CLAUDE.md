@@ -28,6 +28,18 @@
 
 문서는 두 갈래. **사용자가 읽을 것은 HTML**(브라우저로 봄), **Claude가 볼 규칙은 .md**.
 
+## 컨벤션 문서 (상세 규칙)
+
+작업 유형별 상세 규칙은 `docs/conventions/`에 있다. 해당 작업을 하기 전에 관련 문서를 읽는다.
+
+- [code](docs/conventions/code-convention.md) — 네이밍·파일명·훅·Query Key
+- [srp](docs/conventions/srp-convention.md) — FSD 슬라이스/세그먼트·단일 책임
+- [supabase](docs/conventions/supabase-convention.md) — 타입·마이그레이션·클라이언트 read/write·RLS
+- [design](docs/conventions/design-convention.md) — 토큰·cn·모바일 우선·shadcn·Dialog
+- [app-message](docs/conventions/app-message-convention.md) — 사용자 문구(APP_MESSAGE/FORM_MESSAGE)
+- [validation](docs/conventions/validation-convention.md) — 검증 순서·권한·실패 보고
+- [git](docs/conventions/git-convention.md) — 커밋·브랜치·PR·저자 규칙
+
 ## 아키텍처 — FSD
 
 ```
@@ -105,6 +117,7 @@ src/
 - 브랜치: `유형/도메인/#이슈번호-설명` (예: `feat/map/#12-nearby-rpc`)
 - **푸시는 사용자가 명시적으로 요청할 때만.**
 - 하나의 논리적 변경이 끝나면 즉시 커밋한다.
+- **저자 구분**: Claude 작업 커밋은 `--author="Claude <noreply@anthropic.com>"` + 제목 `/Claude`, 사용자가 수정한 코드 커밋은 사용자 저자로 `/Claude` 없이. 상세는 [git-convention](docs/conventions/git-convention.md).
 
 ## 언어
 
