@@ -29,7 +29,9 @@ export default function AppleIcon() {
           background: "#2E5D5A",
         }}
       >
+        {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse(satori)에선 next/image를 못 쓴다 */}
         <img
+          alt=""
           width={140}
           height={140}
           src={`data:image/svg+xml;utf8,${encodeURIComponent(markSvg)}`}
