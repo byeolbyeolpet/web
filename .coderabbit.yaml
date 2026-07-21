@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: ko-KR
+tone_instructions: 시니어 엔지니어 관점에서 한국어로 간결하게 리뷰한다.
+reviews:
+  profile: chill
+  high_level_summary: true
+  poem: false
+  auto_review:
+    enabled: true
+    base_branches:
+      - dev
+      - main
+  path_instructions:
+    - path: src/**
+      instructions: >-
+        FSD 의존 방향(app→views→widgets→features→entities→shared)을 지키는지 확인한다.
+        Static Export 제약(서버 로직·쿠키·proxy·ISR 금지, 동적 라우트는 docs/router.md 규칙)을 어기는지 본다.
+        HEX 하드코딩 대신 시맨틱 토큰, 터치 UX(최소 44px), 사용자 문구 중앙화(APP_MESSAGE)를 점검한다.
+    - path: supabase/**
+      instructions: >-
+        모든 RPC/테이블이 authenticated + RLS(auth.uid())로 보호되는지, 신뢰 파라미터 패턴이 없는지 확인한다.
