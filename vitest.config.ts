@@ -10,5 +10,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
     css: true,
+    // 단위/컴포넌트 테스트만. E2E(e2e/*.spec.ts)는 Playwright가 맡는다.
+    include: ["src/**/*.{test,spec}.{ts,tsx}"],
   },
 });
