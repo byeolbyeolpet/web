@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, main]
+  push:
+    branches: [dev, main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test
+      # next build가 TypeScript 체크까지 수행하므로 별도 typecheck 단계는 두지 않는다
+      # (standalone tsc는 .next/types 생성 전이라 라우트 타입 헬퍼를 못 찾음).
+      - run: npm run build
