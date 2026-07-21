@@ -2,7 +2,7 @@
 
 > 별의별 반려동물이 다 여기에. 강아지·고양이부터 고슴도치·페럿·파충류까지, 종을 가리지 않는 반려 생활 통합 허브.
 
-병원·미용·호텔 **지도**, 동네 **커뮤니티**, 반려동물 **사전**, 성분 **분석** — 흩어져 있던 것을 한곳에 모은다. 웹으로 배포하고, 같은 코드베이스를 Capacitor로 감싸 WebView 앱으로 낸다.
+병원·미용·호텔 **지도**, 동네 **커뮤니티**, 반려동물 **사전**, 성분 **분석** — 흩어져 있던 것을 한곳에 모은다. 배포 대상은 **Capacitor WebView 앱**이고, 웹 빌드는 그 앱에 담길 화면 그 자체다 — 독립 웹사이트가 아니라 Toss식 웹뷰 앱이다.
 
 ## 이 프로젝트가 푼 문제들
 
@@ -62,7 +62,7 @@ src/
 | 데이터·인증 | Supabase (Postgres + PostGIS, Auth, Storage, Edge Functions) |
 | 지도 | 카카오맵 SDK (표시) + 공공데이터 (장소 원장) |
 | AI | Google Gemini (Edge Function 경유) |
-| 배포 | Vercel → 이후 Capacitor로 WebView 앱 |
+| 배포 | Capacitor WebView 앱 (앱-only, 웹 빌드=앱 화면 substrate) |
 
 ## 디자인 시스템
 

@@ -15,7 +15,7 @@
 - **특수동물 진료 가능 병원 태깅 = 해자.** 아무도 안 한다.
 - 가치 = **정보의 퍼짐(scattered) 해소.** 병원·미용·호텔 지도 + 동네 커뮤니티 + 사전 + 성분분석을 한곳에.
 - **위치/동네는 기능이지 정체성이 아니다.** (사용자 교정 사항: 지도를 정체성으로 착각 금지.)
-- 대상: 20~40대 반려인. 배포: 웹(Vercel) → Capacitor WebView 앱(방식 B: 화면 앱 내장 + OTA 업데이트. 방식 A 원격 URL은 심사 반려 리스크라 배제).
+- 대상: 20~40대 반려인. 배포: **Capacitor WebView 앱 하나(앱-only)**. web 빌드는 앱에 담길 화면 substrate이지 독립 사이트가 아니다(Toss식 웹뷰 앱). 방식 B(정적 번들 내장 + OTA) 채택, 방식 A(원격 URL)는 심사 반려 리스크로 배제. **SEO·도메인은 관심사 아님.** (→ [ADR-0001](adr/0001-app-only-webview-delivery.md))
 
 ## 2. IA — "나무 말고 숲" (사용자 핵심 피드백으로 정리)
 
@@ -57,7 +57,7 @@ src/app/
 │   ├── post/new/page.tsx       # 글 작성
 │   ├── ingredient/page.tsx     # 성분 분석 검색
 │   ├── dex/page.tsx            # 사전 목록 (사이드바 진입)
-│   ├── dex/[slug]/page.tsx     # 사전 상세 (SSG, SEO 핵심)
+│   ├── dex/[slug]/page.tsx     # 사전 상세 (빌드 SSG — 오프라인/즉시표시용, SEO 아님)
 │   └── shop/page.tsx           # 준비중(Tutorial)
 ├── login/page.tsx
 └── layout.tsx              # RootLayout (폰트/메타/테마)
@@ -82,7 +82,7 @@ src/app/
 - **reviews** — 자체 UGC. 영수증 인증(핏펫 패턴). `visited_species_id`(어떤 종으로 방문했나), `search_tsv`(tsvector + GIN, 리뷰 검색용 — 지금은 필드만, 검색기능은 후순위).
 - **posts** — 커뮤니티 글. `category`(산책크루/실종/입양/자유/질문...), `location`(동네 기반), 실종·입양은 지도 표시용 좌표.
 - **comments** — posts 하위.
-- **dex_articles** — 사전 콘텐츠. 빌드 시 SSG(SEO). 위키/공공 팩트 소스, 표현은 재작성.
+- **dex_articles** — 사전 콘텐츠. 빌드 시 SSG(오프라인/즉시표시 목적, SEO 아님 — [ADR-0001](adr/0001-app-only-webview-delivery.md)). 위키/공공 팩트 소스, 표현은 재작성.
 - **products / ingredients** — 성분 분석. products ↔ ingredients N:N.
 - **market_leads** — Shop 준비 단계 수요 수집용(선택).
 
