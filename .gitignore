@@ -50,6 +50,7 @@ next-env.d.ts
 
 # Claude 로컬 설정
 .claude/settings.local.json
+.mcp.json
 
 # Supabase 로컬
 /supabase/.branches

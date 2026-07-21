@@ -12,6 +12,8 @@
   },
   "iconLibrary": "lucide",
   "rtl": false,
+  "menuColor": "default",
+  "menuAccent": "subtle",
   "aliases": {
     "components": "@/shared/ui",
     "utils": "@/shared/lib/utils",
@@ -19,7 +21,7 @@
     "lib": "@/shared/lib",
     "hooks": "@/shared/lib/hooks"
   },
-  "menuColor": "default",
-  "menuAccent": "subtle",
-  "registries": {}
+  "registries": {
+    "@supabase": "https://supabase.com/ui/r/{name}.json"
+  }
 }
