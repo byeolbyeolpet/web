@@ -1,0 +1,48 @@
+name: 🐛 버그 신고
+description: 동작이 기대와 다를 때
+title: "fix: "
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: 무엇이 잘못됐나
+      description: 어떤 문제가 있는지 한두 줄로.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: 재현 절차
+      placeholder: |
+        1. /map 진입
+        2. 특수동물 필터 탭
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 기대한 동작
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 실제 동작
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: 환경
+      options:
+        - WebView 앱 (iOS)
+        - WebView 앱 (Android)
+        - 브라우저 (개발/데모)
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: 스크린샷 / 로그 (선택)

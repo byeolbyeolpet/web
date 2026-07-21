@@ -1,0 +1,30 @@
+name: ✨ 기능 제안
+description: 새 기능이나 개선
+title: "feat: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 어떤 문제 / 필요
+      description: 무슨 불편을 푸는지.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 제안
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 고려한 대안 (선택)
+  - type: checkboxes
+    id: identity
+    attributes:
+      label: 정체성 점검
+      description: 별별펫의 방향과 맞는지 스스로 확인.
+      options:
+        - label: 전(全) 반려동물 / 정보 통합이라는 정체성에 부합한다
+        - label: 지도·위치를 정체성으로 착각하지 않는다
