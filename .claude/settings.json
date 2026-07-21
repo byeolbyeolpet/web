@@ -34,5 +34,17 @@
       "mcp__supabase__list_edge_functions",
       "mcp__supabase__search_docs"
     ]
+  },
+  "hooks": {
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "BRANCH=$(git branch --show-current 2>/dev/null); printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PreCompact\",\"additionalContext\":\"압축 후에도 유지 — 브랜치 %s. 진행 중 이슈 번호·완료조건, 저자 규칙(Claude/사용자), GitFlow(main=릴리스/dev=기본), CLAUDE.md·AGENTS.md·docs/conventions 규칙.\"}}\\n' \"$BRANCH\""
+          }
+        ]
+      }
+    ]
   }
 }
