@@ -1,0 +1,8 @@
+node_modules
+.next
+out
+coverage
+package-lock.json
+
+# 손으로 정렬한 표·ASCII 트리를 prettier가 흐트러뜨리지 않도록 문서는 제외한다.
+*.md
