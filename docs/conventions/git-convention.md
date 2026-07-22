@@ -45,3 +45,7 @@
 - 작업 내용은 사용자 관점으로 쓰고, DB·RPC·RLS 등 외부 상태 변경이 있으면 함께 적는다.
 - 테스트 결과(`npm run build` 등, 스키마 변경 시 `npm run db:types`)를 명시하고, 확인 못 한 항목은 사유를 적는다.
 - 연관 이슈는 마지막에 `Closes #이슈번호`.
+
+### 머지
+
+**rebase 머지만 사용한다.** repo 설정에서 squash·merge commit을 비활성화했다. 기능 브랜치는 CI(verify·e2e) 통과 후 `dev`로 rebase 머지하고 브랜치를 삭제한다. (히스토리를 선형으로 유지한다.)
