@@ -7,14 +7,24 @@
 스키마(테이블·컬럼·enum·RPC·trigger)가 바뀌면 즉시 TypeScript 타입을 갱신한다.
 
 - 방법: Supabase MCP `generate_typescript_types`, 또는 (Supabase CLI 세팅 후) `npm run db:types`.
-- 출력: `shared/lib/supabase/database.types.ts`.
+- 출력: `shared/lib/supabase/database.types.ts`. **생성 파일이므로 직접 수정하지 않는다**(eslint·prettier 예외 처리됨).
+
+### 생성 타입이 거짓말하는 지점 (반드시 감싸서 쓴다)
+
+typegen이 표현하지 못하는 것이 있다. 아래는 타입을 믿으면 런타임에 깨진다.
+
+- **RPC 반환의 nullability**: `returns table (...)` 형태는 전 컬럼이 non-null로 생성된다. `nearby_places`의 `phone`·`road_address`·`jibun_address`·`external_id`는 실제로 NULL이 온다(LOCALDATA 결측 흔함). 소비 계층(`entities/*`)에서 `Omit` + `Pick<Tables<'places'>, ...>`로 nullable을 복원해 재수출하고, 컴포넌트는 그 타입만 쓴다.
+- **생성 컬럼**: `geog`·`search_tsv`는 `Insert`/`Update`에 `?: unknown`으로 열려 있지만 값을 넣으면 Postgres가 거부한다(428C9). write 타입은 `Omit<TablesInsert<'posts'>, 'geog' | 'search_tsv'>`처럼 감싼다.
+- **컬럼 단위 권한**: `reviews.is_verified` 등은 타입상 쓸 수 있어 보이지만 DB가 권한으로 막는다. 타입이 아니라 DB가 경계다.
 
 ## 2. 마이그레이션 최신화
 
 - 적용은 Supabase MCP `apply_migration` 또는 대시보드 SQL Editor.
 - **적용한 SQL은 반드시 `supabase/migrations/`에 파일로 남긴다.** 파일명 `YYYYMMDDHHMMSS_작업_내용.sql`.
+- **파일명의 버전은 손으로 만들지 않는다.** `apply_migration` 뒤에 `list_migrations`로 원격이 기록한 version을 확인해 그 값을 그대로 파일명에 쓴다. 로컬 시각(`date`)으로 지으면 원격 기록(UTC)과 어긋나 `supabase migration list`가 미적용으로 오판하고 `db push`가 재실행하다 깨진다.
 - 파일은 실제 적용 SQL과 동등해야 하고, 이후 타입을 갱신한다.
 - 대상: 테이블·컬럼·RPC·trigger·제약 등 DB 스키마/로직 변화 전부.
+- `alter type ... add value`는 같은 트랜잭션에서 그 값을 쓸 수 없다. **enum 값 추가는 단독 마이그레이션으로 분리**한다.
 
 ## 3. 로직 위치
 
@@ -39,7 +49,9 @@
 - 권한 판단은 DB(RLS)가 한다. 정책의 `auth.uid()`는 **`(select auth.uid())`로 감싸** 플래너가 initPlan으로 캐시하게 한다(성능).
 - **공개 데이터 RPC는 `SECURITY INVOKER`**로 두면 테이블 RLS(공개 읽기)가 그대로 적용돼 게스트도 호출 가능하다(예: `nearby_places`). 개인 데이터를 다루는 RPC는 `authenticated`에만 grant.
 - `p_actor_user_id` 같은 **신뢰 파라미터 패턴 금지** — 브라우저에서 다른 유저 id를 넣어 위조할 수 있다. 행위자는 항상 `auth.uid()`로 DB에서 잡는다.
-- **트리거 전용 함수**(`handle_new_user`, `set_updated_at`)는 REST RPC로 노출될 필요가 없으니 `anon`·`authenticated`·`public`에서 `execute`를 회수한다(어드바이저 WARN 방지).
+- **RLS는 행 단위라 컬럼을 구분하지 못한다.** 사용자가 바꾸면 안 되는 컬럼(`reviews.is_verified` 같은 검증 플래그, `created_at`, 소유권 컬럼)은 RLS로 못 막으니 **컬럼 단위 grant**로 잠근다: 테이블 레벨 `insert, update`를 회수한 뒤 허용 컬럼만 화이트리스트로 `grant`. 테이블 레벨 grant가 남아 있으면 컬럼 제한은 무의미하다. 플래그 승격은 `service_role`(Edge Function)만.
+- **트리거 전용 함수**(`handle_new_user`, `set_updated_at`)는 REST RPC로 노출될 필요가 없으니 `anon`·`authenticated`·`public`에서 `execute`를 회수한다(어드바이저 WARN 방지). `create or replace function`은 ACL을 보존하므로 함수 본문을 고쳐도 회수 상태는 유지된다.
+- **DB 제약이 유일한 검증 계층이다.** 서버가 없어 클라이언트 Zod는 공개 anon key + REST 직접 호출로 우회된다. 길이 상한·좌표 범위·짝 일치는 반드시 `check` 제약으로 건다. 특히 좌표: **geography 캐스트는 범위 초과를 에러 없이 wrap**하므로(위도 91 → 89) 제약이 없으면 `lat/lng`와 생성컬럼 `geog`가 조용히 어긋난다.
 - `service_role`/비밀키가 필요한 로직(Gemini 호출, 공공데이터 정제, 관리 작업)은 **Supabase Edge Function**으로 뺀다. 브라우저엔 절대 두지 않는다.
 
 ## 5. 변경 후 검증

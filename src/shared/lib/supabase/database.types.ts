@@ -52,7 +52,7 @@ export type Database = {
       }
       comments: {
         Row: {
-          author_id: string
+          author_id: string | null
           body: string
           created_at: string
           id: string
@@ -61,7 +61,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          author_id: string
+          author_id?: string | null
           body: string
           created_at?: string
           id?: string
@@ -70,7 +70,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          author_id?: string
+          author_id?: string | null
           body?: string
           created_at?: string
           id?: string
@@ -87,11 +87,11 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "comments_parent_id_fkey"
-            columns: ["parent_id"]
+            foreignKeyName: "comments_parent_fkey"
+            columns: ["post_id", "parent_id"]
             isOneToOne: false
             referencedRelation: "comments"
-            referencedColumns: ["id"]
+            referencedColumns: ["post_id", "id"]
           },
           {
             foreignKeyName: "comments_post_id_fkey"
@@ -341,45 +341,51 @@ export type Database = {
       }
       posts: {
         Row: {
-          author_id: string
+          author_id: string | null
           body: string
           category: Database["public"]["Enums"]["post_category"]
           created_at: string
           geog: unknown
           id: string
+          image_paths: string[]
           lat: number | null
           lng: number | null
           meta: Json
+          region_code: string | null
           search_tsv: unknown
           species_code: string | null
           title: string
           updated_at: string
         }
         Insert: {
-          author_id: string
+          author_id?: string | null
           body: string
           category: Database["public"]["Enums"]["post_category"]
           created_at?: string
           geog?: unknown
           id?: string
+          image_paths?: string[]
           lat?: number | null
           lng?: number | null
           meta?: Json
+          region_code?: string | null
           search_tsv?: unknown
           species_code?: string | null
           title: string
           updated_at?: string
         }
         Update: {
-          author_id?: string
+          author_id?: string | null
           body?: string
           category?: Database["public"]["Enums"]["post_category"]
           created_at?: string
           geog?: unknown
           id?: string
+          image_paths?: string[]
           lat?: number | null
           lng?: number | null
           meta?: Json
+          region_code?: string | null
           search_tsv?: unknown
           species_code?: string | null
           title?: string
@@ -478,6 +484,7 @@ export type Database = {
           created_at: string
           id: string
           nickname: string
+          region_code: string | null
           updated_at: string
         }
         Insert: {
@@ -486,6 +493,7 @@ export type Database = {
           created_at?: string
           id: string
           nickname: string
+          region_code?: string | null
           updated_at?: string
         }
         Update: {
@@ -494,16 +502,18 @@ export type Database = {
           created_at?: string
           id?: string
           nickname?: string
+          region_code?: string | null
           updated_at?: string
         }
         Relationships: []
       }
       reviews: {
         Row: {
-          author_id: string
+          author_id: string | null
           body: string
           created_at: string
           id: string
+          image_paths: string[]
           is_verified: boolean
           place_id: string
           rating: number
@@ -513,10 +523,11 @@ export type Database = {
           visited_species_code: string | null
         }
         Insert: {
-          author_id: string
+          author_id?: string | null
           body: string
           created_at?: string
           id?: string
+          image_paths?: string[]
           is_verified?: boolean
           place_id: string
           rating: number
@@ -526,10 +537,11 @@ export type Database = {
           visited_species_code?: string | null
         }
         Update: {
-          author_id?: string
+          author_id?: string | null
           body?: string
           created_at?: string
           id?: string
+          image_paths?: string[]
           is_verified?: boolean
           place_id?: string
           rating?: number
@@ -621,7 +633,7 @@ export type Database = {
       ingredient_safety: "safe" | "caution" | "danger" | "unknown"
       pet_sex: "male" | "female" | "unknown"
       place_category: "animal_hospital" | "grooming" | "boarding"
-      place_status: "operating" | "closed"
+      place_status: "operating" | "suspended" | "closed"
       post_category: "walk_crew" | "missing" | "adoption" | "free"
       species_group: "dog" | "cat" | "exotic"
     }
@@ -754,7 +766,7 @@ export const Constants = {
       ingredient_safety: ["safe", "caution", "danger", "unknown"],
       pet_sex: ["male", "female", "unknown"],
       place_category: ["animal_hospital", "grooming", "boarding"],
-      place_status: ["operating", "closed"],
+      place_status: ["operating", "suspended", "closed"],
       post_category: ["walk_crew", "missing", "adoption", "free"],
       species_group: ["dog", "cat", "exotic"],
     },
