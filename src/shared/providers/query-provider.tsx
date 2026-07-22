@@ -4,6 +4,32 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 
+const MAX_RETRY = 2;
+
+/**
+ * 재시도 여부를 판단한다.
+ *
+ * 서버가 에러 객체를 돌려줬다는 것은 요청이 거기까지 도달해 거부됐다는 뜻이라
+ * (RLS 거부·검증 실패·없는 리소스) 같은 요청을 반복해도 결과가 같다.
+ * 재시도가 의미 있는 것은 응답 자체를 받지 못한 네트워크 오류다.
+ *
+ * Supabase 는 계층마다 에러 형태가 다르다 — `PostgrestError` 는 HTTP status 없이
+ * `code`(문자열)만 주고, `AuthError`·`FunctionsHttpError` 계열은 숫자 `status` 를 준다.
+ * 한쪽만 보면 절반은 걸러지지 않으므로 둘 다 확인한다.
+ */
+export function shouldRetry(failureCount: number, error: Error): boolean {
+  if (failureCount >= MAX_RETRY) return false;
+
+  const status = (error as { status?: unknown }).status;
+  if (typeof status === "number" && status >= 400 && status < 500) return false;
+
+  // code 가 있다는 것은 PostgREST 까지 도달해 거부됐다는 뜻이다.
+  const code = (error as { code?: unknown }).code;
+  if (typeof code === "string") return false;
+
+  return true;
+}
+
 export function QueryProvider({ children }: { children: ReactNode }) {
   /*
    * QueryClient 를 모듈 최상단 싱글턴으로 두지 않는다.
@@ -17,12 +43,8 @@ export function QueryProvider({ children }: { children: ReactNode }) {
           queries: {
             // 화면을 오갈 때마다 재요청하지 않도록 한다. 개별 쿼리가 필요에 따라 오버라이드한다.
             staleTime: 60_000,
-            /*
-             * 에러 종류를 가려 재시도하는 정책은 아직 넣지 않는다.
-             * Supabase 의 PostgrestError 는 HTTP status 없이 code(문자열)만 주므로
-             * 4xx 판별 같은 조건은 실제 쿼리를 붙여 에러 형태를 확인한 뒤 정한다.
-             */
-            retry: 2,
+            // 클라이언트 오류(4xx·PostgREST 거부)는 재시도해도 같으므로 네트워크 오류만 재시도한다.
+            retry: shouldRetry,
             // 앱이 포그라운드로 돌아올 때 신선도를 확보한다. staleTime 이 과요청을 막는다.
             refetchOnWindowFocus: true,
             // 모바일은 연결이 자주 끊긴다. 복구 시 다시 가져온다.
