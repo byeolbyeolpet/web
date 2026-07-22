@@ -76,6 +76,23 @@ src/
 
 터치 WebView 기준: hover 의존 금지, 최소 탭 영역 44×44px, 색상 단독 정보 전달 금지, Safe Area 준수, 본문 텍스트 선택 허용.
 
+## 진행 상황
+
+> PR을 올릴 때마다 갱신한다.
+
+**M0 · 기반** — 진행 중
+
+- [x] 라우터 설계 확정 + 라우트 스켈레톤 12화면 (`(tabs)`/`(full)` 그룹, 쿼리 라우트)
+- [x] 코어 DB 스키마 — 테이블 13 · enum 6 · RLS 정책 27 · PostGIS 반경 RPC · TS 타입 동기화
+- [x] 개발 기반 — CI(GitHub Actions), Vitest + Playwright, 컨벤션 7종, ADR 4건
+- [ ] Providers 배선 (TanStack Query · next-themes · sonner)
+- [ ] 데이터 계층 규약 (query key 팩토리 · `use-query-*` 훅 패턴)
+- [ ] Capacitor 셋업 (Android 우선 — iOS는 macOS 필요)
+- [ ] 디자인 토큰 폴리시 + shadcn 기본 세트
+- [ ] species 시드 (특수동물 코어 세트)
+
+**이후** — M1 셸 & 내비게이션 → M2 인증 & 프로필 → M3 지도 → M4 리뷰 → M5 커뮤니티 → M6 사전 & 성분
+
 ## 시작하기
 
 ```bash

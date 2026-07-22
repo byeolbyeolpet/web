@@ -2,7 +2,7 @@
 
 > **핵심 전제**: **백엔드는 Supabase다** — Postgres·Auth·Storage·Edge Functions 전부 Supabase 서버에서 돈다. 없는 것은 "서버"가 아니라 **앱과 Supabase 사이에서 우리가 직접 돌리는 Next 서버 런타임**이다(Static Export라 빌드 산출물이 정적 파일뿐). 그래서 PixelPlay식 `admin client`/`service_role` 서버 read가 **불가능**하다 — 비밀키를 숨길 우리 쪽 실행 지점이 없기 때문이다. 이 제약이 아래 read/write 전략을 결정한다. ([ADR-0002](../adr/0002-static-export.md))
 >
-> ```
+> ```text
 > [Capacitor 앱 = WebView] ─ 정적 번들(빌드 타임 생성, 런타임 서버 X)
 >          └─ 브라우저 JS가 직접 호출 ─→ [Supabase 서버] Postgres·Auth·Storage·Edge Functions
 > ```
