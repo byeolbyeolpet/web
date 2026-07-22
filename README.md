@@ -101,6 +101,19 @@ npm run dev      # 개발 서버
 npm run build    # out/ 에 정적 번들 생성
 ```
 
+### 앱으로 실행하기
+
+웹 빌드 산출물(`out/`)이 그대로 네이티브 WebView 안에 담긴다. UI 를 다시 짜지 않는다.
+
+```bash
+npm run app:android   # build → cap sync → Android Studio 열기
+npm run app:sync      # build → cap sync (에뮬레이터를 열지 않을 때)
+```
+
+`android/` 는 Capacitor 가 생성한 네이티브 프로젝트다. 아이콘·권한·스플래시를 직접 수정하는 곳이라 저장소에 포함하며, 그 안의 `app/src/main/assets/public` 만은 `out/` 의 복사본이라 추적하지 않는다(`cap sync` 가 매번 다시 만든다).
+
+**필요한 것**: [Android Studio](https://developer.android.com/studio) (JDK 를 함께 설치해 준다). iOS 는 Xcode 가 필요해 macOS 에서만 빌드할 수 있다.
+
 ## 문서
 
 - [CLAUDE.md](CLAUDE.md) — 작업 규칙과 제약
