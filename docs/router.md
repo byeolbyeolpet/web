@@ -51,7 +51,7 @@ src/app/
 
 ## 4. 왜 place/post는 `[id]`가 아니라 쿼리파라미터인가
 
-Static Export는 동적 세그먼트 `[id]`에 대해 `generateStaticParams()`를 **필수**로 요구하고 `dynamicParams`가 강제로 `false`다 → **빌드 시점에 없는 id는 404.** 번들이 정적 파일이라 런타임에 새 페이지를 찍어낼 Next 서버가 없다(데이터는 앱에서 Supabase로 직접 가져온다).
+Static Export는 동적 세그먼트 `[id]`에 대해 `generateStaticParams()`를 **필수**로 요구하고, `dynamicParams: true`의 런타임 fallback은 **지원되지 않는다** → **`generateStaticParams()`가 만들지 않은 경로는 404.** 번들이 정적 파일이라 런타임에 새 페이지를 찍어낼 Next 서버가 없다(데이터는 앱에서 Supabase로 직접 가져온다).
 
 - **post**: 런타임에 계속 생성되는 UGC → 빌드 후 만든 글은 애초에 프리렌더 불가.
 - **place**: 공공데이터라 빌드 때 존재는 하지만, 수만 개로 늘고 **리뷰가 live**라 프리렌더해도 빈 껍데기 + 새 장소마다 재빌드 필요 → 실익 없음.
