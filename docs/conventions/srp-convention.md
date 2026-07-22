@@ -28,6 +28,7 @@
 | shadcn 래퍼 | `shared/ui` |
 | 외부 lib 설정(supabase client, cn, zod 스키마) | `shared/lib` |
 | 상수·Query Key·앱 메시지 | `shared/config` |
+| 앱 전역 Provider(Query·Theme·Toaster) | `shared/providers` — `app/`은 라우팅 껍데기라 조립 로직을 두지 않는다. `layout`은 `AppProviders` 하나만 감싼다 |
 | 전역 스토어(auth 세션 등) | `shared` (슬라이스 전용 스토어는 그 슬라이스 `model`) |
 | DB 자동 생성 타입 | `shared/lib/supabase/database.types.ts` |
 

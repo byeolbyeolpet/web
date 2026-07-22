@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Noto_Sans_KR, Nunito } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/shared/lib/utils";
+import { AppProviders } from "@/shared/providers";
 
 /** 본문 — 한글. 400/500/700만 쓴다. */
 const notoSansKr = Noto_Sans_KR({
@@ -55,7 +56,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
       suppressHydrationWarning
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <AppProviders>{children}</AppProviders>
+      </body>
     </html>
   );
 }
