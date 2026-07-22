@@ -1,6 +1,11 @@
 # Supabase 컨벤션
 
-> **핵심 전제**: 우리는 Static Export라 **서버가 없다.** 그래서 PixelPlay식 `admin client`/`service_role` 서버 read가 **불가능**하다. 이 제약이 아래 read/write 전략을 결정한다. ([ADR-0002](../adr/0002-static-export.md))
+> **핵심 전제**: **백엔드는 Supabase다** — Postgres·Auth·Storage·Edge Functions 전부 Supabase 서버에서 돈다. 없는 것은 "서버"가 아니라 **앱과 Supabase 사이에서 우리가 직접 돌리는 Next 서버 런타임**이다(Static Export라 빌드 산출물이 정적 파일뿐). 그래서 PixelPlay식 `admin client`/`service_role` 서버 read가 **불가능**하다 — 비밀키를 숨길 우리 쪽 실행 지점이 없기 때문이다. 이 제약이 아래 read/write 전략을 결정한다. ([ADR-0002](../adr/0002-static-export.md))
+>
+> ```
+> [Capacitor 앱 = WebView] ─ 정적 번들(빌드 타임 생성, 런타임 서버 X)
+>          └─ 브라우저 JS가 직접 호출 ─→ [Supabase 서버] Postgres·Auth·Storage·Edge Functions
+> ```
 
 ## 1. 타입 동기화
 
@@ -34,13 +39,13 @@ typegen이 표현하지 못하는 것이 있다. 아래는 타입을 믿으면 �
 
 ## 4. read/write 전략 — 전부 브라우저 client
 
-서버가 없으므로 read든 write든 **브라우저 client + TanStack Query**로 한다.
+우리 쪽 서버 런타임이 없으므로 read든 write든 **브라우저 client + TanStack Query**로 Supabase를 직접 호출한다.
 
 - **read**: `useQuery`의 `queryFn`에서 `.rpc()`/`.from()` 직접 호출 → `use-query-*` 훅으로 감싼다.
 - **write(mutation)**: `useMutation` → 성공 시 관련 `invalidateQueries`.
 - 캐시 공유로 props drilling을 피하고, mutation 후 즉시 갱신한다.
 
-### 보안 모델 (서버가 없기 때문에)
+### 보안 모델 (우리 쪽 검증 계층이 없기 때문에)
 
 **RLS 2단 모델** — 정보 허브라 로그인 게이트를 두지 않는다. ([결정](../adr/0004-client-side-supabase-auth.md) 계열)
 
@@ -51,7 +56,7 @@ typegen이 표현하지 못하는 것이 있다. 아래는 타입을 믿으면 �
 - `p_actor_user_id` 같은 **신뢰 파라미터 패턴 금지** — 브라우저에서 다른 유저 id를 넣어 위조할 수 있다. 행위자는 항상 `auth.uid()`로 DB에서 잡는다.
 - **RLS는 행 단위라 컬럼을 구분하지 못한다.** 사용자가 바꾸면 안 되는 컬럼(`reviews.is_verified` 같은 검증 플래그, `created_at`, 소유권 컬럼)은 RLS로 못 막으니 **컬럼 단위 grant**로 잠근다: 테이블 레벨 `insert, update`를 회수한 뒤 허용 컬럼만 화이트리스트로 `grant`. 테이블 레벨 grant가 남아 있으면 컬럼 제한은 무의미하다. 플래그 승격은 `service_role`(Edge Function)만.
 - **트리거 전용 함수**(`handle_new_user`, `set_updated_at`)는 REST RPC로 노출될 필요가 없으니 `anon`·`authenticated`·`public`에서 `execute`를 회수한다(어드바이저 WARN 방지). `create or replace function`은 ACL을 보존하므로 함수 본문을 고쳐도 회수 상태는 유지된다.
-- **DB 제약이 유일한 검증 계층이다.** 서버가 없어 클라이언트 Zod는 공개 anon key + REST 직접 호출로 우회된다. 길이 상한·좌표 범위·짝 일치는 반드시 `check` 제약으로 건다. 특히 좌표: **geography 캐스트는 범위 초과를 에러 없이 wrap**하므로(위도 91 → 89) 제약이 없으면 `lat/lng`와 생성컬럼 `geog`가 조용히 어긋난다.
+- **DB 제약이 유일한 검증 계층이다.** 요청이 우리 코드를 거치지 않고 브라우저에서 Supabase로 바로 가므로, 클라이언트 Zod는 공개 anon key + REST 직접 호출로 우회된다. 길이 상한·좌표 범위·짝 일치는 반드시 `check` 제약으로 건다. 특히 좌표: **geography 캐스트는 범위 초과를 에러 없이 wrap**하므로(위도 91 → 89) 제약이 없으면 `lat/lng`와 생성컬럼 `geog`가 조용히 어긋난다.
 - `service_role`/비밀키가 필요한 로직(Gemini 호출, 공공데이터 정제, 관리 작업)은 **Supabase Edge Function**으로 뺀다. 브라우저엔 절대 두지 않는다.
 
 ## 5. 변경 후 검증

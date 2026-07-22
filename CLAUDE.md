@@ -61,7 +61,7 @@ src/
 최종 타깃이 WebView 앱(Capacitor)이고 앱은 정적 번들이 필수다. `next.config.ts`에 `output: 'export'`가 켜져 있다. 아래를 어기면 앱 경로가 막힌다.
 
 1. **`use cache` / `cacheComponents`를 쓰지 않는다.** Static Export를 지원하지 않는다.
-2. **서버 로직을 Route Handler(요청 기반)나 Server Action에 두지 않는다.** Static Export엔 서버가 없다. 서버가 필요한 것(Gemini 호출, 비밀키를 쓰는 외부 API)은 전부 **Supabase Edge Functions**로 간다. 웹과 앱이 같은 엔드포인트를 쓴다.
+2. **서버 로직을 Route Handler(요청 기반)나 Server Action에 두지 않는다.** Static Export엔 **우리가 돌리는 Next 서버 런타임이 없다** — 백엔드가 없다는 뜻이 아니라 **백엔드가 Supabase**라는 뜻이다. 서버에서 돌아야 하는 것(Gemini 호출, 비밀키를 쓰는 외부 API)은 전부 **Supabase Edge Functions**로 간다. 웹과 앱이 같은 엔드포인트를 쓴다.
 3. **`next/image` 기본 최적화는 서버를 요구한다.** `images: { unoptimized: true }`로 꺼 뒀다. 이미지 서빙은 Supabase Storage 경로 참조로 간다.
 4. **쿠키/proxy/redirects/rewrites/ISR 불가.** 개인화는 클라이언트에서 Supabase Auth 세션으로 처리한다.
 
