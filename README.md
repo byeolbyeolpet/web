@@ -85,8 +85,8 @@ src/
 - [x] 라우터 설계 확정 + 라우트 스켈레톤 12화면 (`(tabs)`/`(full)` 그룹, 쿼리 라우트)
 - [x] 코어 DB 스키마 — 테이블 13 · enum 6 · RLS 정책 27 · PostGIS 반경 RPC · TS 타입 동기화
 - [x] 개발 기반 — CI(GitHub Actions), Vitest + Playwright, 컨벤션 7종, ADR 4건
-- [ ] Providers 배선 (TanStack Query · next-themes · sonner)
-- [ ] 데이터 계층 규약 (query key 팩토리 · `use-query-*` 훅 패턴)
+- [x] Providers 배선 — TanStack Query · next-themes(다크모드) · sonner
+- [x] 데이터 계층 규약 — Query Key 팩토리 + 기준 훅(`entities/species`)
 - [ ] Capacitor 셋업 (Android 우선 — iOS는 macOS 필요)
 - [ ] 디자인 토큰 폴리시 + shadcn 기본 세트
 - [ ] species 시드 (특수동물 코어 세트)
