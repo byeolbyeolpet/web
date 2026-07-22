@@ -30,6 +30,14 @@ Supabase 표준 Next.js 스캐폴드가 `src/shared/lib/supabase/`에 들어왔�
 
   실기기에서 재로그인 유지를 확인해야 결론이 나므로 **인증(auth) 구현 이슈에서 실측 후 확정**하고, 그때 `@supabase/ssr` 의존성 제거 여부도 함께 판단한다.
 
+  검증된 사실(2026-07-22, `node_modules` 소스 직접 확인):
+  - `@supabase/ssr` `cookies.js` — 옵션 없이 브라우저에서 부르면 `document.cookie`로 저장한다("It only works on the cookies abstraction").
+  - `@supabase/auth-js` `GoTrueClient` — storage 미지정 시 `globalThis.localStorage`가 기본.
+  - Supabase 인증은 `Authorization: Bearer <JWT>` 헤더. **쿠키를 읽지 않는다.**
+  - 미검증(실기기 필요): iOS ITP의 JS 쿠키 수명 제한, Capacitor 커스텀 스킴에서의 쿠키 영속성.
+
+  **열어둔 선택지 — 세션을 서버 측에서 관리**: 앱/웹이 세션을 각자 들고 왔다 갔다 하는 대신 Supabase(또는 Redis 같은 세션 스토어)에 두고 서버에서 불러오는 구성. 앱과 웹이 같은 세션을 공유해야 하거나 서버에서 세션을 검증해야 할 때 유리하다. 단 이 구성은 **세션을 읽을 서버 실행 지점**을 요구하므로(Edge Function 등) 현재의 2-tier 전제와 충돌하는지부터 따져야 한다. auth 설계 시 함께 검토한다.
+
 ## 결과
 
 **긍정**
