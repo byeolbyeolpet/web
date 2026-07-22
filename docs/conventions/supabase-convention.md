@@ -32,8 +32,14 @@
 
 ### 보안 모델 (서버가 없기 때문에)
 
-- **모든 RPC·테이블은 `authenticated`에 grant + RLS(`auth.uid() = user_id`)로 보호**한다. 권한 판단은 DB(RLS)가 한다.
+**RLS 2단 모델** — 정보 허브라 로그인 게이트를 두지 않는다. ([결정](../adr/0004-client-side-supabase-auth.md) 계열)
+
+- **공개 콘텐츠 = 읽기 공개**: 장소·종·사전·성분·제품·커뮤니티 글·리뷰 등은 `anon`+`authenticated` SELECT 허용. 게스트도 열람한다. (초안 `dex_articles`는 `published`만 노출.)
+- **개인정보·UGC = 본인만 쓰기**: profiles·pets·reviews·posts·comments 의 INSERT/UPDATE/DELETE 는 `authenticated` + RLS(`auth.uid() = user_id/owner_id/author_id`). 참조 데이터(장소·종·사전·성분)는 **쓰기 정책 없음**(=service_role/마이그레이션만).
+- 권한 판단은 DB(RLS)가 한다. 정책의 `auth.uid()`는 **`(select auth.uid())`로 감싸** 플래너가 initPlan으로 캐시하게 한다(성능).
+- **공개 데이터 RPC는 `SECURITY INVOKER`**로 두면 테이블 RLS(공개 읽기)가 그대로 적용돼 게스트도 호출 가능하다(예: `nearby_places`). 개인 데이터를 다루는 RPC는 `authenticated`에만 grant.
 - `p_actor_user_id` 같은 **신뢰 파라미터 패턴 금지** — 브라우저에서 다른 유저 id를 넣어 위조할 수 있다. 행위자는 항상 `auth.uid()`로 DB에서 잡는다.
+- **트리거 전용 함수**(`handle_new_user`, `set_updated_at`)는 REST RPC로 노출될 필요가 없으니 `anon`·`authenticated`·`public`에서 `execute`를 회수한다(어드바이저 WARN 방지).
 - `service_role`/비밀키가 필요한 로직(Gemini 호출, 공공데이터 정제, 관리 작업)은 **Supabase Edge Function**으로 뺀다. 브라우저엔 절대 두지 않는다.
 
 ## 5. 변경 후 검증
