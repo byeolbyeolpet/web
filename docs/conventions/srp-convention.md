@@ -2,7 +2,7 @@
 
 레이어의 역할과 의존 방향은 각 `src/<layer>/README.md`에 있다. 이 문서는 **슬라이스 내부의 단일 책임**과 "이 코드 어디 두지?"를 다룬다.
 
-> **PixelPlay와 다른 점**: 우리는 Static Export라 **서버가 없다.** `actions/`(Server Actions), `proxy.ts`(라우트 가드), Server Component 데이터 페칭, `_data/` 폴더는 **쓰지 않는다.** mutation은 클라이언트에서 Supabase client로 한다. ([ADR-0002](../adr/0002-static-export.md), [ADR-0004](../adr/0004-client-side-supabase-auth.md))
+> **PixelPlay와 다른 점**: 우리는 Static Export라 **우리가 돌리는 Next 서버 런타임이 없다**(백엔드는 Supabase). `actions/`(Server Actions), `proxy.ts`(라우트 가드), Server Component 데이터 페칭, `_data/` 폴더는 **쓰지 않는다.** mutation은 클라이언트에서 Supabase client로 한다. ([ADR-0002](../adr/0002-static-export.md), [ADR-0004](../adr/0004-client-side-supabase-auth.md))
 
 ## 슬라이스 구조 (세그먼트)
 

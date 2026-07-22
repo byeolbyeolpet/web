@@ -105,7 +105,7 @@ src/app/
 
 ## 6. 서버 로직 위치
 
-Static Export라 서버가 없다. 서버가 필요한 것(Gemini 호출, 비밀키 쓰는 외부 API, 공공데이터 정제 파이프라인 등)은 전부 **Supabase Edge Functions**. 웹과 앱이 같은 엔드포인트를 쓴다.
+Static Export라 **우리가 돌리는 Next 서버 런타임이 없다**(백엔드는 Supabase다). 서버에서 돌아야 하는 것(Gemini 호출, 비밀키 쓰는 외부 API, 공공데이터 정제 파이프라인 등)은 전부 **Supabase Edge Functions**. 웹과 앱이 같은 엔드포인트를 쓴다.
 
 ## 7. 컬러 (확정)
 
