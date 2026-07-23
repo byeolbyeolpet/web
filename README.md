@@ -93,7 +93,8 @@ src/
 - [x] Providers 배선 — TanStack Query · next-themes(다크모드) · sonner
 - [x] 데이터 계층 규약 — Query Key 팩토리 + 기준 훅(`entities/species`)
 - [x] Capacitor 셋업 — Android 앱으로 실구동 확인 (iOS는 macOS 필요, 별도)
-- [ ] 디자인 토큰 폴리시 + shadcn 기본 세트
+- [x] 디자인 토큰 — 무채색 크롬 + 바이올렛 단일 브랜드, 한글 타이포 기준
+- [ ] shadcn 기본 컴포넌트 세트 (버튼·인풋·다이얼로그 등)
 - [ ] species 시드 (특수동물 코어 세트)
 
 **이후** — M1 셸 & 내비게이션 → M2 인증 & 프로필 → M3 지도 → M4 리뷰 → M5 커뮤니티 → M6 사전 & 성분
