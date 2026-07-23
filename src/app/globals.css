@@ -26,12 +26,13 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* ── Anchor (딥틸) — 두 번째 브랜드 컬러 ──────────────────
-     헤더, 선택된 내비게이션, 링크, "깊이"가 필요한 면에 쓴다.
-     Primary(테라코타)가 행동을 부른다면 Anchor는 신뢰·안정을 준다.
-     bg-anchor / text-anchor 로 사용. */
-  --color-anchor: var(--anchor);
-  --color-anchor-foreground: var(--anchor-foreground);
+  /* ── Primary Tint — 브랜드 색의 옅은 면 ────────────────────
+     크롬이 무채색이라 브랜드 색이 나오는 면적이 작다. 그중에서도
+     "이 병원 페럿 진료 가능" 같은 종 태그는 우리 해자라서 일반
+     태그(secondary)보다 한 단계 위로 보여야 한다.
+     bg-primary-tint / text-primary-tint-foreground 로 사용. */
+  --color-primary-tint: var(--primary-tint);
+  --color-primary-tint-foreground: var(--primary-tint-foreground);
 
   /* ── Status Colors (아이콘/텍스트 병행 필수, 색상 단독 전달 금지) ── */
   --color-success: var(--success);
@@ -88,72 +89,83 @@
   --spacing-safe-right: env(safe-area-inset-right);
 }
 
+/*
+ * 모션 값(duration·easing)은 여기서 토큰으로 만들지 않는다.
+ * `--duration-*` 는 Tailwind v4 의 theme 네임스페이스가 아니라 정의해도 유틸리티가 생기지 않고,
+ * `--ease-*` 는 Tailwind 기본값(ease-out 등)을 덮어쓰게 된다.
+ * 지금은 애니메이션이 한 곳도 없어 검증할 대상도 없으므로,
+ * 실제 전환을 처음 만들 때 `duration-200` 같은 기본 유틸로 시작해 기준을 정한다.
+ * 대신 접근성 가드(prefers-reduced-motion)는 아래 @layer base 에 깔아 둔다.
+ */
+
 /* ══════════════════════════════════════════════════════════
-   Light Mode — "따뜻한 흙, 차분한 물"
+   Light Mode — 무채색 크롬 + 바이올렛
    테라코타(Primary) · 딥틸(Anchor) · 크림(배경)
    반려인의 일상에 스며드는 편안한 대비. 고채도를 피한다.
    ══════════════════════════════════════════════════════════ */
 :root {
-  /* 크림 — 종일 봐도 눈이 편한 따뜻한 오프화이트 */
-  --background: #f7f2ec;
-  --foreground: #1a1512;
+  /* 크롬은 무채색으로 비운다. 화면의 90%가 이 램프이고,
+     브랜드 색은 CTA·활성 탭·해자 태그에만 등장한다.
+     펫 사진이 화면의 주인공이라 배경이 조용해야 사진이 산다. */
+  --background: #ffffff;
+  --foreground: #111318;
 
   --card: #ffffff;
-  --card-foreground: #1a1512;
+  --card-foreground: #111318;
   --popover: #ffffff;
-  --popover-foreground: #1a1512;
+  --popover-foreground: #111318;
 
-  /* 테라코타 — 주요 CTA, 활성 상태. #fff8f3 대비 4.2:1(대형/UI) */
-  --primary: #d9673f;
-  --primary-foreground: #fff8f3;
+  /* 바이올렛 — CTA, 활성 탭. 펫 앱에서 드문 색이라 작은 면적으로도 각인된다.
+     경쟁 서비스(강아지대통령)의 레드 계열과도 확실히 갈린다. */
+  --primary: #6e56cf;
+  --primary-foreground: #ffffff;
 
-  /* 웜 샌드 — 보조 버튼/칩 배경 */
-  --secondary: #ece3d6;
-  --secondary-foreground: #4a3f35;
+  /* 브랜드 색의 옅은 면 — 종 태그(해자) 전용 */
+  --primary-tint: #efebfb;
+  --primary-tint-foreground: #4a3596;
 
-  /* 은은한 강조 배경 — 선택·활성 리스트 항목 */
-  --accent: #eae0d2;
-  --accent-foreground: #1a1512;
+  /* 일반 칩·보조 버튼. 종 태그보다 한 단계 아래 */
+  --secondary: #f3f4f6;
+  --secondary-foreground: #3f4551;
 
-  --muted: #efe8de;
-  --muted-foreground: #6b5f54;
+  /* 선택·호버된 리스트 항목 */
+  --accent: #f3f4f6;
+  --accent-foreground: #111318;
 
-  /* 딥틸 — 헤더·링크·선택된 탭. 신뢰와 깊이 */
-  --anchor: #2e5d5a;
-  --anchor-foreground: #ffffff;
+  --muted: #fafafb;
+  --muted-foreground: #6b7080;
 
-  /* 경고·삭제. 흙빛 팔레트에 맞춘 벽돌빛 레드 */
-  --destructive: #d64545;
-  --destructive-foreground: #fff8f3;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
 
-  --border: #e3d9cc;
-  --input: #e3d9cc;
-  --ring: #d9673f;
+  --border: #eaecef;
+  --input: #eaecef;
+  --ring: #6e56cf;
 
-  /* Status — 아이콘·텍스트 병행 필수 */
-  --success: #2e9e6b;
-  --success-foreground: #fff8f3;
-  --warning: #e8a33d;
-  --warning-foreground: #1a1512;
-  --info: #3b82c4;
-  --info-foreground: #fff8f3;
+  /* Status — 아이콘·텍스트 병행 필수 (색상 단독 전달 금지) */
+  --success: #16a34a;
+  --success-foreground: #ffffff;
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
+  --info: #2563eb;
+  --info-foreground: #ffffff;
 
-  --chart-1: #d9673f;
-  --chart-2: #2e5d5a;
-  --chart-3: #e8a33d;
-  --chart-4: #3b82c4;
-  --chart-5: #a08d7a;
+  --chart-1: #6e56cf;
+  --chart-2: #9b87f5;
+  --chart-3: #16a34a;
+  --chart-4: #d97706;
+  --chart-5: #9aa0ae;
 
   --radius: 0.625rem;
 
   --sidebar: #ffffff;
-  --sidebar-foreground: #1a1512;
-  --sidebar-primary: #d9673f;
-  --sidebar-primary-foreground: #fff8f3;
-  --sidebar-accent: #f2ebe1;
-  --sidebar-accent-foreground: #1a1512;
-  --sidebar-border: #e3d9cc;
-  --sidebar-ring: #d9673f;
+  --sidebar-foreground: #111318;
+  --sidebar-primary: #6e56cf;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f3f4f6;
+  --sidebar-accent-foreground: #111318;
+  --sidebar-border: #eaecef;
+  --sidebar-ring: #6e56cf;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -162,57 +174,61 @@
    보정해 5~15% 밝게 올린다. 배경은 완전 검정 대신 따뜻한 흑갈색.
    ══════════════════════════════════════════════════════════ */
 .dark {
-  --background: #141210;
-  --foreground: #f5f0ea;
+  /* 배경은 완전 검정을 피하고 아주 살짝 띄운다(#0d0d0f).
+     card 를 배경보다 한 단계 밝게 둬서 헤더·탭바가 자연스럽게 떠 보인다. */
+  --background: #0d0d0f;
+  --foreground: #f4f4f6;
 
-  --card: #1e1b19;
-  --card-foreground: #f5f0ea;
-  --popover: #1e1b19;
-  --popover-foreground: #f5f0ea;
+  --card: #17181b;
+  --card-foreground: #f4f4f6;
+  --popover: #17181b;
+  --popover-foreground: #f4f4f6;
 
-  --primary: #e8825c;
-  --primary-foreground: #201510;
+  /* 어두운 배경에서는 같은 색이 탁해 보인다. 명도·채도를 함께 올린다.
+     이 밝기에 흰 글씨는 대비가 부족해 전경은 짙은 보라를 쓴다. */
+  --primary: #9b87f5;
+  --primary-foreground: #180f33;
 
-  --secondary: #2a2521;
-  --secondary-foreground: #f5f0ea;
+  --primary-tint: #241c3d;
+  --primary-tint-foreground: #c4b5fd;
 
-  --accent: #2e2823;
-  --accent-foreground: #f5f0ea;
+  --secondary: #1f2024;
+  --secondary-foreground: #b4b7c0;
 
-  --muted: #2a2521;
-  --muted-foreground: #a8998a;
+  --accent: #1f2024;
+  --accent-foreground: #f4f4f6;
 
-  --anchor: #4a8b85;
-  --anchor-foreground: #0f1817;
+  --muted: #17181b;
+  --muted-foreground: #9c9fa8;
 
-  --destructive: #e5484d;
-  --destructive-foreground: #201510;
+  --destructive: #f87171;
+  --destructive-foreground: #2a0a0a;
 
-  --border: #34302b;
-  --input: #34302b;
-  --ring: #e8825c;
+  --border: #26272b;
+  --input: #26272b;
+  --ring: #9b87f5;
 
-  --success: #43b581;
-  --success-foreground: #201510;
-  --warning: #e8a33d;
-  --warning-foreground: #201510;
-  --info: #4a9fd8;
-  --info-foreground: #201510;
+  --success: #4ade80;
+  --success-foreground: #052e16;
+  --warning: #fbbf24;
+  --warning-foreground: #291404;
+  --info: #60a5fa;
+  --info-foreground: #0a1633;
 
-  --chart-1: #e8825c;
-  --chart-2: #4a8b85;
-  --chart-3: #e8a33d;
-  --chart-4: #4a9fd8;
-  --chart-5: #a08d7a;
+  --chart-1: #9b87f5;
+  --chart-2: #6e56cf;
+  --chart-3: #4ade80;
+  --chart-4: #fbbf24;
+  --chart-5: #6e7078;
 
-  --sidebar: #1e1b19;
-  --sidebar-foreground: #f5f0ea;
-  --sidebar-primary: #e8825c;
-  --sidebar-primary-foreground: #201510;
-  --sidebar-accent: #2e2823;
-  --sidebar-accent-foreground: #f5f0ea;
-  --sidebar-border: #34302b;
-  --sidebar-ring: #e8825c;
+  --sidebar: #17181b;
+  --sidebar-foreground: #f4f4f6;
+  --sidebar-primary: #9b87f5;
+  --sidebar-primary-foreground: #180f33;
+  --sidebar-accent: #1f2024;
+  --sidebar-accent-foreground: #f4f4f6;
+  --sidebar-border: #26272b;
+  --sidebar-ring: #9b87f5;
 }
 
 @layer base {
@@ -232,6 +248,32 @@
     /* 모바일 주소창 높이 변화에 대응 */
     min-height: 100dvh;
     overscroll-behavior-y: none;
+    /*
+     * 한글은 라틴보다 글자가 네모틀을 꽉 채워서 같은 수치라도 더 빽빽해 보인다.
+     * 크롬을 무채색으로 비운 만큼 위계를 타이포가 만들어야 하므로 본문은 넉넉히 잡는다.
+     */
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+  }
+
+  /* 제목은 커질수록 자간이 벌어져 보인다. 더 좁혀 덩어리감을 맞춘다. */
+  h1,
+  h2,
+  h3 {
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+  }
+
+  /* 모션에 민감한 사용자를 위해 전역으로 줄인다. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   button:not(:disabled),

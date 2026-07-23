@@ -86,17 +86,22 @@ src/
 
 ## 디자인 시스템
 
-`src/app/globals.css`에 토큰이 있다. **HEX 하드코딩 금지** — `bg-primary`, `text-anchor`, `text-muted-foreground` 같은 시맨틱 클래스를 쓴다.
+`src/app/globals.css`에 토큰이 있다. **HEX 하드코딩 금지** — `bg-primary`, `text-muted-foreground` 같은 시맨틱 클래스를 쓴다.
+
+**크롬은 무채색으로 비운다. 브랜드 색은 CTA·활성 탭·종 태그에만 등장한다.** 헤더에 색을 칠하지 않는다 — 화면의 주인공은 펫 사진과 정보이고, 배경이 조용해야 사진이 산다. 위계는 색이 아니라 **타이포와 여백**이 만든다.
 
 | 역할 | 색 | Light | Dark |
 |---|---|---|---|
-| Primary (CTA, 활성) | 테라코타 | `#D9673F` | `#E8825C` |
-| Anchor (헤더·링크·선택탭) | 딥틸 | `#2E5D5A` | `#4A8B85` |
-| Background | 크림 | `#F7F2EC` | `#141210` |
-| Surface (card) | | `#FFFFFF` | `#1E1B19` |
-| Text | | `#1A1512` | `#F5F0EA` |
+| Primary (CTA·활성 탭) | 바이올렛 | `#6E56CF` | `#9B87F5` |
+| Primary tint (종 태그=해자) | | `#EFEBFB` / 글씨 `#4A3596` | `#241C3D` / 글씨 `#C4B5FD` |
+| Background | | `#FFFFFF` | `#0D0D0F` |
+| Surface (card) | | `#FFFFFF` | `#17181B` |
+| Secondary (일반 칩) | | `#F3F4F6` / 글씨 `#3F4551` | `#1F2024` / 글씨 `#B4B7C0` |
+| Muted foreground | | `#6B7080` | `#9C9FA8` |
+| Border | | `#EAECEF` | `#26272B` |
+| Text | | `#111318` | `#F4F4F6` |
 
-고채도를 피한다. 종일 봐도 눈이 편한 차분한 대비를 목표로 한다.
+**색은 세 층으로 쓴다.** ① 브랜드(바이올렛) = 정체성, CTA·활성 탭에만 ② 정보/의미 = 상태 구분(`success`·`warning`·`destructive`), 반드시 아이콘 병행 ③ 중립 = 그 외 전부. **종 태그는 중립이 아니라 `bg-primary-tint`로 한 단계 올린다** — 특수동물 진료 태깅이 우리 해자인데 회색으로 죽이면 차별점이 안 보인다.
 
 ### UX 규칙 (터치 WebView 기준)
 

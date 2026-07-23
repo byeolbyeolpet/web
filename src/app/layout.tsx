@@ -38,8 +38,8 @@ export const viewport: Viewport = {
   /* 노치 영역까지 배경을 채우고 Safe Area는 CSS 토큰으로 처리한다. */
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f7f2ec" },
-    { media: "(prefers-color-scheme: dark)", color: "#141210" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0d0d0f" },
   ],
 };
 
