@@ -4,6 +4,20 @@ This version (16.x) has breaking changes — APIs, conventions, and file structu
 
 ---
 
+# 라이브러리 작업 전에는 Context7 을 먼저 본다
+
+**라이브러리·프레임워크의 API·설정·규약을 다룰 때는 코드를 쓰기 전에 Context7 MCP 로 최신 문서를 확인한다.** `resolve-library-id` → `query-docs` 순서로 부른다.
+
+기억으로 쓰면 안 되는 이유는 **버전이 앞서 있어서**다. 이 저장소만 해도 Next 16, Tailwind v4, React 19 처럼 학습 시점 이후에 규약이 바뀐 것들이 쌓여 있다.
+
+실제 사고 사례 — 디자인 토큰 작업에서 `--duration-*` 를 Tailwind v4 의 theme 네임스페이스로 착각해 모션 토큰을 정의했는데, 그런 네임스페이스가 없어 유틸리티가 하나도 생성되지 않았다. 빌드 산출 CSS 를 뒤져 0건인 것을 확인하고서야 알았고, 결국 `node_modules/tailwindcss/theme.css` 를 직접 열어 검증해야 했다. Context7 을 먼저 봤으면 한 번에 끝났을 일이다.
+
+- 적용 대상: 새 라이브러리 도입, 설정 파일 작성, API 시그니처·옵션 확인, "이 버전에서 이게 되나?" 류의 판단 전부.
+- `node_modules` 의 실제 소스·타입 정의를 읽는 것은 여전히 유효하다. Context7 이 최신 문서를, `node_modules` 가 **설치된 바로 그 버전**을 알려주므로 둘은 대체가 아니라 보완이다.
+- 확인한 내용이 판단의 근거가 됐다면 커밋 메시지나 PR 에 남긴다.
+
+---
+
 # 행동 지침 (Behavioral Guidelines)
 
 이 프로젝트는 **속도보다 신중함과 정확성**을 우선한다. 모든 작업은 시니어 엔지니어의 관점에서 한다. `CLAUDE.md`가 "무엇을·왜"라면 이 절은 "어떻게 일하나"다.
