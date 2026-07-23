@@ -89,11 +89,11 @@ shadcn 을 얹을 때 이 규칙이 바로 걸렸다. `radix-nova` 스타일은 
 
 > PR을 올릴 때마다 갱신한다.
 
-**M0 · 기반** — 진행 중
+**M0 · 기반** — 완료
 
 - [x] 라우터 설계 확정 + 라우트 스켈레톤 12화면 (`(tabs)`/`(full)` 그룹, 쿼리 라우트)
 - [x] 코어 DB 스키마 — 테이블 13 · enum 6 · RLS 정책 27 · PostGIS 반경 RPC · TS 타입 동기화
-- [x] 개발 기반 — CI(GitHub Actions), Vitest + Playwright, 컨벤션 7종, ADR 4건
+- [x] 개발 기반 — CI(GitHub Actions, lint·format·test·build·e2e), Vitest + Playwright, 컨벤션 7종, ADR 5건
 - [x] Providers 배선 — TanStack Query · next-themes(다크모드) · sonner
 - [x] 데이터 계층 규약 — Query Key 팩토리 + 기준 훅(`entities/species`)
 - [x] Capacitor 셋업 — Android 앱으로 실구동 확인 (iOS는 macOS 필요, 별도)
@@ -101,7 +101,12 @@ shadcn 을 얹을 때 이 규칙이 바로 걸렸다. `radix-nova` 스타일은 
 - [x] shadcn 기본 세트 7종 — 터치 44px 스케일로 재조정, 대비 실측 검증
 - [x] species 시드 — 종 코드 체계 확정([ADR-0005](docs/adr/0005-species-code-system.md)) + 14종
 
-**이후** — M1 셸 & 내비게이션 → M2 인증 & 프로필 → M3 지도 → M4 리뷰 → M5 커뮤니티 → M6 사전 & 성분
+**M1 · 셸 & 내비게이션** — 다음
+
+- [ ] 헤더·하단 탭 위젯을 확정 토큰과 shadcn 세트로 구현
+- [ ] 다크 모드에서 종 태그가 일반 칩과 충분히 갈리는지 실기 확인 ([#21](https://github.com/byeolbyeolpet/web/issues/21))
+
+**이후** — M2 인증 & 프로필 → M3 지도 → M4 리뷰 → M5 커뮤니티 → M6 사전 & 성분
 
 ## 시작하기
 
