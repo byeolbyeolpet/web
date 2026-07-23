@@ -18,26 +18,24 @@ const markSvg =
 
 export default function AppleIcon() {
   return new ImageResponse(
-    (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#6E56CF",
-        }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse(satori)에선 next/image를 못 쓴다 */}
-        <img
-          alt=""
-          width={140}
-          height={140}
-          src={`data:image/svg+xml;utf8,${encodeURIComponent(markSvg)}`}
-        />
-      </div>
-    ),
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#6E56CF",
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse(satori)에선 next/image를 못 쓴다 */}
+      <img
+        alt=""
+        width={140}
+        height={140}
+        src={`data:image/svg+xml;utf8,${encodeURIComponent(markSvg)}`}
+      />
+    </div>,
     size,
   );
 }
