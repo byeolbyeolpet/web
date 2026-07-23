@@ -12,5 +12,6 @@
 | [0002](0002-static-export.md) | Static Export(`output: 'export'`) 채택 | 채택 |
 | [0003](0003-keep-nextjs-over-vite.md) | 프레임워크로 Next.js 유지 (vs Vite) | 채택 |
 | [0004](0004-client-side-supabase-auth.md) | 클라이언트 사이드 Supabase Auth — 서버 스캐폴드 제거 | 채택 |
+| [0005](0005-species-code-system.md) | 종 코드 체계 — 입도는 "병원이 갈리는 단위", 품종은 breeds | 채택 |
 
 > 2026-07-21: 0001~0004는 "web을 독립 사이트/SEO 채널로 볼 것인가"라는 반복 혼란을 끝내기 위해 한 세션에서 함께 확정했다. 뿌리는 0001이다.

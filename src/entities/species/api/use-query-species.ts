@@ -18,8 +18,10 @@ export function useQuerySpecies(group?: Enums<"species_group">) {
     queryFn: async (): Promise<Species[]> => {
       const supabase = createClient();
 
-      // 그룹 필터는 DB 에서 건다. 받아와서 클라이언트에서 거르지 않는다.
-      let query = supabase.from("species").select("*").order("name_ko");
+      // 그룹 필터도 정렬도 DB 에서 건다. 받아와서 클라이언트에서 거르거나 정렬하지 않는다.
+      // sort_order 는 노출 순서를 데이터로 가진 컬럼이다 — 가나다순이면 가장 흔한
+      // 특수동물(토끼·햄스터)이 맨 아래로 밀린다.
+      let query = supabase.from("species").select("*").order("sort_order");
       if (group) query = query.eq("group", group);
 
       const { data, error } = await query;
