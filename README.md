@@ -87,7 +87,7 @@ src/
 - [x] 개발 기반 — CI(GitHub Actions), Vitest + Playwright, 컨벤션 7종, ADR 4건
 - [x] Providers 배선 — TanStack Query · next-themes(다크모드) · sonner
 - [x] 데이터 계층 규약 — Query Key 팩토리 + 기준 훅(`entities/species`)
-- [ ] Capacitor 셋업 (Android 우선 — iOS는 macOS 필요)
+- [x] Capacitor 셋업 — Android 앱으로 실구동 확인 (iOS는 macOS 필요, 별도)
 - [ ] 디자인 토큰 폴리시 + shadcn 기본 세트
 - [ ] species 시드 (특수동물 코어 세트)
 

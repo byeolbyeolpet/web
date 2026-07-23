@@ -59,3 +59,7 @@ next-env.d.ts
 # Supabase 로컬
 /supabase/.branches
 /supabase/.temp
+
+# IDE (Android Studio·IntelliJ) — 머신 종속 설정이라 추적하지 않는다
+.idea/
+*.iml
