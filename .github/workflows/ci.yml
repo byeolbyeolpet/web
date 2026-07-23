@@ -20,6 +20,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # lint보다 먼저 둔다. 포맷은 가장 싸게 떨어지는 검사고, 여기가 비어 있어서
+      # #17에서 깨진 포맷 2건이 초록불로 통과했다(#19에서 발견).
+      - run: npm run format:check
       - run: npm run lint
       - run: npm run test
       # next build가 TypeScript 체크까지 수행하므로 별도 typecheck 단계는 두지 않는다
