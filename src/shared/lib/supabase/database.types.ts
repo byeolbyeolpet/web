@@ -581,6 +581,7 @@ export type Database = {
           group: Database["public"]["Enums"]["species_group"]
           name_en: string | null
           name_ko: string
+          sort_order: number
           updated_at: string
         }
         Insert: {
@@ -589,6 +590,7 @@ export type Database = {
           group: Database["public"]["Enums"]["species_group"]
           name_en?: string | null
           name_ko: string
+          sort_order?: number
           updated_at?: string
         }
         Update: {
@@ -597,6 +599,7 @@ export type Database = {
           group?: Database["public"]["Enums"]["species_group"]
           name_en?: string | null
           name_ko?: string
+          sort_order?: number
           updated_at?: string
         }
         Relationships: []
