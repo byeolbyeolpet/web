@@ -25,7 +25,7 @@ export function BottomNav() {
             href={tab.href}
             className={cn(
               "flex min-h-14 flex-1 items-center justify-center text-sm",
-              active ? "font-bold text-anchor" : "text-muted-foreground",
+              active ? "font-bold text-primary" : "text-muted-foreground",
             )}
           >
             {tab.label}

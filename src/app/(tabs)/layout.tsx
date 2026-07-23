@@ -6,7 +6,7 @@ export default function TabsLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="flex min-h-12 items-center border-b border-border bg-card px-4 pt-safe-top">
-        <span className="font-heading font-bold text-anchor select-none">
+        <span className="font-heading font-bold text-foreground select-none">
           별별펫
         </span>
       </header>
