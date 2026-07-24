@@ -101,9 +101,10 @@ shadcn 을 얹을 때 이 규칙이 바로 걸렸다. `radix-nova` 스타일은 
 - [x] shadcn 기본 세트 7종 — 터치 44px 스케일로 재조정, 대비 실측 검증
 - [x] species 시드 — 종 코드 체계 확정([ADR-0005](docs/adr/0005-species-code-system.md)) + 14종
 
-**M1 · 셸 & 내비게이션** — 다음
+**M1 · 셸 & 내비게이션** — 진행 중
 
-- [ ] 헤더·하단 탭 위젯을 확정 토큰과 shadcn 세트로 구현
+- [x] 셸 위젯 — 헤더(워드마크) 분리 + 하단 탭 아이콘·활성 표현, 트리쉐이킹 실측
+- [ ] 브랜드 마크·파비콘·스플래시 — 워드마크로 먼저 가고 별도 확정 ([#18](https://github.com/byeolbyeolpet/web/issues/18))
 - [ ] 다크 모드에서 종 태그가 일반 칩과 충분히 갈리는지 실기 확인 ([#21](https://github.com/byeolbyeolpet/web/issues/21))
 
 **이후** — M2 인증 & 프로필 → M3 지도 → M4 리뷰 → M5 커뮤니티 → M6 사전 & 성분
