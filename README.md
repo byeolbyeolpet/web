@@ -73,7 +73,7 @@ src/
 | 역할 | Light | Dark |
 |---|---|---|
 | Primary — CTA·활성 탭 | `#6E56CF` | `#9B87F5` |
-| Primary tint — 종 태그(해자) | `#EFEBFB` | `#241C3D` |
+| Primary tint — 종 태그(해자) | `#EFEBFB` | `#3A2D6E` |
 | Background | `#FFFFFF` | `#0D0D0F` |
 | Text | `#111318` | `#F4F4F6` |
 
