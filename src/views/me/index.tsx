@@ -3,6 +3,7 @@
 
 import { useRequireSession, useSignOut } from "@/features/auth";
 import { useQueryProfile } from "@/entities/user";
+import { APP_MESSAGE } from "@/shared/config/app-message";
 import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { NicknameEditor } from "./nickname-editor";
@@ -50,7 +51,7 @@ export function MeView() {
         />
       ) : (
         <p className="text-sm text-muted-foreground">
-          프로필을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+          {APP_MESSAGE.profile.loadFailed.description}
         </p>
       )}
 
