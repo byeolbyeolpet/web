@@ -1,6 +1,51 @@
-// 로그인 화면.
-import { ScreenPlaceholder } from "@/shared/ui/screen-placeholder";
+// 로그인 화면 — 게스트 열람이 기본인 앱이라 로그인은 권유형으로, 강요하지 않는다.
+"use client";
+
+import { useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { FcGoogle } from "react-icons/fc";
+import { useSession, useSignInGoogle } from "@/features/auth";
+import { Button } from "@/shared/ui/button";
 
 export function LoginView() {
-  return <ScreenPlaceholder title="로그인" />;
+  const router = useRouter();
+  const { session, isLoading } = useSession();
+  const signIn = useSignInGoogle();
+
+  // 이미 로그인된 상태로 들어오면(자동 로그인 포함) 되돌린다.
+  useEffect(() => {
+    if (!isLoading && session) router.replace("/");
+  }, [isLoading, session, router]);
+
+  return (
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-8 px-6 pt-safe-top pb-safe-bottom">
+      <div className="flex flex-col items-center gap-2 text-center">
+        <h1 className="font-heading text-2xl font-bold">별별펫</h1>
+        <p className="text-sm text-muted-foreground">
+          별의별 반려동물이 다 여기에.
+          <br />
+          로그인하면 후기·커뮤니티·펫 프로필을 쓸 수 있어요.
+        </p>
+      </div>
+
+      <div className="flex w-full max-w-80 flex-col gap-3">
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={() => signIn.mutate()}
+          disabled={signIn.isPending}
+        >
+          <FcGoogle aria-hidden className="size-5" />
+          {signIn.isPending ? "로그인 중…" : "Google로 계속하기"}
+        </Button>
+        <Link
+          href="/"
+          className="py-2 text-center text-sm text-muted-foreground underline-offset-4 hover:underline"
+        >
+          로그인 없이 둘러보기
+        </Link>
+      </div>
+    </main>
+  );
 }
