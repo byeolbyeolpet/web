@@ -110,7 +110,9 @@ shadcn 을 얹을 때 이 규칙이 바로 걸렸다. `radix-nova` 스타일은 
 **M2 · 인증 & 프로필** — 진행 중 (#18 은 브랜드 분위기가 잡힌 뒤 병행)
 
 - [x] 세션 저장소 확정 — 안드로이드 실기 검증(3 저장소 × 재시작·재배포·재부팅) 후 네이티브 Preferences 채택, `@supabase/ssr` 제거 ([ADR-0004](docs/adr/0004-client-side-supabase-auth.md) 미결 해소)
-- [ ] kakao/google OAuth 로그인 + 프로필 화면
+- [x] Google 네이티브 로그인 — Credential Manager 계정 시트 + `signInWithIdToken`, 마이 탭 프로필 기본(닉네임 수정·로그아웃), 클라 가드. 에뮬레이터 전 과정 실측
+- [ ] 카카오(개인 개발자 비즈앱 가능 확인)·네이버(Supabase 커스텀 프로바이더 조사 필요) 로그인 추가
+- [ ] 펫 등록 (종 선택 = species 시드 첫 실전)
 
 **이후** — M3 지도 → M4 리뷰 → M5 커뮤니티 → M6 사전 & 성분
 
