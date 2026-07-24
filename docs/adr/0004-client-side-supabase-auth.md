@@ -20,23 +20,23 @@ Supabase 표준 Next.js 스캐폴드가 `src/shared/lib/supabase/`에 들어왔�
 ### 이행 상태 (2026-07-22, #4 코어 스키마)
 
 - **물리 삭제 완료** — `server.ts`·`proxy.ts` 제거. 스키마·RLS·타입이 적용돼 데이터 계층 설계 단계에 진입했으므로 예약해 둔 삭제를 이행했다. (두 파일은 한때 커밋돼 있었고 git 히스토리에 남는다.)
-- **미결 — 세션 저장소(쿠키 vs localStorage)**: `client.ts`는 `@supabase/ssr`의 `createBrowserClient`를 쓰는데 이 함수는 **쿠키 저장이 기본**이라 위 "localStorage 계열" 문구와 어긋난다.
+- **~~미결~~ → 확정 (2026-07-24, [#28](https://github.com/byeolbyeolpet/web/issues/28)) — 세션 저장소는 네이티브 Preferences**: `client.ts`는 `@supabase/supabase-js`의 `createClient`에 **`@capacitor/preferences` 기반 커스텀 storage 어댑터**를 주입한다(iOS UserDefaults / Android SharedPreferences). `@supabase/ssr` 의존성은 제거했다.
 
-  판단에 필요한 사실관계를 정리해 둔다.
-  - **Supabase는 쿠키를 읽지 않는다.** 요청 인증은 `Authorization: Bearer <JWT>` 헤더로 간다. 세션을 쿠키에 두든 localStorage에 두든 `supabase-js`가 꺼내서 헤더에 싣는다. 따라서 저장소 선택은 **서버가 읽느냐의 문제가 아니다.**
-  - 쿠키 저장(`@supabase/ssr`)의 존재 이유는 **Next 서버가 SSR/미들웨어에서 세션을 읽기 위해서**다. 우리는 그 Next 서버가 없으므로 이 경로가 쓰이지 않는다.
-  - 흔한 "쿠키가 XSS에 더 안전하다"는 `httpOnly` 쿠키 얘기다. `createBrowserClient`는 `document.cookie`로 JS가 직접 쓰므로 **JS에서 읽히며, localStorage와 노출도가 같다.**
-  - 남는 실질 기준은 **WebView 영속성** 하나다. 확인 필요 항목: Capacitor 커스텀 스킴(`capacitor://localhost`)에서 쿠키가 앱 재시작·업데이트 후에도 유지되는지, iOS ITP의 JS 쿠키 수명 제한이 강제 재로그인을 유발하는지.
+  판단에 필요했던 사실관계(2026-07-22 정리분, 유효):
+  - **Supabase는 쿠키를 읽지 않는다.** 요청 인증은 `Authorization: Bearer <JWT>` 헤더로 간다. 저장소 선택은 **서버가 읽느냐의 문제가 아니다.**
+  - 쿠키 저장(`@supabase/ssr`)의 존재 이유는 Next 서버가 SSR/미들웨어에서 세션을 읽기 위해서다. 우리는 그 서버가 없으므로 이 경로가 쓰이지 않는다.
+  - `createBrowserClient`의 쿠키는 JS가 쓰므로 httpOnly가 아니다 — **XSS 노출도는 localStorage와 같다.** 기기 내 보안은 세 후보 모두 앱 샌드박스 수준으로 동급.
+  - 남는 실질 기준은 **WebView 영속성** 하나다.
 
-  실기기에서 재로그인 유지를 확인해야 결론이 나므로 **인증(auth) 구현 이슈에서 실측 후 확정**하고, 그때 `@supabase/ssr` 의존성 제거 여부도 함께 판단한다.
+  실측과 결정 근거 (2026-07-24, 안드로이드 에뮬레이터 Pixel 8):
+  - **origin은 `https://localhost`** (커스텀 origin 가설 실측 확인, UA에 WebView 마커 `wv`).
+  - 쿠키·localStorage·Preferences 3종 마커가 **앱 완전 종료 후 재시작·재배포·재부팅 모두 생존** — 안드로이드에서는 무승부.
+  - 판별 기준이 남은 리스크로 이동: ① **iOS 미검증**(WebKit ITP의 JS 쿠키/스토리지 수명 제한이 WKWebView에 적용되는지) ② **OS 저장공간 청소** — Capacitor 공식 문서가 "모바일 OS가 localStorage를 주기적으로 지울 수 있다"며 Preferences를 권장. **네이티브 저장소만 두 리스크 모두 회피한다** — WebView 데이터가 아니기 때문이다.
+  - `@supabase/auth-js`의 `SupportedStorage`는 `getItem/setItem/removeItem`의 **Promise 버전을 허용**(설치 소스 확인) — 비동기 네이티브 어댑터가 정식 지원 경로다.
+  - 웹(브라우저)에서는 Preferences가 localStorage로 폴백되므로 같은 코드가 양쪽에서 돈다. 어댑터 경유 `getSession()`과 REST 조회(species 14행)를 브라우저에서 확인했다.
+  - **iOS 실기 검증은 보류** — macOS 보유로 가능은 하나 Xcode 세팅이 크다. Preferences 선택으로 iOS 불확실성이 결정의 전제조건에서 빠졌으므로, **iOS 빌드 착수 시 재검증 항목**으로만 남긴다.
 
-  검증된 사실(2026-07-22, `node_modules` 소스 직접 확인):
-  - `@supabase/ssr` `cookies.js` — 옵션 없이 브라우저에서 부르면 `document.cookie`로 저장한다("It only works on the cookies abstraction").
-  - `@supabase/auth-js` `GoTrueClient` — storage 미지정 시 `globalThis.localStorage`가 기본.
-  - Supabase 인증은 `Authorization: Bearer <JWT>` 헤더. **쿠키를 읽지 않는다.**
-  - 미검증(실기기 필요): iOS ITP의 JS 쿠키 수명 제한, Capacitor 커스텀 스킴에서의 쿠키 영속성.
-
-  **열어둔 선택지 — 세션을 서버 측에서 관리**: 앱/웹이 세션을 각자 들고 왔다 갔다 하는 대신 Supabase(또는 Redis 같은 세션 스토어)에 두고 서버에서 불러오는 구성. 앱과 웹이 같은 세션을 공유해야 하거나 서버에서 세션을 검증해야 할 때 유리하다. 단 이 구성은 **세션을 읽을 서버 실행 지점**을 요구하므로(Edge Function 등) 현재의 2-tier 전제와 충돌하는지부터 따져야 한다. auth 설계 시 함께 검토한다.
+  **열어둔 선택지 — 세션을 서버 측에서 관리**: 앱/웹이 세션을 각자 들고 왔다 갔다 하는 대신 Supabase(또는 Redis 같은 세션 스토어)에 두고 서버에서 불러오는 구성. 앱과 웹이 같은 세션을 공유해야 하거나 서버에서 세션을 검증해야 할 때 유리하다. 단 이 구성은 **세션을 읽을 서버 실행 지점**을 요구하므로(Edge Function 등) 현재의 2-tier 전제와 충돌하는지부터 따져야 한다. 필요가 생기면 그때 재검토한다(현재는 해당 없음).
 
 ## 결과
 
