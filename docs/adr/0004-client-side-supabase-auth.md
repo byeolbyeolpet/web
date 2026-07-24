@@ -35,6 +35,7 @@ Supabase 표준 Next.js 스캐폴드가 `src/shared/lib/supabase/`에 들어왔�
   - `@supabase/auth-js`의 `SupportedStorage`는 `getItem/setItem/removeItem`의 **Promise 버전을 허용**(설치 소스 확인) — 비동기 네이티브 어댑터가 정식 지원 경로다.
   - 웹(브라우저)에서는 Preferences가 localStorage로 폴백되므로 같은 코드가 양쪽에서 돈다. 어댑터 경유 `getSession()`과 REST 조회(species 14행)를 브라우저에서 확인했다.
   - **iOS 실기 검증은 보류** — macOS 보유로 가능은 하나 Xcode 세팅이 크다. Preferences 선택으로 iOS 불확실성이 결정의 전제조건에서 빠졌으므로, **iOS 빌드 착수 시 재검증 항목**으로만 남긴다.
+  - **iOS 출시 전 의무 작업**: `@capacitor/preferences`는 iOS에서 `UserDefaults`를 쓰므로 App Store 제출 전 `PrivacyInfo.xcprivacy`에 `NSPrivacyAccessedAPICategoryUserDefaults` + 사유 `CA92.1`을 선언해야 한다(Apple required-reason API, Capacitor 공식 문서 명시).
 
   **열어둔 선택지 — 세션을 서버 측에서 관리**: 앱/웹이 세션을 각자 들고 왔다 갔다 하는 대신 Supabase(또는 Redis 같은 세션 스토어)에 두고 서버에서 불러오는 구성. 앱과 웹이 같은 세션을 공유해야 하거나 서버에서 세션을 검증해야 할 때 유리하다. 단 이 구성은 **세션을 읽을 서버 실행 지점**을 요구하므로(Edge Function 등) 현재의 2-tier 전제와 충돌하는지부터 따져야 한다. 필요가 생기면 그때 재검토한다(현재는 해당 없음).
 
