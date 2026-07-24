@@ -53,7 +53,8 @@ typegen이 표현하지 못하는 것이 있다. 아래는 타입을 믿으면 �
 **read-modify-write 를 브라우저에서 하면 lost update 가 난다.** 두 사용자가 동시에 읽으면 같은 값을 보고, 나중 쓰기가 앞의 것을 덮는다.
 
 - 카운터(좋아요·조회수·댓글 수)는 클라이언트에서 `select` 후 `+1` 하지 않는다. **DB 안에서 단일 `update ... set n = n + 1`** 로 끝낸다.
-- 중복 방지(같은 장소에 후기 1개, 크루 정원)는 애플리케이션 검사로 막지 못한다. **유니크 제약 + `on conflict`**, 또는 함수 안에서 `select ... for update` 로 잠근다.
+- **중복 삽입 방지(같은 장소에 후기 1개)는 `unique` 제약 + `on conflict` 가 기본이다.** `select ... for update` 로는 못 막는다 — 아직 없는 행은 잠글 대상이 없어(팬텀) 두 트랜잭션이 동시에 "없음"을 보고 둘 다 insert 한다. 존재하지 않는 행을 막는 것은 제약뿐이다.
+- **`for update` 는 이미 있는 부모 행을 잠글 때만 쓴다.** 크루 정원처럼 "기존 크루 행을 잠그고 현재 인원을 세어 자리가 있으면 자식 행을 넣는" 경우다. 잠글 부모 행이 실재하므로 팬텀 문제가 없다.
 - 잠금이 필요한 로직은 **적용 전에 사용자와 상의**한다. 락 범위를 잘못 잡으면 교착이 난다.
 
 ### 3-3. 인덱스를 설계해야 할 때
@@ -92,7 +93,8 @@ typegen이 표현하지 못하는 것이 있다. 아래는 타입을 믿으면 �
 - **공개 콘텐츠 = 읽기 공개**: 장소·종·사전·성분·제품·커뮤니티 글·리뷰 등은 `anon`+`authenticated` SELECT 허용. 게스트도 열람한다. (초안 `dex_articles`는 `published`만 노출.)
 - **개인정보·UGC = 본인만 쓰기**: profiles·pets·reviews·posts·comments 의 INSERT/UPDATE/DELETE 는 `authenticated` + RLS(`auth.uid() = user_id/owner_id/author_id`). 참조 데이터(장소·종·사전·성분)는 **쓰기 정책 없음**(=service_role/마이그레이션만).
 - 권한 판단은 DB(RLS)가 한다. 정책의 `auth.uid()`는 **`(select auth.uid())`로 감싸** 플래너가 initPlan으로 캐시하게 한다(성능).
-- **공개 데이터 RPC는 `SECURITY INVOKER`**로 두면 테이블 RLS(공개 읽기)가 그대로 적용돼 게스트도 호출 가능하다(예: `nearby_places`). 개인 데이터를 다루는 RPC는 `authenticated`에만 grant.
+- **공개 데이터 RPC는 `SECURITY INVOKER`**로 두면 테이블 RLS(공개 읽기)가 그대로 적용돼 게스트도 호출 가능하다(예: `nearby_places`).
+- **개인 데이터 RPC는 `authenticated`에만 grant하기 전에 `public`에서 `execute`를 먼저 회수한다.** PostgreSQL은 함수 생성 시 `public`에 `execute`를 기본 부여하고 `anon`이 이를 상속하므로, `authenticated`에만 grant해도 anon 실행이 막히지 않는다. 정확한 시그니처로 `revoke execute on function public.fn(arg_types) from public` 후 `grant execute ... to authenticated`. (실측 2026-07-23: grant 없이 함수만 만들어도 `has_function_privilege('anon', ...)` = true.)
 - `p_actor_user_id` 같은 **신뢰 파라미터 패턴 금지** — 브라우저에서 다른 유저 id를 넣어 위조할 수 있다. 행위자는 항상 `auth.uid()`로 DB에서 잡는다.
 - **RLS는 행 단위라 컬럼을 구분하지 못한다.** 사용자가 바꾸면 안 되는 컬럼(`reviews.is_verified` 같은 검증 플래그, `created_at`, 소유권 컬럼)은 RLS로 못 막으니 **컬럼 단위 grant**로 잠근다: 테이블 레벨 `insert, update`를 회수한 뒤 허용 컬럼만 화이트리스트로 `grant`. 테이블 레벨 grant가 남아 있으면 컬럼 제한은 무의미하다. 플래그 승격은 `service_role`(Edge Function)만.
 - **트리거 전용 함수**(`handle_new_user`, `set_updated_at`)는 REST RPC로 노출될 필요가 없으니 `anon`·`authenticated`·`public`에서 `execute`를 회수한다(어드바이저 WARN 방지). `create or replace function`은 ACL을 보존하므로 함수 본문을 고쳐도 회수 상태는 유지된다.
