@@ -93,7 +93,7 @@ src/
 | 역할 | 색 | Light | Dark |
 |---|---|---|---|
 | Primary (CTA·활성 탭) | 바이올렛 | `#6E56CF` | `#9B87F5` |
-| Primary tint (종 태그=해자) | | `#EFEBFB` / 글씨 `#4A3596` | `#241C3D` / 글씨 `#C4B5FD` |
+| Primary tint (종 태그=해자) | | `#EFEBFB` / 글씨 `#4A3596` | `#3A2D6E` / 글씨 `#C4B5FD` |
 | Background | | `#FFFFFF` | `#0D0D0F` |
 | Surface (card) | | `#FFFFFF` | `#17181B` |
 | Secondary (일반 칩) | | `#F3F4F6` / 글씨 `#3F4551` | `#1F2024` / 글씨 `#B4B7C0` |

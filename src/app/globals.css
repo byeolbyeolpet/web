@@ -188,7 +188,10 @@
   --primary: #9b87f5;
   --primary-foreground: #180f33;
 
-  --primary-tint: #241c3d;
+  /* 종 태그(해자) 배경. #241c3d 는 일반 칩(#1f2024)과 밝기차 1.01 로 색조로만
+     갈렸다 — 두 단계 밝혀 밝기 단서를 더한다(칩 대비 1.38, 글씨 대비 6.39 AA).
+     더 밝히면 태그가 버튼처럼 읽혀 CTA 와 위계가 섞인다. (#21 실기 확인 결정) */
+  --primary-tint: #3a2d6e;
   --primary-tint-foreground: #c4b5fd;
 
   --secondary: #1f2024;
