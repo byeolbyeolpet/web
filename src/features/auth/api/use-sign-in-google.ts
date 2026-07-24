@@ -19,9 +19,11 @@ async function signInNative() {
   await SocialLogin.initialize({
     google: { webClientId: process.env.NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID! },
   });
+  // scopes 를 넘기면 안드로이드에서 MainActivity 개조를 요구하며 거부한다(플러그인 제약).
+  // idToken 에는 email·이름·사진 클레임이 기본 포함되므로 scopes 가 필요 없다.
   const login = await SocialLogin.login({
     provider: "google",
-    options: { scopes: ["email", "profile"] },
+    options: {},
   });
   const idToken =
     "idToken" in login.result ? (login.result.idToken ?? null) : null;
