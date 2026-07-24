@@ -40,7 +40,7 @@
 ## 5. 터치 UX (CLAUDE.md UX 규칙)
 
 - 최소 탭 영역 44×44px, hover 의존 금지(모든 조작은 탭으로 완결), `font-light`/`font-thin` 금지.
-- 색상만으로 정보 전달 금지(아이콘·텍스트 병행), 본문 텍스트 선택 허용(조작 요소만 `select-none`), Safe Area 준수.
+- 색상만으로 정보 전달 금지(아이콘·텍스트 병행), 본문 텍스트 선택 허용(`select-none`은 조작 요소·크롬(헤더/탭바)만), Safe Area 준수.
 
 ## 6. shadcn 컴포넌트
 
