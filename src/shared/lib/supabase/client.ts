@@ -29,7 +29,15 @@ export function createClient() {
   client ??= createSupabaseClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    { auth: { storage: preferencesStorage } },
+    {
+      auth: {
+        storage: preferencesStorage,
+        // 웹(개발용) OAuth 폴백은 PKCE 로 — 코드가 URL 에 노출돼도 verifier 없이는
+        // 세션 교환이 불가하다. 교환은 /auth/callback 클라이언트 페이지가 한다.
+        // 네이티브 경로(signInWithIdToken)는 flowType 의 영향을 받지 않는다.
+        flowType: "pkce",
+      },
+    },
   );
   return client;
 }

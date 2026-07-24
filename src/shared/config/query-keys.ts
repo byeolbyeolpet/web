@@ -18,4 +18,9 @@ export const QUERY_KEYS = {
     list: (group?: Enums<"species_group">) =>
       [...QUERY_KEYS.species.listAll(), group].filter((v) => v !== undefined),
   },
+  profile: {
+    all: ["profile"] as const,
+    detail: (userId?: string) =>
+      [...QUERY_KEYS.profile.all, userId].filter((v) => v !== undefined),
+  },
 } as const;
