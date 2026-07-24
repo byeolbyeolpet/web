@@ -18,6 +18,9 @@ export function LoginView() {
     if (!isLoading && session) router.replace("/");
   }, [isLoading, session, router]);
 
+  // 세션 미확정·리다이렉트 대기 중에는 로그인 폼을 깜빡 보여주지 않는다.
+  if (isLoading || session) return null;
+
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-8 px-6 pt-safe-top pb-safe-bottom">
       <div className="flex flex-col items-center gap-2 text-center">

@@ -22,5 +22,9 @@ export const APP_MESSAGE = {
       title: "닉네임 변경 실패",
       description: "잠시 후 다시 시도해 주세요.",
     },
+    loadFailed: {
+      title: "프로필 불러오기 실패",
+      description: "프로필을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+    },
   },
 } as const;

@@ -12,11 +12,15 @@ export function useUpdateNickname(userId?: string) {
 
   return useMutation({
     mutationFn: async (nickname: string) => {
-      const { error } = await createClient()
+      const { data, error } = await createClient()
         .from("profiles")
         .update({ nickname })
-        .eq("id", userId!);
+        .eq("id", userId!)
+        .select("id")
+        .maybeSingle();
       if (error) throw error;
+      // RLS 로 걸러지면 에러 없이 0행 반영이 된다 — 행이 안 돌아오면 실패로 간주한다.
+      if (!data) throw new Error("nickname update: no row affected");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.profile.all });

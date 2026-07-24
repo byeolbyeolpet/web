@@ -36,6 +36,9 @@ export function createClient() {
         // 세션 교환이 불가하다. 교환은 /auth/callback 클라이언트 페이지가 한다.
         // 네이티브 경로(signInWithIdToken)는 flowType 의 영향을 받지 않는다.
         flowType: "pkce",
+        // URL 의 code 는 콜백 페이지가 명시적으로 교환한다. 자동 감지를 켜두면
+        // GoTrue 가 같은 code 를 먼저 소비해 명시 교환이 이중 시도로 실패한다.
+        detectSessionInUrl: false,
       },
     },
   );

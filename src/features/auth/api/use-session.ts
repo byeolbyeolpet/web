@@ -14,10 +14,17 @@ export function useSession() {
   useEffect(() => {
     const supabase = createClient();
 
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setIsLoading(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        setSession(data.session);
+        setIsLoading(false);
+      })
+      // 저장소 어댑터가 실패해도 로딩에 영구히 갇히면 안 된다 — 비로그인으로 확정한다.
+      .catch((error) => {
+        console.error(error);
+        setIsLoading(false);
+      });
 
     const {
       data: { subscription },
