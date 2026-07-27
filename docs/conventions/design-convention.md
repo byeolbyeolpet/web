@@ -63,6 +63,7 @@ node -e "const s=require('sharp'),f=require('fs');f.mkdirSync('docs/brand',{recu
 ## 5. 터치 UX (CLAUDE.md UX 규칙)
 
 - 최소 탭 영역 44×44px, hover 의존 금지(모든 조작은 탭으로 완결), `font-light`/`font-thin` 금지.
+- **처리 중인 버튼은 `loading` prop을 쓴다.** 문구를 "저장" → "저장 중…"으로 바꾸지 않는다 — 버튼 폭이 흔들리고, 진행 중이라는 사실은 스피너가 이미 말한다. `loading`이 `disabled`와 `aria-busy`까지 함께 건다(연타로 요청이 두 번 나가는 것도 막는다).
 - 색상만으로 정보 전달 금지(아이콘·텍스트 병행), 본문 텍스트 선택 허용(`select-none`은 조작 요소·크롬(헤더/탭바)만), Safe Area 준수.
 
 ## 6. shadcn 컴포넌트
@@ -77,7 +78,7 @@ node -e "const s=require('sharp'),f=require('fs');f.mkdirSync('docs/brand',{recu
 
 | 파일 | 손댄 것 |
 |---|---|
-| `button.tsx` | 사이즈 스케일을 sm 44 / default 48 / lg 56 로 올리고 `xs`·`icon-xs` 삭제 |
+| `button.tsx` | 사이즈 스케일을 sm 44 / default 48 / lg 56 로 올리고 `xs`·`icon-xs` 삭제. **`loading` prop 추가** — 스피너 + `disabled` + `aria-busy` |
 | `input.tsx` | 높이 32 → 48 |
 | `card.tsx` · `dialog.tsx` | 경계를 `ring-foreground/10` → `border-border` 로 통일 |
 | `dialog.tsx` | 오버레이 `black/10` → `black/40`, 문구 "Close" → "닫기", 헤더 `pr-11`(닫기 버튼 자리) |

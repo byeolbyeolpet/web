@@ -102,9 +102,9 @@ export function MeView() {
       <Button
         variant="outline"
         onClick={() => signOut.mutate()}
-        disabled={signOut.isPending}
+        loading={signOut.isPending}
       >
-        {signOut.isPending ? "로그아웃 중…" : "로그아웃"}
+        로그아웃
       </Button>
     </div>
   );

@@ -57,12 +57,13 @@ export function NicknameEditor({
       <div className="flex gap-2">
         <Button
           size="sm"
-          disabled={!valid || update.isPending || trimmed === nickname}
+          loading={update.isPending}
+          disabled={!valid || trimmed === nickname}
           onClick={() =>
             update.mutate(trimmed, { onSuccess: () => setEditing(false) })
           }
         >
-          {update.isPending ? "저장 중…" : "저장"}
+          저장
         </Button>
         <Button variant="outline" size="sm" onClick={() => setEditing(false)}>
           취소
