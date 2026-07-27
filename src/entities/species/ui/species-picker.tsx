@@ -8,6 +8,7 @@ import { cn } from "@/shared/lib/utils";
 import { RadioCard, RadioCards } from "@/shared/ui/radio-cards";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { useQuerySpecies } from "../api/use-query-species";
+import { SpeciesIcon } from "./species-icon";
 
 // 시드 종 수(14). 로딩 자리표시가 실제 그리드와 같은 높이라 로드 후 레이아웃이 튀지 않는다.
 const SKELETON_COUNT = 14;
@@ -22,7 +23,7 @@ export function SpeciesPicker({
     return (
       <div className="grid grid-cols-3 gap-2" aria-hidden>
         {Array.from({ length: SKELETON_COUNT }, (_, i) => (
-          <Skeleton key={i} className="h-11 rounded-lg" />
+          <Skeleton key={i} className="h-20 rounded-lg" />
         ))}
       </div>
     );
@@ -31,7 +32,12 @@ export function SpeciesPicker({
   return (
     <RadioCards className={cn("grid-cols-3", className)} {...props}>
       {data?.map((species) => (
-        <RadioCard key={species.code} value={species.code}>
+        <RadioCard
+          key={species.code}
+          value={species.code}
+          className="min-h-20 flex-col gap-1 py-2 text-xs"
+        >
+          <SpeciesIcon code={species.code} className="size-9" />
           {species.name_ko}
         </RadioCard>
       ))}
