@@ -57,6 +57,7 @@ node -e "const s=require('sharp'),f=require('fs');f.mkdirSync('docs/brand',{recu
 
 - **임의값(`[...]`) 지양.** 4px 단위(`100px` → `min-h-25`)를 쓴다.
 - 줄바꿈 유틸은 `break-words` 대신 `wrap-break-word`.
+- **두 줄 이상이 될 수 있는 한국어 문구(화면 제목·안내문)에는 `break-keep`을 함께 준다.** 기본값(`word-break: normal`)은 한국어를 글자 단위로 끊어 "함께 사는 아이/를 등록해주세요"처럼 어절이 갈라진다. `text-balance`를 같이 주면 줄 길이도 고르게 나뉜다.
 - 한국어 UI 문구에서 문장 종료 마침표 뒤 다음 문장이 이어지면 `<br />`, `whitespace-pre-line`+`\n`, 또는 별도 문단으로 줄바꿈한다.
 
 ## 5. 터치 UX (CLAUDE.md UX 규칙)
