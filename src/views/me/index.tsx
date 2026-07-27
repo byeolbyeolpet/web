@@ -3,8 +3,10 @@
 
 import Link from "next/link";
 import { useRequireSession, useSignOut } from "@/features/auth";
+import { m } from "motion/react";
 import { PetCard, useQueryPets } from "@/entities/pet";
 import { SpeciesIcon } from "@/entities/species";
+import { riseIn, riseInList } from "@/shared/lib/motion";
 import { useQueryProfile } from "@/entities/user";
 import { APP_MESSAGE, APP_MESSAGE_CODE } from "@/shared/config/app-message";
 import { Button } from "@/shared/ui/button";
@@ -65,20 +67,27 @@ export function MeView() {
         {pets.isPending ? (
           <Skeleton className="h-16 w-full" />
         ) : pets.data?.length ? (
-          <ul className="flex flex-col gap-2">
+          // 등록 직후 돌아오면 새 카드가 목록에 얹히는 게 보여야 한다.
+          <m.ul
+            variants={riseInList}
+            initial="hidden"
+            animate="visible"
+            className="flex flex-col gap-2"
+          >
             {pets.data.map((pet) => (
-              <PetCard
-                key={pet.id}
-                pet={pet}
-                speciesIcon={
-                  <SpeciesIcon
-                    code={pet.species.code}
-                    className="size-10 shrink-0"
-                  />
-                }
-              />
+              <m.li key={pet.id} variants={riseIn}>
+                <PetCard
+                  pet={pet}
+                  speciesIcon={
+                    <SpeciesIcon
+                      code={pet.species.code}
+                      className="size-10 shrink-0"
+                    />
+                  }
+                />
+              </m.li>
             ))}
-          </ul>
+          </m.ul>
         ) : (
           <p className="text-sm text-muted-foreground">
             아직 등록한 반려동물이 없어요.

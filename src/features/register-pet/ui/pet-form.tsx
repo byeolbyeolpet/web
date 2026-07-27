@@ -4,12 +4,14 @@
 
 import { useId } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { m } from "motion/react";
 import { useRouter } from "next/navigation";
 import {
   Controller,
   useForm,
   type FieldError as RhfFieldError,
 } from "react-hook-form";
+import { riseIn, riseInList } from "@/shared/lib/motion";
 import { cn } from "@/shared/lib/utils";
 import { PET_SEX_CHOICES, PET_SEX_LABEL } from "@/entities/pet";
 import { SpeciesPicker } from "@/entities/species";
@@ -68,7 +70,13 @@ export function PetForm({ ownerId }: { ownerId: string }) {
     createPet.mutate(values, { onSuccess: () => router.replace("/me") });
 
   return (
-    <form
+    /* 필드가 한꺼번에 나타나면 정보량이 많아 보인다. 위에서부터 차례로 올려
+       읽는 순서를 만든다. CTA(sticky)는 stagger 에서 뺀다 — transform 이 걸린
+       조상은 sticky 의 기준 박스를 바꿔 하단 고정이 깨진다. */
+    <m.form
+      variants={riseInList}
+      initial="hidden"
+      animate="visible"
       onSubmit={form.handleSubmit(onSubmit)}
       className="flex flex-1 flex-col gap-8 px-4"
     >
@@ -78,25 +86,29 @@ export function PetForm({ ownerId }: { ownerId: string }) {
         control={form.control}
         name="speciesCode"
         render={({ field, fieldState }) => (
-          <FieldSet className="gap-2" data-invalid={fieldState.invalid}>
-            <FieldLegend
-              variant="label"
-              id={speciesLabelId}
-              className="mb-2 text-muted-foreground"
-            >
-              종류
-            </FieldLegend>
-            <SpeciesPicker
-              collapsible
-              name={field.name}
-              value={field.value}
-              onValueChange={field.onChange}
-              aria-labelledby={speciesLabelId}
-              aria-invalid={fieldState.invalid}
-              aria-describedby={fieldState.invalid ? speciesErrorId : undefined}
-            />
-            <FieldErrorSlot id={speciesErrorId} error={fieldState.error} />
-          </FieldSet>
+          <m.div variants={riseIn}>
+            <FieldSet className="gap-2" data-invalid={fieldState.invalid}>
+              <FieldLegend
+                variant="label"
+                id={speciesLabelId}
+                className="mb-2 text-muted-foreground"
+              >
+                종류
+              </FieldLegend>
+              <SpeciesPicker
+                collapsible
+                name={field.name}
+                value={field.value}
+                onValueChange={field.onChange}
+                aria-labelledby={speciesLabelId}
+                aria-invalid={fieldState.invalid}
+                aria-describedby={
+                  fieldState.invalid ? speciesErrorId : undefined
+                }
+              />
+              <FieldErrorSlot id={speciesErrorId} error={fieldState.error} />
+            </FieldSet>
+          </m.div>
         )}
       />
 
@@ -104,20 +116,25 @@ export function PetForm({ ownerId }: { ownerId: string }) {
         control={form.control}
         name="name"
         render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={nameInputId} className="text-muted-foreground">
-              이름
-            </FieldLabel>
-            <Input
-              {...field}
-              id={nameInputId}
-              placeholder="코코"
-              maxLength={20}
-              aria-invalid={fieldState.invalid}
-              aria-describedby={fieldState.invalid ? nameErrorId : undefined}
-            />
-            <FieldErrorSlot id={nameErrorId} error={fieldState.error} />
-          </Field>
+          <m.div variants={riseIn}>
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel
+                htmlFor={nameInputId}
+                className="text-muted-foreground"
+              >
+                이름
+              </FieldLabel>
+              <Input
+                {...field}
+                id={nameInputId}
+                placeholder="코코"
+                maxLength={20}
+                aria-invalid={fieldState.invalid}
+                aria-describedby={fieldState.invalid ? nameErrorId : undefined}
+              />
+              <FieldErrorSlot id={nameErrorId} error={fieldState.error} />
+            </Field>
+          </m.div>
         )}
       />
 
@@ -125,33 +142,35 @@ export function PetForm({ ownerId }: { ownerId: string }) {
         control={form.control}
         name="sex"
         render={({ field, fieldState }) => (
-          <FieldSet className="gap-2" data-invalid={fieldState.invalid}>
-            <FieldLegend
-              variant="label"
-              id={sexLabelId}
-              className="mb-2 text-muted-foreground"
-            >
-              성별
-            </FieldLegend>
-            <RadioCards
-              className="grid-cols-2"
-              name={field.name}
-              value={field.value}
-              onValueChange={field.onChange}
-              aria-labelledby={sexLabelId}
-              aria-invalid={fieldState.invalid}
-              aria-describedby={fieldState.invalid ? sexErrorId : undefined}
-            >
-              {/* 라벨과 순서 모두 entities/pet 의 정의를 따른다 — 카드 표기와 어긋나지 않게.
+          <m.div variants={riseIn}>
+            <FieldSet className="gap-2" data-invalid={fieldState.invalid}>
+              <FieldLegend
+                variant="label"
+                id={sexLabelId}
+                className="mb-2 text-muted-foreground"
+              >
+                성별
+              </FieldLegend>
+              <RadioCards
+                className="grid-cols-2"
+                name={field.name}
+                value={field.value}
+                onValueChange={field.onChange}
+                aria-labelledby={sexLabelId}
+                aria-invalid={fieldState.invalid}
+                aria-describedby={fieldState.invalid ? sexErrorId : undefined}
+              >
+                {/* 라벨과 순서 모두 entities/pet 의 정의를 따른다 — 카드 표기와 어긋나지 않게.
                   unknown 은 선택지가 아니다: 안 고르면 그 값이 그대로 저장된다. */}
-              {PET_SEX_CHOICES.map((value) => (
-                <RadioCard key={value} value={value}>
-                  {PET_SEX_LABEL[value]}
-                </RadioCard>
-              ))}
-            </RadioCards>
-            <FieldErrorSlot id={sexErrorId} error={fieldState.error} />
-          </FieldSet>
+                {PET_SEX_CHOICES.map((value) => (
+                  <RadioCard key={value} value={value}>
+                    {PET_SEX_LABEL[value]}
+                  </RadioCard>
+                ))}
+              </RadioCards>
+              <FieldErrorSlot id={sexErrorId} error={fieldState.error} />
+            </FieldSet>
+          </m.div>
         )}
       />
 
@@ -169,6 +188,6 @@ export function PetForm({ ownerId }: { ownerId: string }) {
           {createPet.isPending ? "등록 중…" : "등록하기"}
         </Button>
       </div>
-    </form>
+    </m.form>
   );
 }
