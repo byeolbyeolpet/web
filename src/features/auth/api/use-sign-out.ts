@@ -2,9 +2,9 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { APP_MESSAGE } from "@/shared/config/app-message";
+import { APP_MESSAGE_CODE } from "@/shared/config/app-message";
 import { QUERY_KEYS } from "@/shared/config/query-keys";
+import { toastAppError } from "@/shared/lib/app-toast";
 import { createClient } from "@/shared/lib/supabase/client";
 
 export function useSignOut() {
@@ -19,11 +19,7 @@ export function useSignOut() {
       // 다음 로그인 계정의 프로필이 이전 캐시로 보이면 안 된다 — 무효화가 아니라 제거.
       queryClient.removeQueries({ queryKey: QUERY_KEYS.profile.all });
     },
-    onError: (error) => {
-      console.error(error);
-      toast.error(APP_MESSAGE.auth.signOutFailed.title, {
-        description: APP_MESSAGE.auth.signOutFailed.description,
-      });
-    },
+    onError: (error) =>
+      toastAppError(APP_MESSAGE_CODE.auth.signOutFailed, error),
   });
 }

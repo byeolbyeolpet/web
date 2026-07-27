@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRequireSession, useSignOut } from "@/features/auth";
 import { PetCard, useQueryPets } from "@/entities/pet";
 import { useQueryProfile } from "@/entities/user";
-import { APP_MESSAGE } from "@/shared/config/app-message";
+import { APP_MESSAGE, APP_MESSAGE_CODE } from "@/shared/config/app-message";
 import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { NicknameEditor } from "./nickname-editor";
@@ -54,7 +54,7 @@ export function MeView() {
         />
       ) : (
         <p className="text-sm text-muted-foreground">
-          {APP_MESSAGE.profile.loadFailed.description}
+          {APP_MESSAGE[APP_MESSAGE_CODE.profile.loadFailed].description}
         </p>
       )}
 

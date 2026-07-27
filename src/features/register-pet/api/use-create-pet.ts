@@ -2,9 +2,9 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { APP_MESSAGE } from "@/shared/config/app-message";
+import { APP_MESSAGE_CODE } from "@/shared/config/app-message";
 import { QUERY_KEYS } from "@/shared/config/query-keys";
+import { toastAppError, toastAppSuccess } from "@/shared/lib/app-toast";
 import { createClient } from "@/shared/lib/supabase/client";
 import type { PetFormValues } from "../model/schema";
 
@@ -30,13 +30,8 @@ export function useCreatePet(ownerId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.pet.all });
-      toast.success(APP_MESSAGE.pet.createDone.title);
+      toastAppSuccess(APP_MESSAGE_CODE.pet.createDone);
     },
-    onError: (error) => {
-      console.error(error);
-      toast.error(APP_MESSAGE.pet.createFailed.title, {
-        description: APP_MESSAGE.pet.createFailed.description,
-      });
-    },
+    onError: (error) => toastAppError(APP_MESSAGE_CODE.pet.createFailed, error),
   });
 }
