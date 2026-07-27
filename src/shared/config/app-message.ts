@@ -28,14 +28,14 @@ export const APP_MESSAGE = {
     },
   },
   pet: {
-    createDone: { title: "등록했어요" },
+    createDone: { title: "반려동물 등록 완료" },
     createFailed: {
-      title: "등록하지 못했어요",
-      description: "잠시 후 다시 시도해주세요",
+      title: "반려동물 등록 실패",
+      description: "잠시 후 다시 시도해 주세요.",
     },
     loadFailed: {
-      title: "불러오지 못했어요",
-      description: "잠시 후 다시 시도해주세요",
+      title: "반려동물 목록 불러오기 실패",
+      description: "목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
     },
   },
 } as const;

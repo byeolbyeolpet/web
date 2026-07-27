@@ -71,7 +71,7 @@ export function MeView() {
           </ul>
         ) : (
           <p className="text-sm text-muted-foreground">
-            아직 등록한 아이가 없어요
+            아직 등록한 반려동물이 없어요.
           </p>
         )}
 
