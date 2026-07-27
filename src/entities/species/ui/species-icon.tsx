@@ -147,7 +147,9 @@ function HamsterIcon(props: IconProps) {
 function GuineaPigIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 32 32" fill="none" {...props}>
-      {/* 옆으로 늘어진 작은 귀 + 두 색 무늬 = 기니피그 */}
+      {/* 옆으로 늘어진 작은 귀 + 세로로 긴 얼굴 = 기니피그.
+          실제로는 두 색 무늬가 흔하지만 아이콘에선 "색이 안 맞춰진 것"으로
+          보인다. 단색으로 두고 구분은 귀 모양과 얼굴 비율에 맡긴다. */}
       <ellipse
         cx="6.8"
         cy="12.5"
@@ -165,10 +167,10 @@ function GuineaPigIcon(props: IconProps) {
         transform="rotate(22 25.2 12.5)"
       />
       <ellipse cx="16" cy="17.6" rx="9.4" ry="10" fill="#A8704C" />
-      <path d="M16 7.6c5.2 0 9.4 4.5 9.4 10s-4.2 10-9.4 10z" fill="#EFE2D2" />
+      <ellipse cx="16" cy="21.4" rx="5.8" ry="4.2" fill="#E4CBB0" />
       <Eye cx={11.9} cy={15} />
       <Eye cx={20.1} cy={15} />
-      <ellipse cx="16" cy="20.6" rx="1.9" ry="1.5" fill="#C98A6A" />
+      <ellipse cx="16" cy="19.8" rx="1.9" ry="1.5" fill="#7A4E32" />
     </svg>
   );
 }
@@ -271,17 +273,22 @@ function BirdIcon(props: IconProps) {
 function TurtleIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 32 32" fill="none" {...props}>
-      <ellipse cx="6" cy="23" rx="3.6" ry="2.9" fill="#9ED47A" />
-      <ellipse cx="26" cy="23" rx="3.6" ry="2.9" fill="#9ED47A" />
-      {/* 머리를 껍질보다 두 단계 밝게 — 같은 초록이면 덩어리로 읽힌다 */}
-      <ellipse cx="16" cy="8.6" rx="6" ry="5.2" fill="#9ED47A" />
-      <Eye cx={13.4} cy={8} r={2.1} />
-      <Eye cx={18.6} cy={8} r={2.1} />
-      <ellipse cx="16" cy="19.8" rx="10.6" ry="8.2" fill="#3E7A2E" />
-      <path d="M16 13.6l4.8 3.7-1.8 5.7h-6l-1.8-5.7z" fill="#78BE5A" />
-      <circle cx="8.2" cy="19.8" r="2.3" fill="#78BE5A" />
-      <circle cx="23.8" cy="19.8" r="2.3" fill="#78BE5A" />
-      <circle cx="16" cy="25.4" r="2.3" fill="#78BE5A" />
+      {/* 다리까지 그리면 혼자만 전신이라 나머지 13종(얼굴 클로즈업)과 톤이
+          어긋난다. 껍질을 뒤로 돌리고 머리를 앞으로 크게 빼 얼굴이 주인공이 되게 한다.
+          머리는 껍질보다 두 단계 밝게 — 같은 초록이면 덩어리로 읽힌다. */}
+      <ellipse cx="16" cy="21.4" rx="11" ry="8.4" fill="#3E7A2E" />
+      <path d="M16 15.4l5 3.8-1.9 5.9h-6.2l-1.9-5.9z" fill="#78BE5A" />
+      <circle cx="7.6" cy="21.6" r="2.4" fill="#78BE5A" />
+      <circle cx="24.4" cy="21.6" r="2.4" fill="#78BE5A" />
+      <circle cx="16" cy="11.4" r="7.2" fill="#9ED47A" />
+      <Eye cx={12.9} cy={10.4} r={2.4} />
+      <Eye cx={19.1} cy={10.4} r={2.4} />
+      <path
+        d="M13.3 14.8c1.1 1.1 1.9 1.6 2.7 1.6s1.6-.5 2.7-1.6"
+        stroke="#4E7A2E"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
