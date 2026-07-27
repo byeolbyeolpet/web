@@ -13,6 +13,7 @@
 
 - 방법: Supabase MCP `generate_typescript_types`, 또는 (Supabase CLI 세팅 후) `npm run db:types`.
 - 출력: `shared/lib/supabase/database.types.ts`. **생성 파일이므로 직접 수정하지 않는다**(eslint·prettier 예외 처리됨).
+- **생성 결과를 그대로 덮어쓰지 않는다.** 파일 1행의 한국어 헤더 주석(`// Supabase 스키마에서 자동 생성된 타입...`)은 생성 산출물에 없다. MCP 출력 앞에 그 줄을 다시 붙여 저장한다(AGENTS.md 파일 헤더 규칙). 덮어쓰기 전에 기존 파일과 diff 해서 본문이 실제로 바뀌었는지도 본다 — check 제약처럼 타입에 영향 없는 변경이면 파일을 건드릴 이유가 없다.
 
 ### 생성 타입이 거짓말하는 지점 (반드시 감싸서 쓴다)
 

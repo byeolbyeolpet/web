@@ -84,6 +84,12 @@ node -e "const s=require('sharp'),f=require('fs');f.mkdirSync('docs/brand',{recu
 
 **버튼·입력은 44px 미만 사이즈를 만들지 않는다.** 못 누르는 사이즈를 API에 남겨두면 결국 쓰인다.
 
+### 6-2. `shadcn add`가 조용히 실패하거나 남의 파일을 덮는다
+
+**빈 스텁**: `radix-nova` 레지스트리에 항목은 있는데 내용이 비어 있는 경우가 있다. `form`이 그랬다 — `GET /r/styles/radix-nova/form.json`이 200에 109바이트고 `files`가 없어서 CLI가 **exit 0으로 아무 파일도 안 쓰고 끝난다.** 설치했는데 파일이 없으면 레지스트리 JSON을 직접 확인한다. (shadcn이 RHF 연동을 `Form`→`Field`로 옮기는 중이라 신규 스타일엔 구세대 `form`이 없다. 우리는 `Field` 계열을 쓴다.)
+
+**대화형 프롬프트**: 기존 파일을 덮어야 하면 `--yes`만으로는 확인 프롬프트에서 멎는다. `--yes --overwrite`로 통과시키되, 실행 전후 `git status --porcelain`을 비교해 **의도한 파일 외에 무엇이 덮였는지 확인**하고 불필요한 변경은 `git checkout -- <파일>`로 되돌린다. 6-1 표의 파일들이 여기서 날아간다.
+
 ## 7. Dialog 규칙
 
 - 트리거·제목·설명·핵심 요약·취소 버튼·주요 액션이 한눈에 보여야 한다.
