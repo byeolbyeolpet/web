@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { useRequireSession, useSignOut } from "@/features/auth";
 import { PetCard, useQueryPets } from "@/entities/pet";
+import { SpeciesIcon } from "@/entities/species";
 import { useQueryProfile } from "@/entities/user";
 import { APP_MESSAGE, APP_MESSAGE_CODE } from "@/shared/config/app-message";
 import { Button } from "@/shared/ui/button";
@@ -66,7 +67,16 @@ export function MeView() {
         ) : pets.data?.length ? (
           <ul className="flex flex-col gap-2">
             {pets.data.map((pet) => (
-              <PetCard key={pet.id} pet={pet} />
+              <PetCard
+                key={pet.id}
+                pet={pet}
+                speciesIcon={
+                  <SpeciesIcon
+                    code={pet.species.code}
+                    className="size-10 shrink-0"
+                  />
+                }
+              />
             ))}
           </ul>
         ) : (
