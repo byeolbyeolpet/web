@@ -5,6 +5,7 @@
 
 import * as React from "react";
 import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
+import { LuCheck } from "react-icons/lu";
 
 import { cn } from "@/shared/lib/utils";
 
@@ -23,6 +24,7 @@ function RadioCards({
 
 function RadioCard({
   className,
+  children,
   ...props
 }: React.ComponentProps<typeof RadioGroupPrimitive.Item>) {
   return (
@@ -30,7 +32,7 @@ function RadioCard({
       data-slot="radio-card"
       className={cn(
         // 최소 탭 영역 44px (CLAUDE.md UX 규칙)
-        "flex min-h-11 items-center justify-center rounded-lg border border-border bg-background px-2 text-sm font-medium transition-colors outline-none select-none",
+        "flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-2 text-sm font-medium transition-colors outline-none select-none",
         "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
         // 선택 상태는 종 태그와 같은 tint 계열로 — 브랜드 색을 한 단계 올린다(design-convention)
         "data-[state=checked]:border-primary data-[state=checked]:bg-primary-tint data-[state=checked]:text-primary-tint-foreground",
@@ -38,7 +40,13 @@ function RadioCard({
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+      {/* 선택을 색으로만 알리지 않는다 (CLAUDE.md UX 규칙). 미선택 시엔 렌더되지 않는다. */}
+      <RadioGroupPrimitive.Indicator asChild>
+        <LuCheck aria-hidden className="size-3.5 shrink-0" />
+      </RadioGroupPrimitive.Indicator>
+    </RadioGroupPrimitive.Item>
   );
 }
 
