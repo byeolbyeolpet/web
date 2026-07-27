@@ -11,9 +11,9 @@ export function BackButton() {
       type="button"
       onClick={() => router.back()}
       aria-label="뒤로 가기"
-      className="-ml-2 flex min-h-11 min-w-11 items-center gap-0.5 text-sm text-muted-foreground transition-colors select-none active:text-foreground"
+      className="-ml-2 flex min-h-11 min-w-11 items-center justify-center text-muted-foreground transition-colors select-none active:text-foreground"
     >
-      <LuChevronLeft aria-hidden className="size-5" /> 뒤로
+      <LuChevronLeft aria-hidden className="size-6" />
     </button>
   );
 }

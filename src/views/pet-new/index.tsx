@@ -22,7 +22,7 @@ export function PetNewView() {
   return (
     <div className="flex flex-1 flex-col">
       <h1 className="px-4 pt-6 pb-5 font-heading text-2xl font-bold">
-        어떤 아이와 함께하나요?
+        우리 아이를 등록해보세요
       </h1>
       <PetForm ownerId={session.user.id} />
     </div>
