@@ -2,6 +2,10 @@
 //
 // 종 아이콘을 직접 import 하지 않고 주입받는다. entities 는 같은 레이어(species)를
 // 참조할 수 없다(entities/README). 조립하는 쪽(views)이 두 슬라이스를 다 알고 있다.
+//
+// <li> 를 렌더하지 않는다 — 이건 "카드"이지 "목록 항목"이 아니다. 목록 시맨틱은
+// 호출부가 갖는다(그래야 motion.li 로 감싸 순차 등장을 줄 수 있고, 나중에
+// 그리드나 상세 화면에서 재사용할 때도 <li> 가 걸리적거리지 않는다).
 
 import type { ReactNode } from "react";
 import { Badge } from "@/shared/ui/badge";
@@ -16,7 +20,7 @@ export function PetCard({
   speciesIcon?: ReactNode;
 }) {
   return (
-    <li className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
+    <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
       {speciesIcon}
       <div className="flex min-w-0 flex-col gap-0.5">
         <span className="truncate font-medium">{pet.name}</span>
@@ -30,6 +34,6 @@ export function PetCard({
       <Badge variant="tint" className="ml-auto shrink-0">
         {pet.species.name_ko}
       </Badge>
-    </li>
+    </div>
   );
 }
