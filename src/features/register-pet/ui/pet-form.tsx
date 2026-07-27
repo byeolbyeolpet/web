@@ -45,7 +45,7 @@ export function PetForm({ ownerId }: { ownerId: string }) {
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit)}
-      className="flex flex-1 flex-col gap-7 px-4"
+      className="flex flex-1 flex-col gap-8 px-4"
     >
       {/* 종·성별은 radiogroup 이라 <label htmlFor> 로는 이름이 붙지 않는다.
           fieldset/legend 로 묶고 그룹 자신에게 aria-labelledby 로 legend 를 가리킨다. */}
@@ -54,7 +54,11 @@ export function PetForm({ ownerId }: { ownerId: string }) {
         name="speciesCode"
         render={({ field, fieldState }) => (
           <FieldSet className="gap-2" data-invalid={fieldState.invalid}>
-            <FieldLegend variant="label" id={speciesLabelId} className="mb-2">
+            <FieldLegend
+              variant="label"
+              id={speciesLabelId}
+              className="mb-2 text-muted-foreground"
+            >
               종류
             </FieldLegend>
             <SpeciesPicker
@@ -77,7 +81,9 @@ export function PetForm({ ownerId }: { ownerId: string }) {
         name="name"
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={nameInputId}>이름</FieldLabel>
+            <FieldLabel htmlFor={nameInputId} className="text-muted-foreground">
+              이름
+            </FieldLabel>
             <Input
               {...field}
               id={nameInputId}
@@ -98,7 +104,11 @@ export function PetForm({ ownerId }: { ownerId: string }) {
         name="sex"
         render={({ field, fieldState }) => (
           <FieldSet className="gap-2" data-invalid={fieldState.invalid}>
-            <FieldLegend variant="label" id={sexLabelId} className="mb-2">
+            <FieldLegend
+              variant="label"
+              id={sexLabelId}
+              className="mb-2 text-muted-foreground"
+            >
               성별
             </FieldLegend>
             <RadioCards
@@ -129,7 +139,7 @@ export function PetForm({ ownerId }: { ownerId: string }) {
           바닥에 붙이면 CTA 를 만나려고 끝까지 내려야 하므로 하단에 고정한다.
           safe-area 는 (full) layout 의 main 이 갖고 있고, sticky 는 부모
           padding box 를 넘지 못하므로 홈 인디케이터 위에서 알아서 멈춘다. */}
-      <div className="sticky bottom-0 -mx-4 mt-auto border-t border-border bg-background px-4 pt-3 pb-4">
+      <div className="sticky bottom-0 -mx-4 mt-auto border-t border-border bg-background/85 px-4 pt-3 pb-4 backdrop-blur-md">
         <Button
           type="submit"
           size="lg"

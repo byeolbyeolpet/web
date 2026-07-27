@@ -155,7 +155,10 @@
   --chart-4: #d97706;
   --chart-5: #9aa0ae;
 
-  --radius: 0.625rem;
+  /* 14px. shadcn 기본 10px 는 데스크톱 밀도라 터치 UI 에선 각져 보인다.
+     radius 는 앱 인상을 가장 크게 좌우하는 단일 값이라 컴포넌트마다 덧칠하지
+     않고 여기서 한 번에 올린다(lg 14 / xl 19.6 / 2xl 25). */
+  --radius: 0.875rem;
 
   --sidebar: #ffffff;
   --sidebar-foreground: #111318;
