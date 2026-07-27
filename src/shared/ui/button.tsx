@@ -1,7 +1,9 @@
 // shadcn Button — 터치 WebView 기준으로 사이즈 스케일을 재조정했다(최소 44px).
+// 원본에 없는 loading 상태를 더했다(6-1 표 참고).
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Slot } from "radix-ui";
+import { LuLoaderCircle } from "react-icons/lu";
 
 import { cn } from "@/shared/lib/utils";
 
@@ -48,10 +50,19 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  loading = false,
+  disabled,
+  children,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
+    /**
+     * 처리 중임을 스피너로 알리고 버튼을 잠근다.
+     * **문구는 바꾸지 않는다** — "저장" → "저장 중…" 으로 갈면 버튼 폭이 흔들리고,
+     * 무슨 일이 일어나는지는 스피너가 이미 말한다. 스크린리더에는 aria-busy 로 전한다.
+     */
+    loading?: boolean;
   }) {
   const Comp = asChild ? Slot.Root : "button";
 
@@ -60,9 +71,15 @@ function Button({
       data-slot="button"
       data-variant={variant}
       data-size={size}
+      // 처리 중 두 번 눌리면 요청이 두 번 나간다.
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
-    />
+    >
+      {loading && <LuLoaderCircle aria-hidden className="animate-spin" />}
+      {children}
+    </Comp>
   );
 }
 

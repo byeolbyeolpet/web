@@ -183,9 +183,9 @@ export function PetForm({ ownerId }: { ownerId: string }) {
           type="submit"
           size="lg"
           className="w-full"
-          disabled={createPet.isPending}
+          loading={createPet.isPending}
         >
-          {createPet.isPending ? "등록 중…" : "등록하기"}
+          등록하기
         </Button>
       </div>
     </m.form>
