@@ -5,7 +5,12 @@
 import { useId } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import {
+  Controller,
+  useForm,
+  type FieldError as RhfFieldError,
+} from "react-hook-form";
+import { cn } from "@/shared/lib/utils";
 import { PET_SEX_CHOICES, PET_SEX_LABEL } from "@/entities/pet";
 import { SpeciesPicker } from "@/entities/species";
 import { Button } from "@/shared/ui/button";
@@ -20,6 +25,26 @@ import { Input } from "@/shared/ui/input";
 import { RadioCard, RadioCards } from "@/shared/ui/radio-cards";
 import { useCreatePet } from "../api/use-create-pet";
 import { petFormSchema, type PetFormValues } from "../model/schema";
+
+/**
+ * 오류 문구가 갑자기 나타나면 그 줄만큼 아래 내용이 튄다. 높이를 함께
+ * 전환해 밀려나는 과정이 보이게 한다. `grid-rows-[0fr]`→`[1fr]` 은 height:auto
+ * 를 transition 할 수 있는 유일한 CSS 방법이다(height 는 auto 로 전환되지 않는다).
+ */
+function FieldErrorSlot({ id, error }: { id: string; error?: RhfFieldError }) {
+  return (
+    <div
+      className={cn(
+        "grid transition-[grid-template-rows,opacity] duration-150 ease-out",
+        error ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+      )}
+    >
+      <div className="overflow-hidden">
+        <FieldError id={id} errors={error ? [error] : []} />
+      </div>
+    </div>
+  );
+}
 
 export function PetForm({ ownerId }: { ownerId: string }) {
   const router = useRouter();
@@ -70,9 +95,7 @@ export function PetForm({ ownerId }: { ownerId: string }) {
               aria-invalid={fieldState.invalid}
               aria-describedby={fieldState.invalid ? speciesErrorId : undefined}
             />
-            {fieldState.invalid && (
-              <FieldError id={speciesErrorId} errors={[fieldState.error]} />
-            )}
+            <FieldErrorSlot id={speciesErrorId} error={fieldState.error} />
           </FieldSet>
         )}
       />
@@ -93,9 +116,7 @@ export function PetForm({ ownerId }: { ownerId: string }) {
               aria-invalid={fieldState.invalid}
               aria-describedby={fieldState.invalid ? nameErrorId : undefined}
             />
-            {fieldState.invalid && (
-              <FieldError id={nameErrorId} errors={[fieldState.error]} />
-            )}
+            <FieldErrorSlot id={nameErrorId} error={fieldState.error} />
           </Field>
         )}
       />
@@ -129,9 +150,7 @@ export function PetForm({ ownerId }: { ownerId: string }) {
                 </RadioCard>
               ))}
             </RadioCards>
-            {fieldState.invalid && (
-              <FieldError id={sexErrorId} errors={[fieldState.error]} />
-            )}
+            <FieldErrorSlot id={sexErrorId} error={fieldState.error} />
           </FieldSet>
         )}
       />
