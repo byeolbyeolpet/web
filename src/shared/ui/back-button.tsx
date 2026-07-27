@@ -2,6 +2,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { LuChevronLeft } from "react-icons/lu";
 
 export function BackButton() {
   const router = useRouter();
@@ -10,9 +11,9 @@ export function BackButton() {
       type="button"
       onClick={() => router.back()}
       aria-label="뒤로 가기"
-      className="flex min-h-11 min-w-11 items-center gap-1 text-sm text-muted-foreground select-none"
+      className="-ml-2 flex min-h-11 min-w-11 items-center gap-0.5 text-sm text-muted-foreground transition-colors select-none active:text-foreground"
     >
-      <span aria-hidden>←</span> 뒤로
+      <LuChevronLeft aria-hidden className="size-5" /> 뒤로
     </button>
   );
 }

@@ -8,7 +8,11 @@ export default function FullLayout({ children }: { children: ReactNode }) {
       <header className="flex min-h-12 items-center gap-2 border-b border-border bg-card px-4 pt-safe-top">
         <BackButton />
       </header>
-      <main className="flex flex-1 flex-col">{children}</main>
+      {/* safe-area 는 셸이 맡는다. 화면·폼이 p-4 와 함께 pb-safe-bottom 을 주면
+          tailwind-merge 가 p-4 의 아래쪽을 지우고, 웹에서 inset 은 0이라 여백이 사라진다. */}
+      <main className="mx-auto flex w-full max-w-md flex-1 flex-col pb-safe-bottom">
+        {children}
+      </main>
     </div>
   );
 }

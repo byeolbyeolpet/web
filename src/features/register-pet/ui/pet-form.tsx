@@ -6,7 +6,7 @@ import { useId } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
-import { PET_SEX_LABEL } from "@/entities/pet";
+import { PET_SEX_CHOICES, PET_SEX_LABEL } from "@/entities/pet";
 import { SpeciesPicker } from "@/entities/species";
 import { Button } from "@/shared/ui/button";
 import {
@@ -45,7 +45,7 @@ export function PetForm({ ownerId }: { ownerId: string }) {
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit)}
-      className="flex flex-1 flex-col gap-6 p-4 pb-safe-bottom"
+      className="flex flex-1 flex-col gap-7 px-4"
     >
       {/* 종·성별은 radiogroup 이라 <label htmlFor> 로는 이름이 붙지 않는다.
           fieldset/legend 로 묶고 그룹 자신에게 aria-labelledby 로 legend 를 가리킨다. */}
@@ -54,7 +54,7 @@ export function PetForm({ ownerId }: { ownerId: string }) {
         name="speciesCode"
         render={({ field, fieldState }) => (
           <FieldSet className="gap-2" data-invalid={fieldState.invalid}>
-            <FieldLegend variant="label" id={speciesLabelId} className="mb-0">
+            <FieldLegend variant="label" id={speciesLabelId} className="mb-2">
               종류
             </FieldLegend>
             <SpeciesPicker
@@ -98,11 +98,11 @@ export function PetForm({ ownerId }: { ownerId: string }) {
         name="sex"
         render={({ field, fieldState }) => (
           <FieldSet className="gap-2" data-invalid={fieldState.invalid}>
-            <FieldLegend variant="label" id={sexLabelId} className="mb-0">
+            <FieldLegend variant="label" id={sexLabelId} className="mb-2">
               성별
             </FieldLegend>
             <RadioCards
-              className="grid-cols-3"
+              className="grid-cols-2"
               name={field.name}
               value={field.value}
               onValueChange={field.onChange}
@@ -110,10 +110,11 @@ export function PetForm({ ownerId }: { ownerId: string }) {
               aria-invalid={fieldState.invalid}
               aria-describedby={fieldState.invalid ? sexErrorId : undefined}
             >
-              {/* 라벨과 순서 모두 entities/pet 의 정의를 따른다 — 카드 표기와 어긋나지 않게. */}
-              {Object.entries(PET_SEX_LABEL).map(([value, label]) => (
+              {/* 라벨과 순서 모두 entities/pet 의 정의를 따른다 — 카드 표기와 어긋나지 않게.
+                  unknown 은 선택지가 아니다: 안 고르면 그 값이 그대로 저장된다. */}
+              {PET_SEX_CHOICES.map((value) => (
                 <RadioCard key={value} value={value}>
-                  {label}
+                  {PET_SEX_LABEL[value]}
                 </RadioCard>
               ))}
             </RadioCards>
@@ -124,14 +125,20 @@ export function PetForm({ ownerId }: { ownerId: string }) {
         )}
       />
 
-      <Button
-        type="submit"
-        size="lg"
-        className="mt-auto"
-        disabled={createPet.isPending}
-      >
-        {createPet.isPending ? "등록 중…" : "등록하기"}
-      </Button>
+      {/* 종 14칸 + 이름 + 성별이면 모바일에서 반드시 스크롤이 생긴다. mt-auto 로
+          바닥에 붙이면 CTA 를 만나려고 끝까지 내려야 하므로 하단에 고정한다.
+          safe-area 는 (full) layout 의 main 이 갖고 있고, sticky 는 부모
+          padding box 를 넘지 못하므로 홈 인디케이터 위에서 알아서 멈춘다. */}
+      <div className="sticky bottom-0 -mx-4 mt-auto border-t border-border bg-background px-4 pt-3 pb-4">
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full"
+          disabled={createPet.isPending}
+        >
+          {createPet.isPending ? "등록 중…" : "등록하기"}
+        </Button>
+      </div>
     </form>
   );
 }
