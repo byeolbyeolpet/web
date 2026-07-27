@@ -31,5 +31,7 @@
 
 ## code
 
-- 호출부는 문자열 대신 `APP_MESSAGE_CODE.error.auth.invalidInput`처럼 상수를 쓴다.
-- `APP_MESSAGE`와 `APP_MESSAGE_CODE`의 도메인·key는 반드시 일치시킨다.
+- `APP_MESSAGE`의 키 자체가 `"도메인.이름"` 형태의 메시지 코드다. 중첩 객체가 아니라 코드를 키로 두는 이유는 **코드 하나로 문구를 찾을 수 있어야** 헬퍼가 `as` 단언 없이 조회하기 때문이다.
+- 호출부는 코드 문자열을 직접 쓰지 않고 `APP_MESSAGE_CODE.auth.signInFailed`처럼 상수를 쓴다.
+- `APP_MESSAGE`와 `APP_MESSAGE_CODE`의 도메인·key는 반드시 일치시킨다. `satisfies`가 "값이 실재하는 코드인가"를 보고, 경로 불일치(`pet.createFailed` 자리에 다른 도메인 코드)와 한쪽 누락은 `app-message.test.ts`가 잡는다.
+- toast는 `shared/lib/app-toast.ts`의 `toastAppSuccess(code)` / `toastAppError(code, cause)`로 띄운다. **호출부가 title·description을 조립하지 않는다.** 원본 에러는 `cause`로 넘기면 `console.error`로만 나가고 사용자 화면에는 닿지 않는다.

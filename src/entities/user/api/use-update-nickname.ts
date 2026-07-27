@@ -2,9 +2,9 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { APP_MESSAGE } from "@/shared/config/app-message";
+import { APP_MESSAGE_CODE } from "@/shared/config/app-message";
 import { QUERY_KEYS } from "@/shared/config/query-keys";
+import { toastAppError, toastAppSuccess } from "@/shared/lib/app-toast";
 import { createClient } from "@/shared/lib/supabase/client";
 
 export function useUpdateNickname(userId?: string) {
@@ -24,13 +24,9 @@ export function useUpdateNickname(userId?: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.profile.all });
-      toast.success(APP_MESSAGE.profile.updateDone.title);
+      toastAppSuccess(APP_MESSAGE_CODE.profile.updateDone);
     },
-    onError: (error) => {
-      console.error(error);
-      toast.error(APP_MESSAGE.profile.updateFailed.title, {
-        description: APP_MESSAGE.profile.updateFailed.description,
-      });
-    },
+    onError: (error) =>
+      toastAppError(APP_MESSAGE_CODE.profile.updateFailed, error),
   });
 }

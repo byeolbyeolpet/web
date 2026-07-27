@@ -4,8 +4,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { Capacitor } from "@capacitor/core";
 import { SocialLogin } from "@capgo/capacitor-social-login";
-import { toast } from "sonner";
-import { APP_MESSAGE } from "@/shared/config/app-message";
+import { APP_MESSAGE_CODE } from "@/shared/config/app-message";
+import { toastAppError } from "@/shared/lib/app-toast";
 import { createClient } from "@/shared/lib/supabase/client";
 
 /*
@@ -49,11 +49,7 @@ export function useSignInGoogle() {
   return useMutation({
     mutationFn: () =>
       Capacitor.isNativePlatform() ? signInNative() : signInWeb(),
-    onError: (error) => {
-      console.error(error);
-      toast.error(APP_MESSAGE.auth.signInFailed.title, {
-        description: APP_MESSAGE.auth.signInFailed.description,
-      });
-    },
+    onError: (error) =>
+      toastAppError(APP_MESSAGE_CODE.auth.signInFailed, error),
   });
 }
