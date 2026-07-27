@@ -19,6 +19,18 @@
 | `src/app/layout.tsx` 의 `viewport.themeColor` | OS/브라우저 크롬이 메타데이터로 읽는다 — CSS 적용 대상 아님 |
 | `src/app/icon.svg` | 정적 SVG 에셋 — CSS 커스텀 프로퍼티가 닿지 않는다 |
 
+### 1-2. 외부 콘솔 업로드용 아이콘 — `icon.svg` 파생 산출물
+
+`docs/brand/app-icon-512.png` 는 **`icon.svg` 를 512px 로 래스터화한 파생물**이다. 카카오 디벨로퍼스·앱 스토어처럼 PNG 업로드만 받는 외부 콘솔에 쓴다.
+
+`public/` 이 아니라 `docs/` 에 두는 이유: 앱이 런타임에 참조하지 않는다. 안드로이드 앱 아이콘은 `android/app/src/main/res/mipmap-*` 에 있고 우리는 PWA manifest 도 없어서, `public/` 에 두면 Static Export 가 그대로 APK 에 실어 나르는 죽은 무게가 된다.
+
+마크나 팔레트를 바꾸면 위 세 파일과 함께 다시 뽑는다 (`sharp` 는 Next 의존성으로 이미 설치돼 있다):
+
+```bash
+node -e "const s=require('sharp'),f=require('fs');f.mkdirSync('docs/brand',{recursive:true});s(f.readFileSync('src/app/icon.svg'),{density:800}).resize(512,512).png().toFile('docs/brand/app-icon-512.png')"
+```
+
 ## 2. `cn` 사용 규칙
 
 가독성이 최우선이다.
