@@ -33,7 +33,7 @@ function RadioCard({
       className={cn(
         // 최소 탭 영역 44px 이지만 52px 로 둔다 — 44 는 하한이지 목표가 아니고,
         // 선택 카드가 촘촘하면 오조작이 는다.
-        "flex min-h-13 items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-2 text-sm font-medium transition-all outline-none select-none",
+        "relative flex min-h-13 items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-2 text-sm font-medium transition-all outline-none select-none",
         "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
         // 탭 피드백. hover 에 기대지 않는다(터치 WebView).
         "active:scale-97",
@@ -46,8 +46,9 @@ function RadioCard({
     >
       {children}
       {/* 선택을 색으로만 알리지 않는다 (CLAUDE.md UX 규칙). 미선택 시엔 렌더되지 않는다. */}
+      {/* 카드 안 내용(아이콘·텍스트)의 배치와 무관하도록 모서리에 띄운다. */}
       <RadioGroupPrimitive.Indicator asChild>
-        <LuCheck aria-hidden className="size-3.5 shrink-0" />
+        <LuCheck aria-hidden className="absolute top-1.5 right-1.5 size-3.5" />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   );
