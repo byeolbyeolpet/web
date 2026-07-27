@@ -27,4 +27,15 @@ export const APP_MESSAGE = {
       description: "프로필을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
     },
   },
+  pet: {
+    createDone: { title: "등록했어요" },
+    createFailed: {
+      title: "등록하지 못했어요",
+      description: "잠시 후 다시 시도해주세요",
+    },
+    loadFailed: {
+      title: "불러오지 못했어요",
+      description: "잠시 후 다시 시도해주세요",
+    },
+  },
 } as const;
