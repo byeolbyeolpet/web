@@ -1,7 +1,9 @@
-// 마이 화면 — 로그인 필수 (클라 가드). 프로필 기본: 아바타·닉네임·로그아웃.
+// 마이 화면 — 로그인 필수 (클라 가드). 프로필 기본: 아바타·닉네임·펫 목록·로그아웃.
 "use client";
 
+import Link from "next/link";
 import { useRequireSession, useSignOut } from "@/features/auth";
+import { PetCard, useQueryPets } from "@/entities/pet";
 import { useQueryProfile } from "@/entities/user";
 import { APP_MESSAGE } from "@/shared/config/app-message";
 import { Button } from "@/shared/ui/button";
@@ -11,6 +13,7 @@ import { NicknameEditor } from "./nickname-editor";
 export function MeView() {
   const { session, isLoading } = useRequireSession();
   const profile = useQueryProfile(session?.user.id);
+  const pets = useQueryPets(session?.user.id);
   const signOut = useSignOut();
 
   // 세션 미확정이거나 리다이렉트 직전 — 빈 화면 대신 스켈레톤.
@@ -54,6 +57,28 @@ export function MeView() {
           {APP_MESSAGE.profile.loadFailed.description}
         </p>
       )}
+
+      <section className="flex w-full max-w-80 flex-col gap-3">
+        <h2 className="font-heading text-base font-bold">나의 반려동물</h2>
+
+        {pets.isPending ? (
+          <Skeleton className="h-16 w-full" />
+        ) : pets.data?.length ? (
+          <ul className="flex flex-col gap-2">
+            {pets.data.map((pet) => (
+              <PetCard key={pet.id} pet={pet} />
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            아직 등록한 아이가 없어요
+          </p>
+        )}
+
+        <Button variant="outline" asChild>
+          <Link href="/pet/new">반려동물 등록하기</Link>
+        </Button>
+      </section>
 
       <Button
         variant="outline"
