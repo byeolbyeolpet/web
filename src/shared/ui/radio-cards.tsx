@@ -31,9 +31,12 @@ function RadioCard({
     <RadioGroupPrimitive.Item
       data-slot="radio-card"
       className={cn(
-        // 최소 탭 영역 44px (CLAUDE.md UX 규칙)
-        "flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-2 text-sm font-medium transition-colors outline-none select-none",
+        // 최소 탭 영역 44px 이지만 52px 로 둔다 — 44 는 하한이지 목표가 아니고,
+        // 선택 카드가 촘촘하면 오조작이 는다.
+        "flex min-h-13 items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-2 text-sm font-medium transition-all outline-none select-none",
         "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
+        // 탭 피드백. hover 에 기대지 않는다(터치 WebView).
+        "active:scale-97",
         // 선택 상태는 종 태그와 같은 tint 계열로 — 브랜드 색을 한 단계 올린다(design-convention)
         "data-[state=checked]:border-primary data-[state=checked]:bg-primary-tint data-[state=checked]:text-primary-tint-foreground",
         "disabled:pointer-events-none disabled:opacity-50",
