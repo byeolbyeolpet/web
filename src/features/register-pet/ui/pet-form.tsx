@@ -62,6 +62,7 @@ export function PetForm({ ownerId }: { ownerId: string }) {
               종류
             </FieldLegend>
             <SpeciesPicker
+              collapsible
               name={field.name}
               value={field.value}
               onValueChange={field.onChange}
