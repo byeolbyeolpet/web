@@ -1,7 +1,8 @@
-// 닉네임 인라인 편집 — 표시 상태와 편집 상태를 오간다.
+// 닉네임 인라인 편집 — 표시 상태와 편집 상태를 오간다. 프로필 카드 안에 들어간다.
 "use client";
 
 import { useState } from "react";
+import { LuPencil } from "react-icons/lu";
 import { useUpdateNickname } from "@/entities/user";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -24,25 +25,31 @@ export function NicknameEditor({
 
   if (!editing) {
     return (
-      <div className="flex items-center gap-2">
-        <span className="font-heading text-xl font-bold">{nickname}</span>
+      <div className="flex min-w-0 flex-1 items-center gap-1">
+        <span className="min-w-0 flex-1 truncate font-heading text-lg font-bold">
+          {nickname}
+        </span>
+        {/* 연필 아이콘만 둔다 — "수정" 글자를 붙이면 프로필 줄에서 이름보다
+            부수적인 것이 더 큰 자리를 차지한다. 이름은 aria-label 로 전한다. */}
         <Button
           variant="ghost"
-          size="sm"
+          size="icon-sm"
+          aria-label="닉네임 수정"
           onClick={() => {
             setDraft(nickname);
             setEditing(true);
           }}
         >
-          수정
+          <LuPencil />
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="flex w-full max-w-80 flex-col gap-2">
+    <div className="flex min-w-0 flex-1 flex-col gap-2">
       <Input
+        autoFocus
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         maxLength={NICKNAME_MAX}
@@ -65,7 +72,7 @@ export function NicknameEditor({
         >
           저장
         </Button>
-        <Button variant="outline" size="sm" onClick={() => setEditing(false)}>
+        <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
           취소
         </Button>
       </div>
