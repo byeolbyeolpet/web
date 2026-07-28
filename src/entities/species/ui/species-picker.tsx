@@ -77,7 +77,9 @@ export function SpeciesPicker({
 
   return (
     <div>
-      {selected && (
+      {/* collapsible 이 아니면 접힘 카드를 만들지 않는다. CSS 로만 숨기면 쓰지도
+          않을 DOM 이 남는다(지도 필터처럼 접기가 없는 소비처). */}
+      {collapsible && selected && (
         <Collapsible open={collapsed}>
           <button
             type="button"

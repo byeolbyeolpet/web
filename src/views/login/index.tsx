@@ -37,10 +37,12 @@ export function LoginView() {
           variant="outline"
           size="lg"
           onClick={() => signIn.mutate()}
-          disabled={signIn.isPending}
+          loading={signIn.isPending}
         >
-          <FcGoogle aria-hidden className="size-5" />
-          {signIn.isPending ? "로그인 중…" : "Google로 계속하기"}
+          {/* 진행 중에는 스피너가 그 자리를 대신한다 — 아이콘 둘이 나란히 서면
+              무엇을 기다리는지 흐려진다. 문구는 그대로 둔다(design-convention). */}
+          {!signIn.isPending && <FcGoogle aria-hidden className="size-5" />}
+          Google로 계속하기
         </Button>
         <Link
           href="/"

@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { SpeciesPicker } from "./species-picker";
 
@@ -32,5 +34,70 @@ describe("SpeciesPicker", () => {
     );
 
     expect(screen.getByRole("radio", { name: "페럿" })).toBeChecked();
+  });
+});
+
+/** 부모가 value 를 쥐는 실제 사용 형태(RHF Controller)를 흉내 낸다. */
+function Controlled({ collapsible }: { collapsible?: boolean }) {
+  const [value, setValue] = useState("");
+  return (
+    <SpeciesPicker
+      collapsible={collapsible}
+      aria-label="종"
+      value={value}
+      onValueChange={setValue}
+    />
+  );
+}
+
+describe("SpeciesPicker collapsible", () => {
+  it("고르면 접히고 선택한 종만 남는다", async () => {
+    render(<Controlled collapsible />);
+
+    await userEvent.click(screen.getByRole("radio", { name: "페럿" }));
+
+    expect(
+      screen.getByRole("button", { name: /선택한 종류 페럿/ }),
+    ).toBeInTheDocument();
+  });
+
+  it("접힌 그리드는 inert 라 초점·스크린리더에서 빠진다", async () => {
+    // 높이 0 으로 숨기기만 하면 보이지 않는 라디오가 탭 순서에 남는다.
+    render(<Controlled collapsible />);
+
+    await userEvent.click(screen.getByRole("radio", { name: "페럿" }));
+
+    const grid = screen.getByRole("radiogroup", { name: "종" });
+    expect(grid.closest("[inert]")).not.toBeNull();
+  });
+
+  it("접힌 카드를 누르면 다시 펼쳐지고 선택은 유지된다", async () => {
+    render(<Controlled collapsible />);
+    await userEvent.click(screen.getByRole("radio", { name: "페럿" }));
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /선택한 종류 페럿/ }),
+    );
+
+    // 두 쪽 모두 DOM 에 남고 inert 로 켜고 끈다(높이 전환을 CSS 로 하기 위해).
+    // 접힘/펼침의 판정은 존재 여부가 아니라 inert 다.
+    const grid = screen.getByRole("radiogroup", { name: "종" });
+    expect(grid.closest("[inert]")).toBeNull();
+    expect(
+      screen
+        .getByRole("button", { name: /선택한 종류 페럿/ })
+        .closest("[inert]"),
+    ).not.toBeNull();
+    expect(screen.getByRole("radio", { name: "페럿" })).toBeChecked();
+  });
+
+  it("collapsible 이 아니면 골라도 접히지 않는다 — 지도 필터처럼 결과를 바로 봐야 하는 화면용", async () => {
+    render(<Controlled />);
+
+    await userEvent.click(screen.getByRole("radio", { name: "페럿" }));
+
+    expect(
+      screen.queryByRole("button", { name: /선택한 종류/ }),
+    ).not.toBeInTheDocument();
   });
 });
