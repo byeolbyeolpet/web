@@ -1,0 +1,24 @@
+{
+  // Capacitor 가 생성한 android/ 를 Java 확장(redhat-developer/vscode-java)이
+  // Gradle 프로젝트로 임포트하려 해서 열 때마다 "JDK 를 설치하라"는 알림이 뜬다.
+  //
+  // JDK 를 새로 깔 이유가 없다 — 네이티브 코드는 Android Studio 에서 열고,
+  // 거기엔 JBR(현재 21)이 번들로 들어 있다. VS Code 에서는 웹만 만진다.
+  //
+  // 아래는 확장의 기본 제외 목록에 android 를 더한 것이다. 이 설정은 기본값을
+  // 덮어쓰므로 node_modules 등을 다시 적어야 한다.
+  //
+  // android/ 안의 Java 를 편집할 일이 생기면 이 파일이 아니라 개인 설정
+  // (Ctrl+Shift+P → "Preferences: Open User Settings (JSON)")에 JBR 경로를 넣는다.
+  // 머신마다 경로가 달라 팀 공유 설정에 박으면 다른 기기에서 깨진다:
+  //   "java.configuration.runtimes": [
+  //     { "name": "JavaSE-21", "path": "<Android Studio 설치 경로>/jbr", "default": true }
+  //   ]
+  "java.import.exclusions": [
+    "**/node_modules/**",
+    "**/.metadata/**",
+    "**/archetype-resources/**",
+    "**/META-INF/maven/**",
+    "**/android/**"
+  ]
+}
