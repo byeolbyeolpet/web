@@ -78,7 +78,10 @@ function Button({
       {...props}
     >
       {loading && <LuLoaderCircle aria-hidden className="animate-spin" />}
-      {children}
+      {/* asChild 로 Link 를 감쌀 때 Slot 은 자식이 정확히 하나여야 한다.
+          스피너와 children 두 개를 그냥 두면 "Slot failed to slot onto its
+          children" 으로 터진다. Slottable 이 어느 자식에 병합할지 알려준다. */}
+      <Slot.Slottable>{children}</Slot.Slottable>
     </Comp>
   );
 }
