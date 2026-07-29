@@ -19,7 +19,9 @@ test("등록하면 마이 화면 목록에 나타난다", async ({ page }) => {
 
   await page.goto("/pet/new");
   // 세션이 안 실리면 로그인 화면으로 튕긴다 — 그때 실패 원인이 분명하도록 먼저 본다.
-  await expect(page.getByRole("radiogroup", { name: "종류" })).toBeVisible();
+  // 컨테이너가 아니라 선택지가 보이는 것을 기준으로 삼는다 — 종 목록이 도착하기
+  // 전의 빈 그리드는 높이가 0 이라 hidden 으로 잡힌다.
+  await expect(page.getByRole("radio", { name: "강아지" })).toBeVisible();
 
   await page.getByRole("radio", { name: "페럿" }).click();
   await page.getByLabel("이름").fill(name);
@@ -37,7 +39,9 @@ test("등록하면 마이 화면 목록에 나타난다", async ({ page }) => {
 
 test("이름을 비우면 등록되지 않는다", async ({ page }) => {
   await page.goto("/pet/new");
-  await expect(page.getByRole("radiogroup", { name: "종류" })).toBeVisible();
+  // 컨테이너가 아니라 선택지가 보이는 것을 기준으로 삼는다 — 종 목록이 도착하기
+  // 전의 빈 그리드는 높이가 0 이라 hidden 으로 잡힌다.
+  await expect(page.getByRole("radio", { name: "강아지" })).toBeVisible();
 
   await page.getByRole("radio", { name: "강아지" }).click();
   await page.getByRole("button", { name: "등록하기" }).click();
@@ -60,7 +64,9 @@ test("등록 중에는 버튼이 잠겨 두 번 눌리지 않는다", async ({ p
   });
 
   await page.goto("/pet/new");
-  await expect(page.getByRole("radiogroup", { name: "종류" })).toBeVisible();
+  // 컨테이너가 아니라 선택지가 보이는 것을 기준으로 삼는다 — 종 목록이 도착하기
+  // 전의 빈 그리드는 높이가 0 이라 hidden 으로 잡힌다.
+  await expect(page.getByRole("radio", { name: "강아지" })).toBeVisible();
 
   await page.getByRole("radio", { name: "고양이" }).click();
   await page.getByLabel("이름").fill(name);

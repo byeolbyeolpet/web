@@ -61,22 +61,28 @@ for (const { path, name, ready } of PUBLIC_SCREENS) {
   });
 }
 
-test("다크 모드에서도 대비 위반이 없다", async ({ page }) => {
-  // 대비는 테마마다 다른 값이다. 라이트에서 통과해도 다크는 별개다 —
-  // 실제로 --primary 를 #9b87f5 에서 #7350e0 으로 바꾼 것이 이 문제였다.
-  await page.emulateMedia({ colorScheme: "dark" });
-  await page.goto("/login");
-  await expect(
-    page.getByRole("button", { name: "Google로 계속하기" }),
-  ).toBeVisible();
+/*
+ * 대비는 테마마다 다른 값이라 라이트 통과가 다크를 보증하지 않는다.
+ * **화면마다 다크를 따로 본다.** 처음에는 /login 만 다크로 봤는데, 로그인
+ * 화면에는 탭바가 없어서 활성 탭 라벨의 대비 미달(#7350e0 on #17181b = 3.34:1)을
+ * 놓쳤다. 탭 셸이 얹히는 화면을 빼면 크롬 전체가 검사 밖으로 빠진다.
+ */
+for (const { path, name, ready } of PUBLIC_SCREENS) {
+  test(`${name} 화면이 다크 모드에서도 대비를 지킨다`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: "dark" });
+    await page.goto(path);
+    await expect(ready(page)).toBeVisible({ timeout: 10_000 });
 
-  // withRules 와 withTags 는 둘 다 runOnly 를 세팅해 나중 호출이 앞을 덮는다.
-  // 대비만 보려는 것이므로 withRules 하나만 쓴다.
-  const { violations } = await new AxeBuilder({ page })
-    .withRules(["color-contrast"])
-    .analyze();
+    // withRules 와 withTags 는 둘 다 runOnly 를 세팅해 나중 호출이 앞을 덮는다.
+    // 대비만 보려는 것이므로 withRules 하나만 쓴다.
+    const { violations } = await new AxeBuilder({ page })
+      .withRules(["color-contrast"])
+      .analyze();
 
-  expect(
-    violations.flatMap((v) => v.nodes.map((n) => n.failureSummary)),
-  ).toEqual([]);
-});
+    expect(
+      violations.flatMap((v) =>
+        v.nodes.map((n) => `${n.target.join(" ")} — ${n.failureSummary}`),
+      ),
+    ).toEqual([]);
+  });
+}

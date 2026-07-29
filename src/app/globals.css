@@ -34,6 +34,15 @@
   --color-primary-tint: var(--primary-tint);
   --color-primary-tint-foreground: var(--primary-tint-foreground);
 
+  /* ── Primary Emphasis — 브랜드 색을 "글자"로 쓸 때 ──────────
+     --primary 한 값으로 두 일을 시킬 수 없다.
+       면(bg-primary) 위에는 흰 글씨가 얹히므로 충분히 어두워야 하고,
+       글자(text-primary)로 쓰면 어두운 면 위에 얹히므로 밝아야 한다.
+     다크에서 이 둘은 정면으로 충돌한다 — #7350e0 은 흰 글씨 기준
+     5.36:1 로 통과하지만, 카드(#17181b) 위 글자로는 3.34:1 로 AA 미달이다.
+     그래서 글자용을 따로 둔다. bg-primary 는 그대로 --primary 를 쓴다. */
+  --color-primary-emphasis: var(--primary-emphasis);
+
   /* ── Status Colors (아이콘/텍스트 병행 필수, 색상 단독 전달 금지) ── */
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
@@ -123,6 +132,9 @@
   --primary-tint: #efebfb;
   --primary-tint-foreground: #4a3596;
 
+  /* 글자로 쓰는 브랜드 색. 라이트에서는 흰 배경 대비 5.39:1 이라 --primary 와 같다 */
+  --primary-emphasis: #6e56cf;
+
   /* 일반 칩·보조 버튼. 종 태그보다 한 단계 아래 */
   --secondary: #f3f4f6;
   --secondary-foreground: #3f4551;
@@ -198,6 +210,11 @@
      더 밝히면 태그가 버튼처럼 읽혀 CTA 와 위계가 섞인다. (#21 실기 확인 결정) */
   --primary-tint: #3a2d6e;
   --primary-tint-foreground: #c4b5fd;
+
+  /* 글자로 쓰는 브랜드 색. --primary(#7350e0)를 그대로 글자에 쓰면 카드(#17181b)
+     위에서 3.34:1 로 AA 미달이다(활성 탭 라벨에서 axe 가 실측). 면과 글자를
+     한 값으로 겸할 수 없어 여기서 갈린다 — 이 값은 카드 위 9.9:1 로 통과한다. */
+  --primary-emphasis: #c4b5fd;
 
   --secondary: #1f2024;
   --secondary-foreground: #b4b7c0;

@@ -28,9 +28,12 @@ async function scan(page: Page) {
   }));
 }
 
+// 준비 신호를 radiogroup 컨테이너로 잡으면 안 된다. 종 목록이 도착하기 전에는
+// 칸이 하나도 없는 빈 그리드라 높이가 0 이고, Playwright 는 그것을 hidden 으로
+// 본다. 실제 선택지 하나가 보이는 것을 기준으로 삼는다.
 test("등록 폼에 WCAG A·AA 위반이 없다", async ({ page }) => {
   await page.goto("/pet/new");
-  await expect(page.getByRole("radiogroup", { name: "종류" })).toBeVisible();
+  await expect(page.getByRole("radio", { name: "강아지" })).toBeVisible();
 
   expect(await scan(page)).toEqual([]);
 });
@@ -38,7 +41,7 @@ test("등록 폼에 WCAG A·AA 위반이 없다", async ({ page }) => {
 test("등록 폼은 오류가 표시된 상태에서도 위반이 없다", async ({ page }) => {
   // 오류 표시가 aria-invalid·aria-describedby·role=alert 를 한꺼번에 건드린다.
   await page.goto("/pet/new");
-  await expect(page.getByRole("radiogroup", { name: "종류" })).toBeVisible();
+  await expect(page.getByRole("radio", { name: "강아지" })).toBeVisible();
   await page.getByRole("button", { name: "등록하기" }).click();
   await expect(page.getByText("이름을 입력해 주세요.")).toBeVisible();
 
@@ -66,6 +69,8 @@ test("마이 화면은 다크 모드에서도 대비 위반이 없다", async ({
     .analyze();
 
   expect(
-    violations.flatMap((v) => v.nodes.map((n) => n.failureSummary)),
+    violations.flatMap((v) =>
+      v.nodes.map((n) => `${n.target.join(" ")} — ${n.failureSummary}`),
+    ),
   ).toEqual([]);
 });
