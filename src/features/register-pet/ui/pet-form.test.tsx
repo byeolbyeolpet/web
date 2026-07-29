@@ -6,6 +6,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { findA11yViolations } from "@/shared/lib/test/axe";
 import { PetForm } from "./pet-form";
 
 const { mutate, replace, toastSuccess, toastError } = vi.hoisted(() => ({
@@ -128,5 +129,27 @@ describe("PetForm 접근성", () => {
       "placeholder",
       "코코",
     );
+  });
+
+  // 위의 role 단언은 "내가 의도한 것"만 확인한다. axe 는 의도하지 않은 것을 잡는다
+  // — 중복 id, 중첩된 인터랙티브 요소, 라벨 없는 컨트롤, 잘못 쓴 aria 속성.
+  // 로그인이 필요한 화면이라 브라우저 axe 가 못 오므로 여기서 대신 본다.
+  it("axe 로 검사해도 위반이 없다", async () => {
+    const { container } = render(<PetForm ownerId="owner-1" />);
+
+    expect(await findA11yViolations(container)).toEqual([]);
+  });
+
+  it("오류가 표시된 상태에서도 axe 위반이 없다", async () => {
+    // 오류 표시는 aria-invalid·aria-describedby·role=alert 를 한꺼번에 건드린다.
+    // 정상 상태만 검사하면 정작 관계가 꼬이는 상태를 놓친다.
+    const { container } = render(<PetForm ownerId="owner-1" />);
+
+    await userEvent.click(screen.getByRole("button", { name: "등록하기" }));
+    await waitFor(() =>
+      expect(screen.getByText("이름을 입력해 주세요.")).toBeInTheDocument(),
+    );
+
+    expect(await findA11yViolations(container)).toEqual([]);
   });
 });
