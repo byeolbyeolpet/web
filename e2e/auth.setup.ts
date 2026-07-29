@@ -40,13 +40,16 @@ setup("테스트 계정 세션 굽기", async ({ baseURL }) => {
     },
   );
 
-  // 여기서 실패하면 계정이 없거나 미확인 상태다. 원인이 바로 보이게 본문을 남긴다.
-  expect(
-    response.ok,
-    `로그인 실패 (HTTP ${response.status}): ${await response.text()}`,
-  ).toBe(true);
+  // 본문은 한 번만 읽을 수 있다. expect 의 메시지 인자는 성공·실패와 무관하게
+  // 먼저 평가되므로 거기서 text() 를 부르면 뒤따르는 json() 이 빈 body 를 만난다.
+  const body = await response.text();
 
-  const session = await response.json();
+  // 여기서 실패하면 계정이 없거나 미확인 상태다. 원인이 바로 보이게 본문을 남긴다.
+  expect(response.ok, `로그인 실패 (HTTP ${response.status}): ${body}`).toBe(
+    true,
+  );
+
+  const session = JSON.parse(body);
   expect(session.access_token, "세션에 access_token 이 없다").toBeTruthy();
 
   // supabase-js 의 기본 storageKey 규칙: sb-<프로젝트 ref>-auth-token

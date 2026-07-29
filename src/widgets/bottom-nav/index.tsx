@@ -31,7 +31,9 @@ export function BottomNav() {
             className={cn(
               "flex min-h-14 flex-1 flex-col items-center justify-center gap-1",
               // 색 단독 전달 금지(CLAUDE.md) — 라벨 굵기를 함께 바꿔 색맹도 구분되게 한다.
-              active ? "text-primary" : "text-muted-foreground",
+              // 글자에는 --primary 가 아니라 emphasis 를 쓴다. 다크에서 --primary 는
+              // 흰 글씨를 받는 "면" 기준이라 카드 위 글자로는 3.34:1 로 미달한다.
+              active ? "text-primary-emphasis" : "text-muted-foreground",
             )}
           >
             <tab.Icon aria-hidden className="size-6" />

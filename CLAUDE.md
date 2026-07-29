@@ -92,7 +92,8 @@ src/
 
 | 역할 | 색 | Light | Dark |
 |---|---|---|---|
-| Primary (CTA·활성 탭) | 바이올렛 | `#6E56CF` | `#7350E0` |
+| Primary (CTA **면**) | 바이올렛 | `#6E56CF` | `#7350E0` |
+| Primary emphasis (브랜드색 **글자**) | | `#6E56CF` | `#C4B5FD` |
 | Primary tint (종 태그=해자) | | `#EFEBFB` / 글씨 `#4A3596` | `#3A2D6E` / 글씨 `#C4B5FD` |
 | Background | | `#FFFFFF` | `#0D0D0F` |
 | Surface (card) | | `#FFFFFF` | `#17181B` |
@@ -100,6 +101,8 @@ src/
 | Muted foreground | | `#6B7080` | `#9C9FA8` |
 | Border | | `#EAECEF` | `#26272B` |
 | Text | | `#111318` | `#F4F4F6` |
+
+**브랜드 색을 글자로 쓸 때는 `text-primary-emphasis`다. `text-primary`가 아니다.** 한 값이 면과 글자를 겸할 수 없다 — 면은 흰 글씨를 받아야 하니 어두워야 하고, 글자는 어두운 면 위에 얹히니 밝아야 한다. 다크에서 이 둘은 정면으로 충돌한다(`#7350E0`는 흰 글씨 5.36:1로 통과하지만 카드 위 글자로는 3.34:1로 AA 미달 — 활성 탭 라벨에서 axe가 실측). `bg-primary`는 그대로 쓴다.
 
 **색은 세 층으로 쓴다.** ① 브랜드(바이올렛) = 정체성, CTA·활성 탭에만 ② 정보/의미 = 상태 구분(`success`·`warning`·`destructive`), 반드시 아이콘 병행 ③ 중립 = 그 외 전부. **종 태그는 중립이 아니라 `bg-primary-tint`로 한 단계 올린다** — 특수동물 진료 태깅이 우리 해자인데 회색으로 죽이면 차별점이 안 보인다.
 
