@@ -16,6 +16,8 @@
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+# 구운 로그인 세션 — 실제 access/refresh 토큰이 들어 있다.
+/e2e/.auth/
 
 # next.js
 /.next/
