@@ -25,7 +25,7 @@ export default function AuthCallbackPage() {
       .auth.exchangeCodeForSession(code)
       .then(({ error }) => {
         if (error) {
-          console.error(error);
+          console.error("[auth] 코드 교환 실패", error);
           router.replace("/login");
           return;
         }

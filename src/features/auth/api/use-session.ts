@@ -22,7 +22,10 @@ export function useSession() {
       })
       // 저장소 어댑터가 실패해도 로딩에 영구히 갇히면 안 된다 — 비로그인으로 확정한다.
       .catch((error) => {
-        console.error(error);
+        // 맥락 문자열을 먼저 넘긴다. 에러 객체만 넘기면 Error 상속 클래스의
+        // message·name 이 non-enumerable 이라 dev 오버레이에 "{}" 로만 찍혀
+        // 어디서 났는지 알 수 없다.
+        console.error("[auth] getSession 실패", error);
         setIsLoading(false);
       });
 
