@@ -69,6 +69,15 @@ export function PetForm({ ownerId }: { ownerId: string }) {
   const onSubmit = (values: PetFormValues) =>
     createPet.mutate(values, { onSuccess: () => router.replace("/me") });
 
+  /*
+   * isPending 만으로는 두 번 눌릴 틈이 남는다. insert 가 끝나면 isPending 은
+   * 곧바로 false 가 되는데 router.replace 는 그때부터 화면을 바꾸기 시작한다.
+   * 그 사이에 한 번 더 눌리면 **펫이 두 마리 생긴다** — 되돌리려면 삭제 기능이
+   * 필요한데 아직 없다. 성공을 "끝났다"가 아니라 "이 화면을 떠난다"로 읽는다.
+   * (로그인 버튼과 같은 판단 — views/login/index.tsx)
+   */
+  const isLeaving = createPet.isPending || createPet.isSuccess;
+
   return (
     /* 필드가 한꺼번에 나타나면 정보량이 많아 보인다. 위에서부터 차례로 올려
        읽는 순서를 만든다. CTA(sticky)는 stagger 에서 뺀다 — transform 이 걸린
@@ -179,12 +188,7 @@ export function PetForm({ ownerId }: { ownerId: string }) {
           safe-area 는 (full) layout 의 main 이 갖고 있고, sticky 는 부모
           padding box 를 넘지 못하므로 홈 인디케이터 위에서 알아서 멈춘다. */}
       <div className="sticky bottom-0 -mx-4 mt-auto border-t border-border bg-background/85 px-4 pt-3 pb-4 backdrop-blur-md">
-        <Button
-          type="submit"
-          size="lg"
-          className="w-full"
-          loading={createPet.isPending}
-        >
+        <Button type="submit" size="lg" className="w-full" loading={isLeaving}>
           등록하기
         </Button>
       </div>

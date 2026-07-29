@@ -16,8 +16,13 @@ const { mutate, replace, toastSuccess, toastError } = vi.hoisted(() => ({
   toastError: vi.fn(),
 }));
 
+const createPetState = vi.hoisted(() => ({
+  isPending: false,
+  isSuccess: false,
+}));
+
 vi.mock("../api/use-create-pet", () => ({
-  useCreatePet: () => ({ mutate, isPending: false }),
+  useCreatePet: () => ({ ...createPetState, mutate }),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -38,7 +43,11 @@ vi.mock("@/entities/species/api/use-query-species", () => ({
   }),
 }));
 
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => {
+  vi.clearAllMocks();
+  createPetState.isPending = false;
+  createPetState.isSuccess = false;
+});
 
 describe("PetForm 검증", () => {
   it("빈 채로 제출하면 필드 아래에 오류를 띄우고 제출하지 않는다", async () => {
@@ -78,6 +87,24 @@ describe("PetForm 검증", () => {
       speciesCode: "ferret",
       sex: "unknown",
     });
+  });
+
+  // 두 번 눌리면 펫이 두 마리 생기고, 지금은 삭제 기능이 없어 되돌릴 수 없다.
+  it("제출 중에는 버튼이 잠긴다", () => {
+    createPetState.isPending = true;
+    render(<PetForm ownerId="owner-1" />);
+
+    expect(screen.getByRole("button", { name: "등록하기" })).toBeDisabled();
+  });
+
+  it("성공 후 화면이 넘어가는 동안에도 버튼이 잠긴 채로 있는다", () => {
+    // insert 가 끝나면 isPending 은 곧바로 false 지만 router.replace 는
+    // 그때부터 화면을 바꾼다 — 그 틈이 중복 제출 구멍이다.
+    createPetState.isPending = false;
+    createPetState.isSuccess = true;
+    render(<PetForm ownerId="owner-1" />);
+
+    expect(screen.getByRole("button", { name: "등록하기" })).toBeDisabled();
   });
 
   it("이름 앞뒤 공백은 잘라서 보낸다", async () => {
