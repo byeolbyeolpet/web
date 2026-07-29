@@ -20,7 +20,7 @@ export function useQueryProfile(userId?: string) {
         .eq("id", userId!)
         .single();
       if (error) {
-        console.error(error);
+        console.error("[profile] 조회 실패", error);
         throw error;
       }
       return data;

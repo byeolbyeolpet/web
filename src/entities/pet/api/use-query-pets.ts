@@ -17,7 +17,7 @@ export function useQueryPets(ownerId?: string) {
         .eq("owner_id", ownerId!)
         .order("created_at", { ascending: false });
       if (error) {
-        console.error(error);
+        console.error("[pet] 목록 조회 실패", error);
         throw error;
       }
       return data;

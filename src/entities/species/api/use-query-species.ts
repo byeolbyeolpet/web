@@ -28,7 +28,7 @@ export function useQuerySpecies(group?: Enums<"species_group">) {
       // 원본 에러는 로그로만 남기고 사용자에게는 노출하지 않는다.
       // PostgrestError 의 hint 에 실제 원인이 담기는 경우가 많아 객체 전체를 찍는다.
       if (error) {
-        console.error(error);
+        console.error("[species] 목록 조회 실패", error);
         throw error;
       }
       return data;
