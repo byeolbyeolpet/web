@@ -7,20 +7,9 @@
 //
 // **한계를 분명히 한다.** axe 는 자동 판정 가능한 위반만 잡는다. 초점 순서가
 // 말이 되는지, 대체 텍스트가 실제로 그림을 설명하는지는 사람이 봐야 한다.
-//
-// wcag22aa 를 넣은 이유: 우리 규칙이 최소 탭 영역 44×44px 인데(CLAUDE.md),
-// 그걸 기계로 확인해 주는 규칙이 2.2 의 target-size 다.
 
-import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-
-const WCAG_TAGS = [
-  "wcag2a",
-  "wcag2aa",
-  "wcag21a",
-  "wcag21aa",
-  "wcag22aa",
-] as const;
+import { scanContrast, scanWcag } from "./a11y";
 
 /**
  * 세션 없이 실제 내용이 그려지는 화면만 넣는다. 나머지는 아직 placeholder 다.
@@ -46,18 +35,7 @@ for (const { path, name, ready } of PUBLIC_SCREENS) {
     await page.goto(path);
     await expect(ready(page)).toBeVisible({ timeout: 10_000 });
 
-    const { violations } = await new AxeBuilder({ page })
-      .withTags([...WCAG_TAGS])
-      .analyze();
-
-    // 실패했을 때 규칙 id 만 보이면 어디를 고쳐야 할지 모른다 — 대상까지 남긴다.
-    expect(
-      violations.map((v) => ({
-        id: v.id,
-        impact: v.impact,
-        targets: v.nodes.map((n) => n.target.join(" ")),
-      })),
-    ).toEqual([]);
+    expect(await scanWcag(page)).toEqual([]);
   });
 }
 
@@ -73,16 +51,6 @@ for (const { path, name, ready } of PUBLIC_SCREENS) {
     await page.goto(path);
     await expect(ready(page)).toBeVisible({ timeout: 10_000 });
 
-    // withRules 와 withTags 는 둘 다 runOnly 를 세팅해 나중 호출이 앞을 덮는다.
-    // 대비만 보려는 것이므로 withRules 하나만 쓴다.
-    const { violations } = await new AxeBuilder({ page })
-      .withRules(["color-contrast"])
-      .analyze();
-
-    expect(
-      violations.flatMap((v) =>
-        v.nodes.map((n) => `${n.target.join(" ")} — ${n.failureSummary}`),
-      ),
-    ).toEqual([]);
+    expect(await scanContrast(page)).toEqual([]);
   });
 }
