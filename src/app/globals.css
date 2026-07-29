@@ -151,7 +151,8 @@
 
   --border: #eaecef;
   --input: #eaecef;
-  --ring: #6e56cf;
+  /* 다크와 짝을 맞춰 emphasis 를 참조한다. 라이트에서는 값이 --primary 와 같다. */
+  --ring: var(--primary-emphasis);
 
   /* Status — 아이콘·텍스트 병행 필수 (색상 단독 전달 금지) */
   --success: #16a34a;
@@ -230,7 +231,9 @@
 
   --border: #26272b;
   --input: #26272b;
-  --ring: #9b87f5;
+  /* 포커스 링은 어두운 면 위에 그려지는 "선"이라 --primary 가 아니라 emphasis 쪽이다.
+     --primary(#7350e0)는 흰 글씨를 받는 면 기준 값이라 배경 대비가 3.5:1 밖에 안 된다. */
+  --ring: var(--primary-emphasis);
 
   --success: #4ade80;
   --success-foreground: #052e16;
