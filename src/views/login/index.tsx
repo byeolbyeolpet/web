@@ -21,6 +21,16 @@ export function LoginView() {
   // 세션 미확정·리다이렉트 대기 중에는 로그인 폼을 깜빡 보여주지 않는다.
   if (isLoading || session) return null;
 
+  /*
+   * isPending 만으로는 버튼이 잠기지 않는다.
+   * 웹의 signInWithOAuth 는 window.location.assign(url) 을 부른 "직후" 곧바로
+   * resolve 한다(auth-js _handleProviderSignIn). assign 은 이동을 예약할 뿐이라
+   * 구글 동의 화면이 뜨기까지는 네트워크 왕복만큼 시간이 걸리는데, 그 구간에서
+   * isPending 은 이미 false 다 — 버튼이 되살아나 다시 눌린다.
+   * 그래서 성공을 "끝났다"가 아니라 "이 화면을 떠난다"로 읽는다.
+   */
+  const isLeaving = signIn.isPending || signIn.isSuccess;
+
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-8 px-6 pt-safe-top pb-safe-bottom">
       <div className="flex flex-col items-center gap-2 text-center">
@@ -37,11 +47,11 @@ export function LoginView() {
           variant="outline"
           size="lg"
           onClick={() => signIn.mutate()}
-          loading={signIn.isPending}
+          loading={isLeaving}
         >
           {/* 진행 중에는 스피너가 그 자리를 대신한다 — 아이콘 둘이 나란히 서면
               무엇을 기다리는지 흐려진다. 문구는 그대로 둔다(design-convention). */}
-          {!signIn.isPending && <FcGoogle aria-hidden className="size-5" />}
+          {!isLeaving && <FcGoogle aria-hidden className="size-5" />}
           Google로 계속하기
         </Button>
         <Link
