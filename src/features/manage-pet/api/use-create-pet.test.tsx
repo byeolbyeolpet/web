@@ -6,7 +6,7 @@
 import type { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useCreatePet } from "./use-create-pet";
 
 const { maybeSingle, insert, toastSuccess, toastError } = vi.hoisted(() => ({
@@ -44,6 +44,12 @@ beforeEach(() => {
   vi.clearAllMocks();
   // 원본 에러는 console.error 로만 남긴다 — 테스트 출력이 더럽지 않게 가린다.
   vi.spyOn(console, "error").mockImplementation(() => {});
+});
+
+// clearAllMocks 는 호출 기록만 지우고 spy 구현은 되돌리지 않는다 — 복원 없이는
+// 이 파일 이후의 테스트에서도 console.error 가 계속 먹통이 된다.
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 describe("useCreatePet", () => {

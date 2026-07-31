@@ -3,6 +3,7 @@
 
 import { useRouter } from "next/navigation";
 import type { PetDetail } from "@/entities/pet";
+import { useDeletePet } from "../api/use-delete-pet";
 import { useUpdatePet } from "../api/use-update-pet";
 import { DeletePetButton } from "./delete-pet-button";
 import { PetForm } from "./pet-form";
@@ -10,10 +11,15 @@ import { PetForm } from "./pet-form";
 export function EditPetForm({ pet }: { pet: PetDetail }) {
   const router = useRouter();
   const updatePet = useUpdatePet(pet.id);
+  // 삭제 mutation 을 폼이 쥔다 — 지워지는 행에 update 가 나가면 안 되므로
+  // 삭제가 진행되는 동안 저장 버튼도 함께 잠가야 한다(CodeRabbit 지적).
+  const deletePet = useDeletePet(pet.id);
 
   // 수정·삭제 모두 끝나면 마이로 돌아간다. push 가 아니라 replace 다 —
   // 뒤로가기로 방금 지운 펫의 수정 화면에 되돌아가면 안 된다.
   const backToMe = () => router.replace("/me");
+
+  const deleting = deletePet.isPending || deletePet.isSuccess;
 
   return (
     <PetForm
@@ -23,9 +29,14 @@ export function EditPetForm({ pet }: { pet: PetDetail }) {
         sex: pet.sex,
       }}
       submitLabel="저장하기"
-      isSubmitting={updatePet.isPending || updatePet.isSuccess}
+      isSubmitting={updatePet.isPending || updatePet.isSuccess || deleting}
       onSubmit={(values) => updatePet.mutate(values, { onSuccess: backToMe })}
-      footer={<DeletePetButton petId={pet.id} onDeleted={backToMe} />}
+      footer={
+        <DeletePetButton
+          loading={deleting}
+          onConfirm={() => deletePet.mutate(undefined, { onSuccess: backToMe })}
+        />
+      }
     />
   );
 }
