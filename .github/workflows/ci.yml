@@ -31,6 +31,15 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
+    # NEXT_PUBLIC_* 는 빌드 시점에 번들로 인라인된다. 없으면 useSession 의
+    # getSession 이 영원히 로딩에 갇혀 로그인 화면이 렌더되지 않는다 —
+    # 로컬은 .env.local 이 채우지만 CI 는 repo Actions 변수에서 받는다.
+    # (둘 다 앱 번들에 그대로 실리는 공개 설계값이라 secret 이 아니다.)
+    # 인증 E2E 계정(E2E_USER_*)은 CI 에 넣지 않는다 — authenticated 프로젝트는
+    # 자격증명이 없으면 사유를 남기고 건너뛰도록 설계돼 있다(e2e/auth-config.ts).
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
