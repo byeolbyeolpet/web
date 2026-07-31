@@ -62,6 +62,23 @@ Static Export는 동적 세그먼트 `[id]`에 대해 `generateStaticParams()`�
 place/page.tsx → useSearchParams()로 id 취득 → useQuery(['place', id], fetchPlace)
 ```
 
+`useSearchParams()`는 **Suspense 경계 안에 둔다.** 없으면 빌드가 `missing-suspense-with-csr-bailout`으로 멈춘다. (`window.location.search`를 effect에서 읽는 우회는 쓰지 않는다 — React Compiler 린트 `react-hooks/set-state-in-effect`에 걸린다.) 실물은 `views/pet-edit`.
+
+`/pet/edit`도 같은 이유로 쿼리파라미터다. 펫은 사용자가 런타임에 만드는 것이라 빌드 시점에 id를 알 수 없다.
+
+## 4-1. `next/link`의 prefetch는 끈다 (`prefetch={false}`)
+
+**Static Export + App Router에서 세그먼트 prefetch가 동작하지 않는다.** 클라이언트가 요청하는 파일명에 세그먼트가 한 번 더 붙어 빌드 산출물과 어긋난다:
+
+```
+빌드 산출: out/me/__next.!KHRhYnMp.txt
+클라 요청:    /me/__next.!KHRhYnMp.me.txt     ← `.me` 가 덧붙음 → 404
+```
+
+App Router 전 라우트에 해당한다(Next 문서의 "Prefetching with next/link 지원"은 `<PagesOnly>` 절이다). 실측: 마이 화면 진입 한 번에 **404가 14건** — 하단 탭 4개 + 펫 행 수만큼. 얻는 것 없이 요청만 나가므로 모든 `<Link>`에 `prefetch={false}`를 건다. 끄고 재측정한 결과 404는 0건.
+
+번들이 기기 안에 통째로 들어 있는 WebView 앱이라 prefetch로 아낄 지연 자체가 없다 — 고쳐지더라도 켤 이유가 약하다.
+
 ## 5. dex만 SSG인 이유
 
 사전은 **유한·큐레이션·잘 안 바뀌는 참조 콘텐츠**다. 빌드 때 HTML로 구워 앱에 내장하면 **네트워크 없이 즉시 열람**(지하철·엘리베이터)이 된다. 콘텐츠 갱신은 재빌드 + OTA로 처리한다. (근거는 오프라인/즉시표시이지 SEO가 아니다 — [ADR-0001].) 콘텐츠 소스(Supabase 빌드타임 fetch vs 리포 MDX)는 데이터 계층 설계에서 확정한다.

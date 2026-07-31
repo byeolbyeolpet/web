@@ -90,7 +90,18 @@ node -e "const s=require('sharp'),f=require('fs');f.mkdirSync('docs/brand',{recu
 
 **빈 스텁**: `radix-nova` 레지스트리에 항목은 있는데 내용이 비어 있는 경우가 있다. `form`이 그랬다 — `GET /r/styles/radix-nova/form.json`이 200에 109바이트고 `files`가 없어서 CLI가 **exit 0으로 아무 파일도 안 쓰고 끝난다.** 설치했는데 파일이 없으면 레지스트리 JSON을 직접 확인한다. (shadcn이 RHF 연동을 `Form`→`Field`로 옮기는 중이라 신규 스타일엔 구세대 `form`이 없다. 우리는 `Field` 계열을 쓴다.)
 
-**대화형 프롬프트**: 기존 파일을 덮어야 하면 `--yes`만으로는 확인 프롬프트에서 멎는다. `--yes --overwrite`로 통과시키되, 실행 전후 `git status --porcelain`을 비교해 **의도한 파일 외에 무엇이 덮였는지 확인**하고 불필요한 변경은 `git checkout -- <파일>`로 되돌린다. 6-1 표의 파일들이 여기서 날아간다.
+**항상 `--dry-run` 을 먼저 돌린다.** 어떤 파일이 덮이는지 실행 전에 알려준다. 이게 유일한 사전 방어다 — 4.16.0 에 파일 단위 제외 플래그(`--no-deps` 류)는 **없고**, `--overwrite` 를 빼도 `--yes` 가 확인 프롬프트를 건너뛰므로 그대로 덮인다.
+
+```
+$ npx shadcn@latest add alert-dialog --yes --dry-run
+├ Files (2) ~1 overwrite, =1 skip
+│ ~ src\shared\ui\button.tsx        overwrite   ← 6-1 표의 파일이면 여기서 멈춘다
+│ = src\shared\ui\alert-dialog.tsx  skip (identical)
+```
+
+`registryDependencies` 에 걸린 컴포넌트가 딸려오면서 덮인다. `alert-dialog` → `button` 이 그랬다. 6-1 표의 파일이 목록에 있으면 **작업 트리를 먼저 깨끗이 만들고**(커밋 또는 stash) 설치한 뒤 `git checkout -- <파일>` 로 되돌린다. 그래야 되돌릴 때 내 작업까지 날아가지 않는다.
+
+**대화형 프롬프트**: 기존 파일을 덮어야 하면 `--yes`만으로는 확인 프롬프트에서 멎는다. `--yes --overwrite`로 통과시키되, 실행 후 `git status --porcelain`으로 **의도한 파일 외에 무엇이 덮였는지 반드시 확인**한다.
 
 ## 7. Dialog 규칙
 

@@ -56,6 +56,7 @@ export function LoginView() {
         </Button>
         <Link
           href="/"
+          prefetch={false}
           className="py-2 text-center text-sm text-muted-foreground underline-offset-4 hover:underline"
         >
           로그인 없이 둘러보기

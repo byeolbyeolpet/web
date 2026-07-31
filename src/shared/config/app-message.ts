@@ -40,6 +40,31 @@ export const APP_MESSAGE = {
     title: "반려동물 목록 불러오기 실패",
     description: "목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
   },
+  "pet.updateDone": { title: "반려동물 정보 수정 완료" },
+  "pet.updateFailed": {
+    title: "반려동물 정보 수정 실패",
+    description: "잠시 후 다시 시도해 주세요.",
+  },
+  // 되돌릴 수 없는 조작이라 확인 단계를 거친다. 그 확인창 문구도 여기서 관리한다.
+  "pet.deleteConfirm": {
+    title: "반려동물 삭제",
+    description: "삭제하면 되돌릴 수 없어요.",
+  },
+  "pet.deleteDone": { title: "반려동물 삭제 완료" },
+  "pet.deleteFailed": {
+    title: "반려동물 삭제 실패",
+    description: "잠시 후 다시 시도해 주세요.",
+  },
+  "pet.detailLoadFailed": {
+    title: "반려동물 정보 불러오기 실패",
+    description: "정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+  },
+  // 없는 펫과 남의 펫을 같은 문구로 묶는다. 갈라 놓으면 "그 id 가 존재하는지"를
+  // 문구로 알려주는 셈이 된다(pets 는 읽기 공개다).
+  "pet.notFound": {
+    title: "반려동물 없음",
+    description: "찾을 수 없는 반려동물이에요.",
+  },
 } as const satisfies Record<string, AppMessage>;
 
 export type AppMessageCode = keyof typeof APP_MESSAGE;
@@ -62,5 +87,12 @@ export const APP_MESSAGE_CODE = {
     createDone: "pet.createDone",
     createFailed: "pet.createFailed",
     loadFailed: "pet.loadFailed",
+    updateDone: "pet.updateDone",
+    updateFailed: "pet.updateFailed",
+    deleteConfirm: "pet.deleteConfirm",
+    deleteDone: "pet.deleteDone",
+    deleteFailed: "pet.deleteFailed",
+    detailLoadFailed: "pet.detailLoadFailed",
+    notFound: "pet.notFound",
   },
 } as const satisfies Record<string, Record<string, AppMessageCode>>;
