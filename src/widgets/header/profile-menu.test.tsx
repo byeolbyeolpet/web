@@ -65,9 +65,14 @@ describe("ProfileMenu", () => {
     await userEvent.click(screen.getByRole("button", { name: "계정 메뉴" }));
 
     expect(await screen.findByRole("menu")).toBeInTheDocument();
-    // 첫 항목은 라벨이 아니라 목적지다 — 마이페이지로 가는 링크여야 한다.
-    const profileCard = screen.getByRole("menuitem", { name: /지호/ });
-    expect(profileCard).toHaveAttribute("href", "/me");
+    // 정체성 행도, 마이페이지 pill 도 라벨이 아니라 목적지다.
+    expect(screen.getByRole("menuitem", { name: /지호/ })).toHaveAttribute(
+      "href",
+      "/me",
+    );
+    expect(
+      screen.getByRole("menuitem", { name: "마이페이지" }),
+    ).toHaveAttribute("href", "/me");
     expect(
       screen.getByRole("menuitem", { name: /로그아웃/ }),
     ).toBeInTheDocument();
