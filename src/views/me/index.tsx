@@ -1,4 +1,4 @@
-// 마이 화면 — 로그인 필수 (클라 가드). 프로필 · 펫 목록 · 계정.
+// 마이 화면 — 로그인 필수 (클라 가드). 프로필 · 펫 목록.
 //
 // 구조는 모바일 앱 마이 화면의 일반형을 따랐다(Dribbble "Smart Pet Care Profile"
 // 등 참고):
@@ -6,20 +6,21 @@
 //    곧 위계다. 카드로 묶으면 아래 목록 카드들과 같은 무게가 돼 층위가 사라진다.
 //  - 목록은 항목마다 카드를 띄우지 않고 **그룹 카드 하나에 divide-y** 로 나눈다.
 //    항목이 늘수록 떠 있는 카드는 산만해지고 경계선이 겹쳐 보인다.
-//  - 섹션 헤더 오른쪽에 원형 + 버튼, 계정 조작은 맨 아래 별도 섹션.
+//  - 계정 조작(로그아웃)은 여기 없다 — 헤더의 ProfileMenu 로 올렸다.
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import { m } from "motion/react";
-import { LuLogOut, LuPencil, LuPlus } from "react-icons/lu";
+import { LuPencil, LuPlus } from "react-icons/lu";
 import { PetCard, useQueryPets } from "@/entities/pet";
 import { SpeciesIcon } from "@/entities/species";
 import { useQueryProfile } from "@/entities/user";
-import { useRequireSession, useSignOut } from "@/features/auth";
+import { useRequireSession } from "@/features/auth";
 import { APP_MESSAGE, APP_MESSAGE_CODE } from "@/shared/config/app-message";
 import { riseIn, riseInList } from "@/shared/lib/motion";
 import { cn } from "@/shared/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { ErrorState } from "@/shared/ui/error-state";
 import { Skeleton } from "@/shared/ui/skeleton";
@@ -33,7 +34,6 @@ export function MeView() {
   const { session, isLoading } = useRequireSession();
   const profile = useQueryProfile(session?.user.id);
   const pets = useQueryPets(session?.user.id);
-  const signOut = useSignOut();
   const [editingNickname, setEditingNickname] = useState(false);
 
   // 세션 미확정이거나 리다이렉트 직전 — 빈 화면 대신 스켈레톤.
@@ -65,22 +65,20 @@ export function MeView() {
           editingNickname ? "items-start" : "items-center",
         )}
       >
-        {/* 아바타 — 이미지가 없으면 닉네임 첫 글자로 이니셜 원 */}
-        {profile.data?.avatar_url ? (
-          // eslint-disable-next-line @next/next/no-img-element -- 원격 아바타는 unoptimized 정책(ADR-0002)
-          <img
-            src={profile.data.avatar_url}
-            alt="프로필 사진"
-            className="size-16 shrink-0 rounded-full object-cover"
-          />
-        ) : (
-          <div
+        {/* 이미지가 없으면 닉네임 첫 글자로 이니셜 원. 이미지 로드 실패까지
+            Avatar 가 알아서 fallback 으로 돌린다 — 손으로 만들었을 때는
+            깨진 이미지 아이콘이 그대로 남았다. */}
+        <Avatar className="size-16">
+          {profile.data?.avatar_url && (
+            <AvatarImage src={profile.data.avatar_url} alt="프로필 사진" />
+          )}
+          <AvatarFallback
             aria-hidden
-            className="flex size-16 shrink-0 items-center justify-center rounded-full bg-primary-tint font-heading text-2xl font-bold text-primary-tint-foreground select-none"
+            className="bg-primary-tint font-heading text-2xl font-bold text-primary-tint-foreground"
           >
             {profile.data?.nickname.slice(0, 1) ?? ""}
-          </div>
-        )}
+          </AvatarFallback>
+        </Avatar>
 
         {profile.isPending ? (
           <div className="flex flex-1 flex-col gap-2">
@@ -193,25 +191,6 @@ export function MeView() {
             </Button>
           </div>
         )}
-      </section>
-
-      {/* 계정 조작은 화면 맨 아래 별도 섹션으로. 자주 쓰지 않고, 잘못 누르면
-          되돌리는 데 로그인이 다시 필요하다. */}
-      <section className="mt-auto flex flex-col gap-3">
-        <h2 className={SECTION_TITLE}>계정</h2>
-        <div className={GROUP_CARD}>
-          <Button
-            variant="ghost"
-            className="h-auto w-full justify-start gap-3 rounded-none px-4 py-4"
-            onClick={() => signOut.mutate()}
-            loading={signOut.isPending}
-          >
-            {!signOut.isPending && (
-              <LuLogOut className="text-muted-foreground" />
-            )}
-            로그아웃
-          </Button>
-        </div>
       </section>
     </div>
   );

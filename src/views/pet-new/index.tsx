@@ -3,6 +3,7 @@
 
 import { useRequireSession } from "@/features/auth";
 import { CreatePetForm } from "@/features/manage-pet";
+import { PageHeading } from "@/shared/ui/page-heading";
 import { Skeleton } from "@/shared/ui/skeleton";
 
 export function PetNewView() {
@@ -21,10 +22,10 @@ export function PetNewView() {
 
   return (
     <div className="flex flex-1 flex-col">
-      {/* break-keep 이 없으면 한국어가 어절 중간에서 끊긴다("아이/를"). */}
-      <h1 className="px-4 pt-6 pb-5 font-heading text-2xl font-bold text-balance break-keep">
-        함께 사는 아이를 등록해주세요
-      </h1>
+      <PageHeading
+        title="반려동물 등록"
+        description="함께 사는 아이를 등록해주세요"
+      />
       <CreatePetForm ownerId={session.user.id} />
     </div>
   );

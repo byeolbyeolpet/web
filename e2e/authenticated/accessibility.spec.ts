@@ -4,7 +4,7 @@
 // 터치 영역은 판정되지 않는다.** 그런데 등록 폼과 마이는 로그인이 필요해
 // guest E2E 가 닿지 못했다. 세션이 생긴 지금 그 둘을 실제 브라우저에서 본다.
 
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { SKIP_WITHOUT_ACCOUNT } from "../auth-config";
 import { scanContrast, scanWcag } from "../a11y";
 
@@ -39,6 +39,43 @@ test("마이 화면에 WCAG A·AA 위반이 없다", async ({ page }) => {
   await page.getByRole("listitem").first().waitFor();
 
   expect(await scanWcag(page)).toEqual([]);
+});
+
+/*
+ * 수정 화면은 펫이 하나 있어야 열린다. 목록 첫 행을 눌러 들어간다 —
+ * 이 경로 자체가 "행이 눌린다"의 검증도 겸한다.
+ */
+async function openFirstPetEdit(page: Page) {
+  await page.goto("/me");
+  const firstPet = page.getByRole("listitem").first();
+  await firstPet.waitFor();
+  await firstPet.getByRole("link").click();
+  await expect(page.getByLabel("이름")).toBeVisible();
+}
+
+test("수정 화면에 WCAG A·AA 위반이 없다", async ({ page }) => {
+  await openFirstPetEdit(page);
+
+  expect(await scanWcag(page)).toEqual([]);
+});
+
+test("삭제 확인창에 WCAG A·AA 위반이 없다", async ({ page }) => {
+  // 확인창은 트리거를 눌러야 뜬다 — 빌드만 통과시키고 넘어가면 못 보는 자리다
+  // (design-convention 6). 대비·터치영역은 여기서만 판정된다.
+  await openFirstPetEdit(page);
+  await page.getByRole("button", { name: /삭제하기/ }).click();
+  await expect(page.getByRole("alertdialog")).toBeVisible();
+
+  expect(await scanWcag(page)).toEqual([]);
+});
+
+test("삭제 확인창은 다크 모드에서도 대비를 지킨다", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await openFirstPetEdit(page);
+  await page.getByRole("button", { name: /삭제하기/ }).click();
+  await expect(page.getByRole("alertdialog")).toBeVisible();
+
+  expect(await scanContrast(page)).toEqual([]);
 });
 
 test("마이 화면은 다크 모드에서도 대비 위반이 없다", async ({ page }) => {

@@ -20,6 +20,7 @@ import { EditPetForm } from "@/features/manage-pet";
 import { APP_MESSAGE_CODE } from "@/shared/config/app-message";
 import { Button } from "@/shared/ui/button";
 import { ErrorState } from "@/shared/ui/error-state";
+import { PageHeading } from "@/shared/ui/page-heading";
 import { Skeleton } from "@/shared/ui/skeleton";
 
 const SHELL = "flex flex-1 flex-col";
@@ -78,9 +79,19 @@ function PetEditContent() {
 
   return (
     <div className={SHELL}>
-      <h1 className="px-4 pt-6 pb-5 font-heading text-2xl font-bold text-balance break-keep">
-        {pet.data.name} 정보를 고쳐주세요
-      </h1>
+      <PageHeading
+        title="반려동물 정보 수정"
+        description={
+          <>
+            {/* 브랜드 색을 글자로 쓸 때는 emphasis 다. text-primary 는 흰 글씨를
+                받는 "면" 기준 값이라 다크에서 카드 위 글자로는 AA 미달이다. */}
+            <span className="font-medium text-primary-emphasis">
+              {pet.data.name}
+            </span>
+            의 정보를 수정할 수 있어요
+          </>
+        }
+      />
       <EditPetForm pet={pet.data} />
     </div>
   );

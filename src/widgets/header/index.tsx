@@ -1,5 +1,10 @@
-// (tabs) 셸 상단 헤더 — 워드마크. 크롬은 무채색으로 비운다(색은 CTA·활성 탭에만).
+// (tabs) 셸 상단 헤더 — 워드마크 + 계정. 크롬은 무채색으로 비운다(색은 CTA·활성 탭에만).
+//
+// 페이지 제목은 넣지 않는다. 하단 탭이 이미 현재 위치를 말하고 있어 같은 말을
+// 두 번 하게 되고, 워드마크가 화면에서 사라진다. (full) 화면은 본문 상단의
+// PageHeading 이 그 역할을 한다.
 import { cn } from "@/shared/lib/utils";
+import { ProfileMenu } from "./profile-menu";
 
 // 헤더 높이. 하단 탭(min-h-14=56px)보다 낮춰 상·하 크롬의 위계를 준다.
 const HEADER_HEIGHT = "min-h-12";
@@ -20,6 +25,9 @@ export function Header({ className }: { className?: string }) {
       <span className="font-heading text-lg font-bold tracking-tight text-foreground">
         별별펫
       </span>
+      {/* 서버 컴포넌트인 헤더 안의 클라이언트 섬. 세션을 읽어야 하는 건 여기뿐이라
+          헤더 전체를 클라이언트로 내리지 않는다. */}
+      <ProfileMenu />
     </header>
   );
 }
