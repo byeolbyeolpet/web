@@ -76,8 +76,15 @@ export function ProfileMenu() {
               {initial}
             </AvatarFallback>
           </Avatar>
-          {/* 닉네임이 길면 pill 이 워드마크를 밀어낸다 — 6자쯤에서 자른다. */}
-          <span aria-hidden className="max-w-16 truncate text-sm font-medium">
+          {/* 닉네임이 길면 pill 이 워드마크를 밀어낸다 — 6자쯤에서 자른다.
+              -translate-y-px 는 광학 보정이다: Noto Sans KR 은 메트릭이 위가
+              무거워(20px 박스에 ascent 16 / descent 4) 글자 잉크가 박스 중심보다
+              1px 아래에 그려진다(Range 실측: 잉크 중심 24.5 vs 박스 23.5).
+              flex 는 박스를 맞출 뿐 잉크는 못 맞춘다. */}
+          <span
+            aria-hidden
+            className="max-w-16 -translate-y-px truncate text-sm font-medium"
+          >
             {nickname}
           </span>
         </span>
