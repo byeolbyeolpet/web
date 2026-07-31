@@ -43,6 +43,7 @@ function AvatarImage({
 
 function AvatarFallback({
   className,
+  children,
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
   return (
@@ -53,7 +54,13 @@ function AvatarFallback({
         className,
       )}
       {...props}
-    />
+    >
+      {/* 광학 보정. 원(fallback 배경)이 아니라 글자만 내린다 — 우리 폰트 스택
+          (Nunito·Noto Sans KR)은 메트릭이 위가 무거워, flex 로 박스를 정확히
+          가운데 둬도 글자 잉크는 0.5~1px 위에 그려진다(캔버스 실측: E/지/별 -0.5,
+          코 -1.0). 디센더 없는 이니셜 특성이라 크기와 무관하게 나타난다. */}
+      <span className="translate-y-[0.5px]">{children}</span>
+    </AvatarPrimitive.Fallback>
   );
 }
 
