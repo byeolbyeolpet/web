@@ -1,4 +1,5 @@
 "use client";
+// shadcn DropdownMenu — 트리거 클릭으로 여는 메뉴. destructive 아이템 글자는 emphasis 로 손댔다(6-1 표).
 
 import * as React from "react";
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";

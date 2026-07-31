@@ -18,6 +18,7 @@ import { Button } from "@/shared/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -97,46 +98,53 @@ export function ProfileMenu() {
         sideOffset={8}
         className="w-64 rounded-xl p-2"
       >
-        <DropdownMenuItem
-          asChild
-          className="rounded-lg border border-border bg-muted/40 p-3"
-        >
-          <Link href="/me" prefetch={false} className="flex items-center gap-3">
-            <Avatar size="lg">
-              {avatarUrl && <AvatarImage src={avatarUrl} alt="" />}
-              <AvatarFallback
+        {/* 아이템은 Group 안에 둔다(design-convention 6). */}
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            asChild
+            className="rounded-lg border border-border bg-muted/40 p-3"
+          >
+            <Link
+              href="/me"
+              prefetch={false}
+              className="flex items-center gap-3"
+            >
+              <Avatar size="lg">
+                {avatarUrl && <AvatarImage src={avatarUrl} alt="" />}
+                <AvatarFallback
+                  aria-hidden
+                  className="bg-primary-tint font-heading font-bold text-primary-tint-foreground"
+                >
+                  {initial}
+                </AvatarFallback>
+              </Avatar>
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                {/* 브랜드색 글자는 emphasis 다(text-primary 금지 — CLAUDE.md). */}
+                <span className="text-xs font-bold text-primary-emphasis">
+                  마이페이지
+                </span>
+                <span className="truncate font-heading text-sm font-bold">
+                  {nickname || "내 계정"}
+                </span>
+              </span>
+              <LuChevronRight
                 aria-hidden
-                className="bg-primary-tint font-heading font-bold text-primary-tint-foreground"
-              >
-                {initial}
-              </AvatarFallback>
-            </Avatar>
-            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-              {/* 브랜드색 글자는 emphasis 다(text-primary 금지 — CLAUDE.md). */}
-              <span className="text-xs font-bold text-primary-emphasis">
-                마이페이지
-              </span>
-              <span className="truncate font-heading text-sm font-bold">
-                {nickname || "내 계정"}
-              </span>
-            </span>
-            <LuChevronRight
-              aria-hidden
-              className="size-4 shrink-0 text-muted-foreground"
-            />
-          </Link>
-        </DropdownMenuItem>
+                className="size-4 shrink-0 text-muted-foreground"
+              />
+            </Link>
+          </DropdownMenuItem>
 
-        <DropdownMenuSeparator className="my-2" />
+          <DropdownMenuSeparator className="my-2" />
 
-        <DropdownMenuItem
-          disabled={signOut.isPending}
-          onSelect={() => signOut.mutate()}
-          className="min-h-11 gap-3 rounded-lg px-3 text-muted-foreground"
-        >
-          <LuLogOut aria-hidden />
-          로그아웃
-        </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={signOut.isPending}
+            onSelect={() => signOut.mutate()}
+            className="min-h-11 gap-3 rounded-lg px-3 text-muted-foreground"
+          >
+            <LuLogOut aria-hidden />
+            로그아웃
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );

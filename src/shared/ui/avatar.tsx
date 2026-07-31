@@ -1,4 +1,5 @@
 "use client";
+// shadcn Avatar — 프로필 이미지 + 로드 실패 시 이니셜 fallback. fallback 에 광학 보정을 손댔다(6-1 표).
 
 import * as React from "react";
 import { Avatar as AvatarPrimitive } from "radix-ui";

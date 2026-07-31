@@ -1,4 +1,5 @@
 "use client";
+// shadcn AlertDialog — 바깥 클릭·ESC 로 닫히지 않는 확인 창. 파괴적 조작 확인은 ConfirmDialog 를 쓴다.
 
 import * as React from "react";
 import { AlertDialog as AlertDialogPrimitive } from "radix-ui";

@@ -32,11 +32,32 @@ test("등록 폼은 오류가 표시된 상태에서도 위반이 없다", async
   expect(await scanWcag(page)).toEqual([]);
 });
 
-test("마이 화면에 WCAG A·AA 위반이 없다", async ({ page }) => {
+/*
+ * 마이 화면 검사는 "펫이 하나는 있는" 상태를 스스로 만든다. 계정에 펫이
+ * 있다는 걸 전제하면 이 파일의 통과 여부가 "다른 스펙이 먼저 펫을 만들어
+ * 줬는가"라는 병렬 스케줄 우연에 달리고, 시드 직후 단독 실행은 확정 실패한다.
+ *
+ * 준비 신호는 목록 항목 또는 빈 상태다 — 제목은 스켈레톤일 때 이미 보여서
+ * 기준이 못 된다(스켈레톤을 검사하고 통과해 버린다).
+ */
+async function gotoMeWithPet(page: Page) {
   await page.goto("/me");
-  // 제목은 펫 목록이 스켈레톤일 때 이미 보인다. 실제 검사 대상인 목록 항목이
-  // 붙는 것을 기준으로 삼아야 스켈레톤을 검사하고 통과하는 일이 없다.
-  await page.getByRole("listitem").first().waitFor();
+  const firstPet = page.getByRole("listitem").first();
+  const emptyState = page.getByText("아직 등록한 아이가 없어요");
+  await firstPet.or(emptyState).first().waitFor();
+
+  if (await firstPet.count()) return;
+
+  await page.goto("/pet/new");
+  await page.getByRole("radio", { name: speciesReady }).click();
+  await page.getByLabel("이름").fill(`a11y-${Date.now().toString(36)}`);
+  await page.getByRole("button", { name: "등록하기" }).click();
+  await expect(page).toHaveURL(/\/me\/?$/);
+  await firstPet.waitFor();
+}
+
+test("마이 화면에 WCAG A·AA 위반이 없다", async ({ page }) => {
+  await gotoMeWithPet(page);
 
   expect(await scanWcag(page)).toEqual([]);
 });
@@ -46,10 +67,8 @@ test("마이 화면에 WCAG A·AA 위반이 없다", async ({ page }) => {
  * 이 경로 자체가 "행이 눌린다"의 검증도 겸한다.
  */
 async function openFirstPetEdit(page: Page) {
-  await page.goto("/me");
-  const firstPet = page.getByRole("listitem").first();
-  await firstPet.waitFor();
-  await firstPet.getByRole("link").click();
+  await gotoMeWithPet(page);
+  await page.getByRole("listitem").first().getByRole("link").click();
   await expect(page.getByLabel("이름")).toBeVisible();
 }
 
@@ -80,10 +99,7 @@ test("삭제 확인창은 다크 모드에서도 대비를 지킨다", async ({ 
 
 test("마이 화면은 다크 모드에서도 대비 위반이 없다", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });
-  await page.goto("/me");
-  // 제목은 펫 목록이 스켈레톤일 때 이미 보인다. 실제 검사 대상인 목록 항목이
-  // 붙는 것을 기준으로 삼아야 스켈레톤을 검사하고 통과하는 일이 없다.
-  await page.getByRole("listitem").first().waitFor();
+  await gotoMeWithPet(page);
 
   expect(await scanContrast(page)).toEqual([]);
 });

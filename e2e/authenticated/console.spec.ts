@@ -31,7 +31,12 @@ for (const { path, name } of SCREENS) {
     page.on("pageerror", (error) => errors.push(`pageerror: ${error.message}`));
 
     await page.goto(path);
-    await page.getByRole("navigation").or(page.getByRole("main")).first();
+    // Locator 는 thenable 이 아니라 await 만으로는 아무 대기도 안 된다 — waitFor 가 필요하다.
+    await page
+      .getByRole("navigation")
+      .or(page.getByRole("main"))
+      .first()
+      .waitFor();
     // 초기 쿼리들이 끝날 시간을 준다 — 에러는 대개 응답이 온 뒤에 난다.
     await page.waitForLoadState("networkidle");
 
