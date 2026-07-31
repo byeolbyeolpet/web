@@ -9,3 +9,16 @@ globalThis.ResizeObserver ??= class {
   unobserve() {}
   disconnect() {}
 };
+
+// jsdom 은 이미지를 실제로 내려받지 않아 load 이벤트가 영원히 안 온다.
+// Radix Avatar 는 로드가 확인된 뒤에만 <img> 를 그리므로(useImageLoadingStatus)
+// AvatarImage 가 테스트에서 아예 렌더되지 않는다. Radix 의 판정식이
+// `complete && naturalWidth > 0` 이라(dist 소스로 확인) 그 둘만 채워 준다.
+class AlwaysLoadedImage extends window.Image {
+  constructor() {
+    super();
+    Object.defineProperty(this, "complete", { value: true });
+    Object.defineProperty(this, "naturalWidth", { value: 1 });
+  }
+}
+window.Image = AlwaysLoadedImage;

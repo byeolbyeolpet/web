@@ -78,11 +78,17 @@ node -e "const s=require('sharp'),f=require('fs');f.mkdirSync('docs/brand',{recu
 
 | 파일 | 손댄 것 |
 |---|---|
-| `button.tsx` | 사이즈 스케일을 sm 44 / default 48 / lg 56 로 올리고 `xs`·`icon-xs` 삭제. **`loading` prop 추가** — 스피너 + `disabled` + `aria-busy` |
+| `button.tsx` | 사이즈 스케일을 sm 44 / default 48 / lg 56 로 올리고 `xs`·`icon-xs` 삭제. **`loading` prop 추가** — 스피너 + `disabled` + `aria-busy`. `link`·`destructive` 변형의 글자를 `*-emphasis` 로 |
 | `input.tsx` | 높이 32 → 48 |
 | `card.tsx` · `dialog.tsx` | 경계를 `ring-foreground/10` → `border-border` 로 통일 |
 | `dialog.tsx` | 오버레이 `black/10` → `black/40`, 문구 "Close" → "닫기", 헤더 `pr-11`(닫기 버튼 자리) |
-| `badge.tsx` | 종 태그용 `tint` 변형 추가 |
+| `badge.tsx` | 종 태그용 `tint` 변형 추가. `link`·`destructive` 변형의 글자를 `*-emphasis` 로 |
+| `field.tsx` | 설명 링크 hover 를 `text-primary-emphasis` 로 |
+| `dropdown-menu.tsx` | `destructive` 아이템의 글자를 `text-destructive-emphasis` 로 |
+
+**AlertDialog 를 직접 쓰지 않는다 — `ConfirmDialog`(shared/ui)를 쓴다.** 원본은 데스크톱 밀도(max-w-xs·32px 버튼·footer 회색 띠)라 모바일 확인창으로 어색하다. ConfirmDialog 가 폭·라운드·44px 버튼·tint 아이콘을 갖추고, 문구는 APP_MESSAGE 코드로만 받는다.
+
+**(full) 화면의 제목은 `PageHeading`(shared/ui)으로 쓴다.** Title 명사형 + Description 문장형(APP_MESSAGE 와 같은 규칙). 헤더에는 페이지명을 넣지 않기로 했으므로 위치를 말하는 건 이 블록뿐이다.
 
 **버튼·입력은 44px 미만 사이즈를 만들지 않는다.** 못 누르는 사이즈를 API에 남겨두면 결국 쓰인다.
 

@@ -28,10 +28,6 @@ vi.mock("@/features/auth/api/use-require-session", () => ({
   useRequireSession: () => sessionState,
 }));
 
-vi.mock("@/features/auth/api/use-sign-out", () => ({
-  useSignOut: () => ({ mutate: vi.fn(), isPending: false }),
-}));
-
 vi.mock("@/entities/user/api/use-query-profile", () => ({
   useQueryProfile: () => profileState,
 }));
