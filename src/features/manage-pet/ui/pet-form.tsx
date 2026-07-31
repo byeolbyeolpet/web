@@ -1,11 +1,16 @@
 "use client";
-// 펫 등록 폼 — 이름·종·성별 3필드. 필드 오류는 필드 아래에만 표시하고
-// 제출 실패(서버)만 toast 로 알린다(app-message-convention).
+// 펫 폼(표시 전용) — 이름·종·성별 3필드. 등록·수정이 함께 쓴다.
+//
+// **mutation 을 직접 부르지 않는다.** 등록과 수정은 필요한 인자가 서로 달라
+// (ownerId vs petId) 훅을 조건부로 부를 수 없다. 그래서 이 컴포넌트는 값과
+// 제출 콜백만 다루고, 어떤 mutation 을 걸지는 CreatePetForm·EditPetForm 이 정한다.
+//
+// 필드 오류는 필드 아래에만 표시하고 제출 실패(서버)만 toast 로 알린다
+// (app-message-convention).
 
-import { useId } from "react";
+import { useId, type ReactNode } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { m } from "motion/react";
-import { useRouter } from "next/navigation";
 import {
   Controller,
   useForm,
@@ -25,8 +30,13 @@ import {
 } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
 import { RadioCard, RadioCards } from "@/shared/ui/radio-cards";
-import { useCreatePet } from "../api/use-create-pet";
 import { petFormSchema, type PetFormValues } from "../model/schema";
+
+export const EMPTY_PET_FORM: PetFormValues = {
+  name: "",
+  speciesCode: "",
+  sex: "unknown",
+};
 
 /**
  * 오류 문구가 갑자기 나타나면 그 줄만큼 아래 내용이 튄다. 높이를 함께
@@ -48,10 +58,26 @@ function FieldErrorSlot({ id, error }: { id: string; error?: RhfFieldError }) {
   );
 }
 
-export function PetForm({ ownerId }: { ownerId: string }) {
-  const router = useRouter();
-  const createPet = useCreatePet(ownerId);
-
+export function PetForm({
+  defaultValues = EMPTY_PET_FORM,
+  submitLabel,
+  /**
+   * 제출 중이거나 **성공해서 이 화면을 떠나는 중**이면 잠근다.
+   * 호출부가 `isPending || isSuccess` 를 넘긴다 — mutation 이 끝나면 isPending 은
+   * 곧바로 false 인데 화면 전환은 그때부터 시작이라, 그 틈에 한 번 더 눌리면
+   * 요청이 두 번 나간다.
+   */
+  isSubmitting,
+  onSubmit,
+  /** 삭제처럼 폼 아래에 붙는 것. 고정 CTA 위, 스크롤 영역 끝에 놓인다. */
+  footer,
+}: {
+  defaultValues?: PetFormValues;
+  submitLabel: string;
+  isSubmitting: boolean;
+  onSubmit: (values: PetFormValues) => void;
+  footer?: ReactNode;
+}) {
   // 라벨·오류를 aria 로 잇는 id. 한 화면에 폼이 두 벌 떠도 겹치지 않게 useId 로 만든다.
   const uid = useId();
   const speciesLabelId = `${uid}-species-label`;
@@ -63,20 +89,8 @@ export function PetForm({ ownerId }: { ownerId: string }) {
 
   const form = useForm<PetFormValues>({
     resolver: zodResolver(petFormSchema),
-    defaultValues: { name: "", speciesCode: "", sex: "unknown" },
+    defaultValues,
   });
-
-  const onSubmit = (values: PetFormValues) =>
-    createPet.mutate(values, { onSuccess: () => router.replace("/me") });
-
-  /*
-   * isPending 만으로는 두 번 눌릴 틈이 남는다. insert 가 끝나면 isPending 은
-   * 곧바로 false 가 되는데 router.replace 는 그때부터 화면을 바꾸기 시작한다.
-   * 그 사이에 한 번 더 눌리면 **펫이 두 마리 생긴다** — 되돌리려면 삭제 기능이
-   * 필요한데 아직 없다. 성공을 "끝났다"가 아니라 "이 화면을 떠난다"로 읽는다.
-   * (로그인 버튼과 같은 판단 — views/login/index.tsx)
-   */
-  const isLeaving = createPet.isPending || createPet.isSuccess;
 
   return (
     /* 필드가 한꺼번에 나타나면 정보량이 많아 보인다. 위에서부터 차례로 올려
@@ -183,13 +197,22 @@ export function PetForm({ ownerId }: { ownerId: string }) {
         )}
       />
 
+      {/* 파괴적 조작은 스크롤 끝에 둔다. 저장 버튼 옆에 나란히 두면 눌러야 할
+          것과 눌러선 안 될 것이 같은 무게로 보인다. */}
+      {footer && <m.div variants={riseIn}>{footer}</m.div>}
+
       {/* 종 14칸 + 이름 + 성별이면 모바일에서 반드시 스크롤이 생긴다. mt-auto 로
           바닥에 붙이면 CTA 를 만나려고 끝까지 내려야 하므로 하단에 고정한다.
           safe-area 는 (full) layout 의 main 이 갖고 있고, sticky 는 부모
           padding box 를 넘지 못하므로 홈 인디케이터 위에서 알아서 멈춘다. */}
       <div className="sticky bottom-0 -mx-4 mt-auto border-t border-border bg-background/85 px-4 pt-3 pb-4 backdrop-blur-md">
-        <Button type="submit" size="lg" className="w-full" loading={isLeaving}>
-          등록하기
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full"
+          loading={isSubmitting}
+        >
+          {submitLabel}
         </Button>
       </div>
     </m.form>

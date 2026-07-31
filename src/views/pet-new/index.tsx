@@ -2,7 +2,7 @@
 "use client";
 
 import { useRequireSession } from "@/features/auth";
-import { PetForm } from "@/features/register-pet";
+import { CreatePetForm } from "@/features/manage-pet";
 import { Skeleton } from "@/shared/ui/skeleton";
 
 export function PetNewView() {
@@ -25,7 +25,7 @@ export function PetNewView() {
       <h1 className="px-4 pt-6 pb-5 font-heading text-2xl font-bold text-balance break-keep">
         함께 사는 아이를 등록해주세요
       </h1>
-      <PetForm ownerId={session.user.id} />
+      <CreatePetForm ownerId={session.user.id} />
     </div>
   );
 }

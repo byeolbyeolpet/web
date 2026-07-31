@@ -28,6 +28,10 @@ export function BottomNav() {
             key={tab.href}
             href={tab.href}
             aria-current={active ? "page" : undefined}
+            // Static Export 에서 App Router 의 세그먼트 prefetch 는 동작하지 않는다
+            // — 요청 파일명에 세그먼트가 덧붙어 404 다(docs/router.md). 탭바는
+            // 모든 화면에 떠 있어 화면마다 헛된 요청을 네 번씩 만들고 있었다.
+            prefetch={false}
             className={cn(
               "flex min-h-14 flex-1 flex-col items-center justify-center gap-1",
               // 색 단독 전달 금지(CLAUDE.md) — 라벨 굵기를 함께 바꿔 색맹도 구분되게 한다.

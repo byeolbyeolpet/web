@@ -21,6 +21,7 @@ import { APP_MESSAGE, APP_MESSAGE_CODE } from "@/shared/config/app-message";
 import { riseIn, riseInList } from "@/shared/lib/motion";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
+import { ErrorState } from "@/shared/ui/error-state";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { NicknameEditor } from "./nickname-editor";
 
@@ -102,8 +103,10 @@ export function MeView() {
               <span className="truncate font-heading text-lg font-bold">
                 {profile.data.nickname}
               </span>
-              {/* 이름만 있으면 프로필이 비어 보인다. 이 앱에서 나를 설명하는 숫자는 펫 수다. */}
-              {!pets.isPending && (
+              {/* 이름만 있으면 프로필이 비어 보인다. 이 앱에서 나를 설명하는 숫자는 펫 수다.
+                  isPending 이 아니라 data 로 가른다 — 조회가 실패했을 때 0마리라고
+                  적으면 "없다"는 거짓말이 된다(빈 배열은 truthy 라 0마리는 그대로 나온다). */}
+              {pets.data && (
                 <p className="text-sm text-muted-foreground">
                   반려동물 {petCount}마리
                 </p>
@@ -136,7 +139,7 @@ export function MeView() {
               aria-label="반려동물 등록"
               asChild
             >
-              <Link href="/pet/new">
+              <Link href="/pet/new" prefetch={false}>
                 <LuPlus />
               </Link>
             </Button>
@@ -145,6 +148,13 @@ export function MeView() {
 
         {pets.isPending ? (
           <Skeleton className="h-16 w-full rounded-lg" />
+        ) : pets.isError ? (
+          // 실패를 스켈레톤으로 두면 영원히 도는 화면이 된다. 무슨 일인지 말하고
+          // 다시 시도할 길을 준다 — 목록은 재시도가 의미 있는 조회다.
+          <ErrorState
+            code={APP_MESSAGE_CODE.pet.loadFailed}
+            onRetry={() => pets.refetch()}
+          />
         ) : petCount > 0 ? (
           // 등록 직후 돌아오면 새 카드가 목록에 얹히는 게 보여야 한다.
           <m.ul
@@ -157,6 +167,7 @@ export function MeView() {
               <m.li key={pet.id} variants={riseIn}>
                 <PetCard
                   pet={pet}
+                  href={`/pet/edit/?id=${pet.id}`}
                   speciesIcon={
                     <SpeciesIcon
                       code={pet.species.code}
@@ -175,7 +186,7 @@ export function MeView() {
               아직 등록한 아이가 없어요
             </p>
             <Button size="sm" asChild>
-              <Link href="/pet/new">
+              <Link href="/pet/new" prefetch={false}>
                 <LuPlus />
                 반려동물 등록하기
               </Link>

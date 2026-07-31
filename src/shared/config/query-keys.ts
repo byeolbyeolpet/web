@@ -28,5 +28,7 @@ export const QUERY_KEYS = {
     listAll: () => [...QUERY_KEYS.pet.all, "list"] as const,
     listByOwner: (ownerId?: string) =>
       [...QUERY_KEYS.pet.listAll(), ownerId].filter((v) => v !== undefined),
+    detail: (petId?: string) =>
+      [...QUERY_KEYS.pet.all, "detail", petId].filter((v) => v !== undefined),
   },
 } as const;
