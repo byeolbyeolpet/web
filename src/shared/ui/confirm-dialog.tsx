@@ -42,11 +42,17 @@ const TONE = {
     circle: "bg-destructive/10 text-destructive-emphasis",
     action:
       "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+    // 창 자체에 tone 이 은은하게 배어 나오게 한다 — 면을 칠하는 대신
+    // 옅은 테두리 + 넓게 퍼지는 글로우. PixelPlay 로그인 카드의 언어다
+    // (border 2px 20% tint + 60px 소프트 섀도, pixel-play.studio 실측).
+    frame:
+      "border-2 border-destructive/15 shadow-[0_0_60px_0] shadow-destructive/15",
   },
   warning: {
     Icon: LuTriangleAlert,
     circle: "bg-warning/10 text-warning",
     action: "bg-warning text-warning-foreground hover:bg-warning/90",
+    frame: "border-2 border-warning/15 shadow-[0_0_60px_0] shadow-warning/15",
   },
 } as const;
 
@@ -69,7 +75,7 @@ export function ConfirmDialog({
   // 타입을 붙여서 받는다 — APP_MESSAGE 는 as const 라 description 이 없는 항목이
   // 섞인 유니온이 되고, 그 상태로는 .description 을 읽지 못한다.
   const message: AppMessage = APP_MESSAGE[code];
-  const { Icon, circle, action } = TONE[tone];
+  const { Icon, circle, action, frame } = TONE[tone];
 
   return (
     <AlertDialog>
@@ -80,6 +86,7 @@ export function ConfirmDialog({
           // 원본의 grid gap 을 끄고(gap-0) 간격은 아래에서 직접 준다.
           // 폭은 좌우 24px 여백, 위는 여유 있게 — 아이콘이 창의 얼굴이다.
           "w-[calc(100%-3rem)] max-w-sm gap-0 rounded-3xl p-6 pt-8 text-center",
+          frame,
         )}
       >
         {/* 색만으로 전달하지 않는다 — 아이콘 모양이 종류를 먼저 말한다. */}
@@ -110,10 +117,11 @@ export function ConfirmDialog({
             {cancelLabel}
           </AlertDialogCancel>
           {/* Button 의 destructive 변형은 tint(부차 행동의 무게)라 여기선 단색으로
-              덮는다. cn 병합이라 bg·text·hover 만 갈린다. */}
+              덮는다. cn 병합이라 bg·text·hover 만 갈린다. 확인은 이 창의 주인공
+              행동이라 글자도 bold 로 올린다(PixelPlay CTA 와 같은 무게). */}
           <AlertDialogAction
             size="lg"
-            className={cn("rounded-xl", action)}
+            className={cn("rounded-xl font-bold", action)}
             onClick={onConfirm}
           >
             {confirmLabel}

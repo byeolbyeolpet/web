@@ -48,6 +48,9 @@ export function ProfileMenu() {
   const nickname = profile.data?.nickname ?? "";
   const initial = nickname.slice(0, 1);
   const avatarUrl = profile.data?.avatar_url;
+  // 이메일은 profiles 가 아니라 세션에 있다 — Google OAuth 계정이라 항상 오지만
+  // 타입상 optional 이므로 없으면 줄을 뺀다.
+  const email = session.user.email;
 
   return (
     <DropdownMenu>
@@ -70,15 +73,16 @@ export function ProfileMenu() {
         </Avatar>
       </DropdownMenuTrigger>
 
+      {/* 구조는 PixelPlay 의 프로필 팝오버를 따랐다(pixel-play.studio 실측):
+          p-0 콘텐츠에 [정체성 행(전체가 링크)] + [pill 액션 2개] 두 층.
+          부제는 지시문이 아니라 정보다 — "마이페이지에서 내 정보 관리" 같은
+          설명서 문장은 이메일(내가 누구로 들어와 있는지)로 바꿨다. */}
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="w-64 rounded-xl p-2"
+        className="w-72 rounded-2xl p-0"
       >
-        {/* 프로필 카드 — 이 메뉴에서 가장 큰 탭 영역이자 첫 초점. 라벨이 아니라
-            목적지다(마이페이지). 큰 아바타 + 이름 + 행선지, 우측 chevron 은
-            "눌리는 행"이라는 관례 신호다. */}
-        <DropdownMenuItem asChild className="rounded-lg p-2">
+        <DropdownMenuItem asChild className="rounded-none p-4">
           <Link href="/me" prefetch={false} className="flex items-center gap-3">
             <Avatar size="lg">
               {avatarUrl && <AvatarImage src={avatarUrl} alt="" />}
@@ -89,13 +93,16 @@ export function ProfileMenu() {
                 {initial}
               </AvatarFallback>
             </Avatar>
-            <span className="flex min-w-0 flex-1 flex-col">
-              <span className="truncate font-heading text-sm font-bold">
+            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+              {/* 이름이 이 카드의 주인공이다 — 본문보다 한 급 크고 무겁게. */}
+              <span className="truncate font-heading text-base font-bold">
                 {nickname || "내 계정"}
               </span>
-              <span className="text-xs text-muted-foreground">
-                마이페이지에서 내 정보 관리
-              </span>
+              {email && (
+                <span className="truncate text-xs text-muted-foreground">
+                  {email}
+                </span>
+              )}
             </span>
             <LuChevronRight
               aria-hidden
@@ -104,16 +111,30 @@ export function ProfileMenu() {
           </Link>
         </DropdownMenuItem>
 
-        <DropdownMenuSeparator className="my-2" />
+        <DropdownMenuSeparator className="my-0" />
 
-        <DropdownMenuItem
-          disabled={signOut.isPending}
-          onSelect={() => signOut.mutate()}
-          className="min-h-11 rounded-lg px-2 text-muted-foreground"
-        >
-          <LuLogOut aria-hidden />
-          로그아웃
-        </DropdownMenuItem>
+        {/* pill 액션 행 — 주 행동(마이페이지)만 브랜드 면, 로그아웃은 중립.
+            높이는 44px(h-11) 아래로 내리지 않는다(CLAUDE.md — PixelPlay 는
+            데스크톱이라 32px 를 쓰지만 우리는 터치다). */}
+        <div className="grid grid-cols-2 gap-2 p-3">
+          <DropdownMenuItem asChild className="p-0">
+            <Link
+              href="/me"
+              prefetch={false}
+              className="flex min-h-11 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground focus:bg-primary/90 focus:text-primary-foreground"
+            >
+              마이페이지
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={signOut.isPending}
+            onSelect={() => signOut.mutate()}
+            className="flex min-h-11 items-center justify-center rounded-full bg-secondary p-0 font-medium text-secondary-foreground"
+          >
+            <LuLogOut aria-hidden />
+            로그아웃
+          </DropdownMenuItem>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
