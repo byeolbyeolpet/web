@@ -32,7 +32,7 @@ import { Input } from "@/shared/ui/input";
 import { RadioCard, RadioCards } from "@/shared/ui/radio-cards";
 import { petFormSchema, type PetFormValues } from "../model/schema";
 
-export const EMPTY_PET_FORM: PetFormValues = {
+const EMPTY_PET_FORM: PetFormValues = {
   name: "",
   speciesCode: "",
   sex: "unknown",
