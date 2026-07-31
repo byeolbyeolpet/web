@@ -1,19 +1,36 @@
+// 종 선택 그리드 검증 — 순서·선택·접기(collapsible)·실패 상태.
+
 import { useState } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SpeciesPicker } from "./species-picker";
 
-vi.mock("../api/use-query-species", () => ({
-  useQuerySpecies: () => ({
-    isPending: false,
-    data: [
-      { code: "dog", name_ko: "강아지", sort_order: 10 },
-      { code: "cat", name_ko: "고양이", sort_order: 20 },
-      { code: "ferret", name_ko: "페럿", sort_order: 70 },
-    ],
-  }),
+const queryState = vi.hoisted(() => ({
+  isPending: false,
+  isError: false,
+  refetch: vi.fn(),
+  data: [
+    { code: "dog", name_ko: "강아지", sort_order: 10 },
+    { code: "cat", name_ko: "고양이", sort_order: 20 },
+    { code: "ferret", name_ko: "페럿", sort_order: 70 },
+  ] as unknown[] | undefined,
 }));
+
+vi.mock("../api/use-query-species", () => ({
+  useQuerySpecies: () => queryState,
+}));
+
+beforeEach(() => {
+  queryState.isPending = false;
+  queryState.isError = false;
+  queryState.data = [
+    { code: "dog", name_ko: "강아지", sort_order: 10 },
+    { code: "cat", name_ko: "고양이", sort_order: 20 },
+    { code: "ferret", name_ko: "페럿", sort_order: 70 },
+  ];
+  queryState.refetch = vi.fn();
+});
 
 describe("SpeciesPicker", () => {
   it("받아온 순서 그대로 종을 렌더한다", () => {
@@ -34,6 +51,19 @@ describe("SpeciesPicker", () => {
     );
 
     expect(screen.getByRole("radio", { name: "페럿" })).toBeChecked();
+  });
+
+  it("조회가 실패하면 빈 화면 대신 실패 상태와 재시도를 보여준다", async () => {
+    // isError 일 때 isPending 은 false 라, 실패 분기가 없으면 스켈레톤도
+    // 그리드도 아닌 빈 화면이 된다 — 종을 못 고르면 등록 자체가 막힌다.
+    queryState.isError = true;
+    queryState.data = undefined;
+    render(<SpeciesPicker aria-label="종" onValueChange={vi.fn()} />);
+
+    expect(screen.getByText("종류 목록 불러오기 실패")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "다시 시도" }));
+    expect(queryState.refetch).toHaveBeenCalledTimes(1);
   });
 });
 

@@ -8,7 +8,7 @@ import { LuLoaderCircle } from "react-icons/lu";
 import { cn } from "@/shared/lib/utils";
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -67,6 +67,7 @@ function Button({
     loading?: boolean;
   }) {
   const Comp = asChild ? Slot.Root : "button";
+  const blocked = Boolean(disabled || loading);
 
   return (
     <Comp
@@ -74,10 +75,25 @@ function Button({
       data-variant={variant}
       data-size={size}
       // 처리 중 두 번 눌리면 요청이 두 번 나간다.
-      disabled={disabled || loading}
+      disabled={blocked}
       aria-busy={loading || undefined}
+      // asChild 로 렌더되는 앵커(Link)는 disabled 를 모른다 — 로딩 중에도
+      // 그대로 이동해 버린다. aria-disabled 로 알리고, 캡처 단계에서 클릭을
+      // 막는다. 캡처인 이유: Slot 의 핸들러 병합 순서에 기대지 않고 자식
+      // onClick(Next Link 의 라우팅 포함)보다 반드시 먼저 돌기 위해서다.
+      // base 클래스의 aria-disabled:pointer-events-none 이 시각·포인터를,
+      // 이 가드가 키보드 Enter 의 click 을 막는다.
+      aria-disabled={asChild && blocked ? true : undefined}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
+      onClickCapture={
+        asChild && blocked
+          ? (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+          : props.onClickCapture
+      }
     >
       {loading && <LuLoaderCircle aria-hidden className="animate-spin" />}
       {/* asChild 로 Link 를 감쌀 때 Slot 은 자식이 정확히 하나여야 한다.

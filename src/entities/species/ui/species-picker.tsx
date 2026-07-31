@@ -5,7 +5,9 @@
 
 import * as React from "react";
 import { LuChevronDown } from "react-icons/lu";
+import { APP_MESSAGE_CODE } from "@/shared/config/app-message";
 import { cn } from "@/shared/lib/utils";
+import { ErrorState } from "@/shared/ui/error-state";
 import { RadioCard, RadioCards } from "@/shared/ui/radio-cards";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { useQuerySpecies } from "../api/use-query-species";
@@ -58,9 +60,21 @@ export function SpeciesPicker({
    */
   collapsible?: boolean;
 }) {
-  const { data, isPending } = useQuerySpecies();
+  const { data, isPending, isError, refetch } = useQuerySpecies();
   // 값이 이미 있는 채로 열리면(편집 화면) 접힌 상태로 시작한다.
   const [expanded, setExpanded] = React.useState(!value);
+
+  // 실패를 로딩보다 먼저 가른다 — isError 일 때 isPending 은 false 라
+  // 아래 스켈레톤도 그리드도 아닌 "빈 화면"이 됐었다(CodeRabbit 지적).
+  // 종을 못 고르면 등록 자체가 막히므로 재시도 길을 준다.
+  if (isError) {
+    return (
+      <ErrorState
+        code={APP_MESSAGE_CODE.species.loadFailed}
+        onRetry={() => refetch()}
+      />
+    );
+  }
 
   if (isPending) {
     return (
