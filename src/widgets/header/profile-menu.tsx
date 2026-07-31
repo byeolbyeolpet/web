@@ -54,23 +54,33 @@ export function ProfileMenu() {
 
   return (
     <DropdownMenu>
-      {/* 아바타 자체는 32px 이라 탭 영역이 모자란다. 버튼이 44px 를 만들고
-          아바타는 그 안에 놓인다(CLAUDE.md 최소 탭 영역). */}
+      {/* 트리거는 맨 아바타가 아니라 테두리 pill(아바타+이름)이다 — PixelPlay
+          헤더 실측(h-36 rounded-full border+bg, 아바타 32px + 이름). 떠 있는
+          원 하나보다 "눌리는 컨트롤"로 읽힌다. 시각 pill 은 36px 지만 바깥
+          버튼이 44px 탭 영역을 만든다(CLAUDE.md — 그쪽은 데스크톱이라 36 이 끝). */}
       <DropdownMenuTrigger
-        aria-label="계정 메뉴"
-        className="-mr-2 ml-auto flex min-h-11 min-w-11 items-center justify-center rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        // 보이는 텍스트(닉네임)가 접근성 이름에도 들어가야 한다(WCAG 2.5.3) —
+        // 음성 제어 사용자가 화면에 보이는 "지호"로 부를 수 있어야 한다.
+        aria-label={`${nickname} 계정 메뉴`.trim()}
+        className="group/trigger ml-auto flex min-h-11 items-center outline-none select-none"
       >
-        <Avatar>
-          {avatarUrl && <AvatarImage src={avatarUrl} alt="" />}
-          {/* 아바타는 장식이다 — 이름은 트리거의 aria-label 이 갖는다.
-              이니셜까지 읽히면 "ㅈ 계정 메뉴" 처럼 겹쳐 읽힌다. */}
-          <AvatarFallback
-            aria-hidden
-            className="bg-primary-tint font-heading font-bold text-primary-tint-foreground"
-          >
-            {initial}
-          </AvatarFallback>
-        </Avatar>
+        <span className="flex h-9 items-center gap-2 rounded-full border border-border bg-card py-1 pr-2.5 pl-1 transition-colors group-focus-visible/trigger:ring-3 group-focus-visible/trigger:ring-ring/50 group-data-[state=open]/trigger:bg-muted">
+          <Avatar className="size-7">
+            {avatarUrl && <AvatarImage src={avatarUrl} alt="" />}
+            {/* 아바타는 장식이다 — 이름은 트리거의 aria-label 이 갖는다.
+                이니셜까지 읽히면 "ㅈ 계정 메뉴" 처럼 겹쳐 읽힌다. */}
+            <AvatarFallback
+              aria-hidden
+              className="bg-primary-tint font-heading text-xs font-bold text-primary-tint-foreground"
+            >
+              {initial}
+            </AvatarFallback>
+          </Avatar>
+          {/* 닉네임이 길면 pill 이 워드마크를 밀어낸다 — 6자쯤에서 자른다. */}
+          <span aria-hidden className="max-w-16 truncate text-sm font-medium">
+            {nickname}
+          </span>
+        </span>
       </DropdownMenuTrigger>
 
       {/* 구조는 PixelPlay 의 프로필 팝오버를 따랐다(pixel-play.studio 실측):
