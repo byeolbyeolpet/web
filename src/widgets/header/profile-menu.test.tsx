@@ -65,14 +65,13 @@ describe("ProfileMenu", () => {
     await userEvent.click(screen.getByRole("button", { name: /계정 메뉴/ }));
 
     expect(await screen.findByRole("menu")).toBeInTheDocument();
-    // 정체성 행도, 마이페이지 pill 도 라벨이 아니라 목적지다.
+    // 정체성 카드는 라벨이 아니라 목적지다 — 마이페이지로 가는 링크.
+    // 접근성 이름은 eyebrow+닉네임 조합인데 공백 삽입 여부가 구현 세부라
+    // 닉네임만으로 찾는다.
     expect(screen.getByRole("menuitem", { name: /지호/ })).toHaveAttribute(
       "href",
       "/me",
     );
-    expect(
-      screen.getByRole("menuitem", { name: "마이페이지" }),
-    ).toHaveAttribute("href", "/me");
     expect(
       screen.getByRole("menuitem", { name: /로그아웃/ }),
     ).toBeInTheDocument();
