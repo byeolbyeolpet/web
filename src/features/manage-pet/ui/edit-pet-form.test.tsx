@@ -106,6 +106,15 @@ describe("EditPetForm 수정", () => {
 
     expect(screen.getByRole("button", { name: "저장하기" })).toBeDisabled();
   });
+
+  it("삭제가 진행되는 동안에는 저장 버튼도 잠긴다", () => {
+    // 지워지는 행에 update 가 나가면 안 된다 — 두 mutation 이 서로를 잠근다.
+    deleteState.isPending = true;
+    render(<EditPetForm pet={PET} />);
+
+    expect(screen.getByRole("button", { name: "저장하기" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /삭제하기/ })).toBeDisabled();
+  });
 });
 
 describe("EditPetForm 삭제", () => {

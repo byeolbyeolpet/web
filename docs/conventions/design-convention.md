@@ -85,7 +85,7 @@ node -e "const s=require('sharp'),f=require('fs');f.mkdirSync('docs/brand',{recu
 | `dialog.tsx` | 오버레이 `black/10` → `black/40`, 문구 "Close" → "닫기", 헤더 `pr-11`(닫기 버튼 자리) |
 | `badge.tsx` | 종 태그용 `tint` 변형 추가. `link`·`destructive` 변형의 글자를 `*-emphasis` 로 |
 | `field.tsx` | 설명 링크 hover 를 `text-primary-emphasis` 로 |
-| `dropdown-menu.tsx` | `destructive` 아이템의 글자를 `text-destructive-emphasis` 로 |
+| `dropdown-menu.tsx` | `destructive` 아이템의 글자를 `text-destructive-emphasis` 로. `Item`·`CheckboxItem`·`RadioItem` 에 기본 `min-h-11`(터치 44px), `min-w-[96px]` → `min-w-24` |
 | `avatar.tsx` | Fallback 이니셜에 광학 보정 — children 을 `translate-y-[0.5px]` span 으로 감쌈. 우리 폰트 스택(Nunito·Noto Sans KR)은 메트릭이 위가 무거워 flex 정중앙에서도 글자 잉크가 0.5~1px 위에 그려진다(캔버스 실측) |
 
 **AlertDialog 를 직접 쓰지 않는다 — `ConfirmDialog`(shared/ui)를 쓴다.** 원본은 데스크톱 밀도(max-w-xs·32px 버튼·footer 회색 띠)라 모바일 확인창으로 어색하다. ConfirmDialog 가 폭·라운드·44px 버튼·tint 아이콘을 갖추고, 문구는 APP_MESSAGE 코드로만 받는다.
@@ -100,7 +100,7 @@ node -e "const s=require('sharp'),f=require('fs');f.mkdirSync('docs/brand',{recu
 
 **항상 `--dry-run` 을 먼저 돌린다.** 어떤 파일이 덮이는지 실행 전에 알려준다. 이게 유일한 사전 방어다 — 4.16.0 에 파일 단위 제외 플래그(`--no-deps` 류)는 **없고**, `--overwrite` 를 빼도 `--yes` 가 확인 프롬프트를 건너뛰므로 그대로 덮인다.
 
-```
+```text
 $ npx shadcn@latest add alert-dialog --yes --dry-run
 ├ Files (2) ~1 overwrite, =1 skip
 │ ~ src\shared\ui\button.tsx        overwrite   ← 6-1 표의 파일이면 여기서 멈춘다

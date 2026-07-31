@@ -32,7 +32,11 @@ export function ProfileMenu() {
 
   // 세션 미확정 구간에 아무것도 안 그리면 로그인 상태에서 아바타가 뒤늦게
   // 끼어들며 헤더가 흔들린다. 같은 크기의 자리를 먼저 잡아 둔다.
-  if (isLoading) {
+  // 프로필 조회 중에도 마찬가지다 — 빈 이름의 pill 이 잠깐 떴다가 채워지면
+  // 헤더가 두 번 흔들린다(CodeRabbit 지적). 조회 실패 시에는 스켈레톤이 아니라
+  // "내 계정" fallback 으로 내려간다 — 프로필이 없어도 로그아웃은 돼야 하고,
+  // 헤더에 재시도 UI 를 띄우는 것은 과하다.
+  if (isLoading || (session && profile.isPending)) {
     return <Skeleton className="ml-auto size-8 rounded-full" />;
   }
 
@@ -136,10 +140,11 @@ export function ProfileMenu() {
 
           <DropdownMenuSeparator className="my-2" />
 
+          {/* min-h-11 은 공용 DropdownMenuItem 기본값이 됐다(6-1 표). */}
           <DropdownMenuItem
             disabled={signOut.isPending}
             onSelect={() => signOut.mutate()}
-            className="min-h-11 gap-3 rounded-lg px-3 text-muted-foreground"
+            className="gap-3 rounded-lg px-3 text-muted-foreground"
           >
             <LuLogOut aria-hidden />
             로그아웃

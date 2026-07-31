@@ -70,7 +70,7 @@ place/page.tsx → useSearchParams()로 id 취득 → useQuery(['place', id], fe
 
 **Static Export + App Router에서 세그먼트 prefetch가 동작하지 않는다.** 클라이언트가 요청하는 파일명에 세그먼트가 한 번 더 붙어 빌드 산출물과 어긋난다:
 
-```
+```text
 빌드 산출: out/me/__next.!KHRhYnMp.txt
 클라 요청:    /me/__next.!KHRhYnMp.me.txt     ← `.me` 가 덧붙음 → 404
 ```
