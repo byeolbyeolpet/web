@@ -31,3 +31,7 @@ export function Header({ className }: { className?: string }) {
     </header>
   );
 }
+
+// (full) 셸 헤더도 같은 계정 진입점을 쓴다 — 헤더는 셸의 일부라 화면마다
+// 있다 없다 하면 안 된다. 깊은 경로 import 를 막기 위해 여기서 재노출한다.
+export { ProfileMenu } from "./profile-menu";
