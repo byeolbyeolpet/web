@@ -59,13 +59,15 @@ describe("ProfileMenu", () => {
     expect(screen.queryByRole("link", { name: "로그인" })).toBeNull();
   });
 
-  it("아바타를 누르면 닉네임과 로그아웃이 보인다", async () => {
+  it("아바타를 누르면 마이페이지 카드와 로그아웃이 보인다", async () => {
     render(<ProfileMenu />);
 
     await userEvent.click(screen.getByRole("button", { name: "계정 메뉴" }));
 
     expect(await screen.findByRole("menu")).toBeInTheDocument();
-    expect(screen.getByText("지호")).toBeInTheDocument();
+    // 첫 항목은 라벨이 아니라 목적지다 — 마이페이지로 가는 링크여야 한다.
+    const profileCard = screen.getByRole("menuitem", { name: /지호/ });
+    expect(profileCard).toHaveAttribute("href", "/me");
     expect(
       screen.getByRole("menuitem", { name: /로그아웃/ }),
     ).toBeInTheDocument();
