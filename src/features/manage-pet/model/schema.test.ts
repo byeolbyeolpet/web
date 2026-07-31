@@ -1,3 +1,5 @@
+// 펫 폼 zod 스키마 검증 — 트림·길이 경계가 DB check 제약과 같은지.
+
 import { describe, expect, it } from "vitest";
 import { FORM_MESSAGE } from "@/shared/config/form-message";
 import { petFormSchema } from "./schema";

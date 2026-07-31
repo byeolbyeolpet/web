@@ -13,7 +13,15 @@ export const AUTH_STATE_PATH = resolve(process.cwd(), "e2e/.auth/state.json");
 const email = process.env.E2E_USER_EMAIL;
 const password = process.env.E2E_USER_PASSWORD;
 
-/** 둘 다 있을 때만 자격증명으로 친다. 하나만 있으면 설정 실수다. */
+// 하나만 있으면 설정 실수다 — 조용히 건너뛰면 "인증 E2E 가 도는 줄 알았는데
+// 내내 skip 이었다"가 된다. 반쪽 설정은 시끄럽게 죽인다(CodeRabbit 지적).
+if (Boolean(email) !== Boolean(password)) {
+  throw new Error(
+    "E2E_USER_EMAIL / E2E_USER_PASSWORD 는 둘 다 있거나 둘 다 없어야 한다 — .env.local 을 확인하라.",
+  );
+}
+
+/** 둘 다 있을 때만 자격증명으로 친다. 없으면 authenticated 프로젝트가 건너뛴다. */
 export const E2E_CREDENTIALS =
   email && password ? { email, password } : undefined;
 

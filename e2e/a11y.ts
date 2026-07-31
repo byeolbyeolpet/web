@@ -4,8 +4,10 @@ import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
 
 /**
- * wcag22aa 를 넣은 이유: 우리 규칙이 최소 탭 영역 44×44px 인데(CLAUDE.md),
- * 그걸 기계로 확인해 주는 규칙이 2.2 의 target-size 다.
+ * wcag22aa 는 2.2 의 target-size(2.5.8, **24px 기준**)를 돌리기 위해 넣는다.
+ * 우리 규칙인 44×44px(CLAUDE.md)는 이보다 엄격해서 axe 가 대신 보증해 주지
+ * 않는다 — 24px 미달이라는 명백한 붕괴만 걸러 주는 안전망이고, 44px 는
+ * 코드 리뷰와 실측이 지킨다(CodeRabbit 지적으로 정정).
  */
 export const WCAG_TAGS = [
   "wcag2a",

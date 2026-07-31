@@ -65,6 +65,10 @@ export const APP_MESSAGE = {
     title: "반려동물 없음",
     description: "찾을 수 없는 반려동물이에요.",
   },
+  "species.loadFailed": {
+    title: "종류 목록 불러오기 실패",
+    description: "종류를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+  },
 } as const satisfies Record<string, AppMessage>;
 
 export type AppMessageCode = keyof typeof APP_MESSAGE;
@@ -94,5 +98,8 @@ export const APP_MESSAGE_CODE = {
     deleteFailed: "pet.deleteFailed",
     detailLoadFailed: "pet.detailLoadFailed",
     notFound: "pet.notFound",
+  },
+  species: {
+    loadFailed: "species.loadFailed",
   },
 } as const satisfies Record<string, Record<string, AppMessageCode>>;

@@ -3,6 +3,7 @@
 // jsdom axe 는 라벨·역할·aria 관계까지만 본다. 레이아웃 엔진이 없어 **대비와
 // 터치 영역은 판정되지 않는다.** 그런데 등록 폼과 마이는 로그인이 필요해
 // guest E2E 가 닿지 못했다. 세션이 생긴 지금 그 둘을 실제 브라우저에서 본다.
+// (target-size 는 24px 기준 — 44px 규칙은 axe 가 대신 보증하지 않는다. e2e/a11y.ts)
 
 import { expect, test, type Page } from "@playwright/test";
 import { SKIP_WITHOUT_ACCOUNT } from "../auth-config";

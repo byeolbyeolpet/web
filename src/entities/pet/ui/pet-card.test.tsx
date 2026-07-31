@@ -1,3 +1,5 @@
+// 펫 행(PetCard) 검증 — 성별 표기 생략 규칙과 링크/비링크 렌더 분기.
+
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { PetListItem } from "../api/use-query-pets";

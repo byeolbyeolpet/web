@@ -1,5 +1,7 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+// Button 검증 — loading 잠금·asChild(Slot) 렌더·앵커 클릭 가드.
+
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { Button } from "./button";
 
 describe("Button loading", () => {
@@ -64,5 +66,41 @@ describe("Button asChild", () => {
     expect(
       screen.getByRole("link", { name: "반려동물 등록하기" }),
     ).toBeInTheDocument();
+  });
+
+  it("loading 중 앵커는 aria-disabled 가 붙고 클릭이 막힌다", async () => {
+    // 앵커는 disabled 를 모른다 — 로딩 중에도 그대로 이동해 버린다.
+    // preventDefault 가드가 클릭(과 키보드 Enter 의 click 이벤트)을 막는다.
+    const onClick = vi.fn();
+    render(
+      <Button asChild loading>
+        <a href="/pet/new" onClick={onClick}>
+          반려동물 등록하기
+        </a>
+      </Button>,
+    );
+
+    const link = screen.getByRole("link", { name: "반려동물 등록하기" });
+    expect(link).toHaveAttribute("aria-disabled", "true");
+
+    // pointer-events-none 은 userEvent 클릭 자체를 거부하므로 fireEvent 로
+    // "이벤트가 도달했을 때"를 검사한다 — 가드는 preventDefault 로 막는다.
+    const event = fireEvent.click(link);
+    expect(event).toBe(false); // preventDefault 됨
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it("loading 이 아니면 앵커 클릭이 막히지 않는다", () => {
+    const onClick = vi.fn((e: React.MouseEvent) => e.preventDefault());
+    render(
+      <Button asChild>
+        <a href="/pet/new" onClick={onClick}>
+          반려동물 등록하기
+        </a>
+      </Button>,
+    );
+
+    fireEvent.click(screen.getByRole("link", { name: "반려동물 등록하기" }));
+    expect(onClick).toHaveBeenCalledTimes(1);
   });
 });
