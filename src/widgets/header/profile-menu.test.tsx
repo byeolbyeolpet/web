@@ -1,4 +1,4 @@
-// 헤더 프로필 메뉴 — 세 상태(미확정/게스트/로그인)가 다 다르게 생겼다.
+﻿// 헤더 프로필 메뉴 — 세 상태(미확정/게스트/로그인)가 다 다르게 생겼다.
 //
 // 로그아웃이 마이 화면에서 여기로 올라왔으므로, 로그아웃 경로의 검증도
 // 여기가 맡는다.
@@ -47,7 +47,7 @@ describe("ProfileMenu", () => {
       "href",
       "/login",
     );
-    expect(screen.queryByRole("button", { name: "계정 메뉴" })).toBeNull();
+    expect(screen.queryByRole("button", { name: /계정 메뉴/ })).toBeNull();
   });
 
   it("세션 미확정 구간에는 로그인 링크를 깜빡 보여주지 않는다", () => {
@@ -62,7 +62,7 @@ describe("ProfileMenu", () => {
   it("아바타를 누르면 마이페이지 카드와 로그아웃이 보인다", async () => {
     render(<ProfileMenu />);
 
-    await userEvent.click(screen.getByRole("button", { name: "계정 메뉴" }));
+    await userEvent.click(screen.getByRole("button", { name: /계정 메뉴/ }));
 
     expect(await screen.findByRole("menu")).toBeInTheDocument();
     // 정체성 행도, 마이페이지 pill 도 라벨이 아니라 목적지다.
@@ -81,7 +81,7 @@ describe("ProfileMenu", () => {
   it("로그아웃을 누르면 signOut 이 나간다", async () => {
     render(<ProfileMenu />);
 
-    await userEvent.click(screen.getByRole("button", { name: "계정 메뉴" }));
+    await userEvent.click(screen.getByRole("button", { name: /계정 메뉴/ }));
     await userEvent.click(screen.getByRole("menuitem", { name: /로그아웃/ }));
 
     await waitFor(() => expect(signOutMutate).toHaveBeenCalledTimes(1));
@@ -90,7 +90,7 @@ describe("ProfileMenu", () => {
   it("메뉴가 열린 상태에 axe 위반이 없다", async () => {
     render(<ProfileMenu />);
 
-    await userEvent.click(screen.getByRole("button", { name: "계정 메뉴" }));
+    await userEvent.click(screen.getByRole("button", { name: /계정 메뉴/ }));
     await screen.findByRole("menu");
 
     // 메뉴는 portal 이라 render container 밖에 뜬다 — body 를 검사한다.
