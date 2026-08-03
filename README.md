@@ -118,7 +118,11 @@ shadcn 을 얹을 때 이 규칙이 바로 걸렸다. `radix-nova` 스타일은 
 - [x] 안드로이드 에뮬레이터 실측으로 M2 등록·수정 화면 마감 — sticky CTA safe-area·키보드 겹침·3열 그리드·다이얼로그/노치 통과, 상태바에 깔리던 토스트는 헤더 아래(safe-area+56px)로 내림 (#34)
 - [ ] 사진 업로드(#36, 후기 Storage 설계와 함께) · 품종(#37, 소비처 생길 때) · 상세 필드(#38)
 
-**이후** — M3 지도 → M4 리뷰 → M5 커뮤니티 → M6 사전 & 성분. 다음 착수는 [#8](https://github.com/byeolbyeolpet/web/issues/8) nearby RPC 재작성(호출부 생기기 전) → 지도/장소 트랙.
+**M3 · 지도 & 장소** — 시작
+
+- [x] `nearby_places` 재작성 — `p_statuses`(기본 operating만, null=전체) + 반경 clamp(1m~20km). 호출부 0줄일 때 drop 후 재생성으로 시그니처 확정 ([#8](https://github.com/byeolbyeolpet/web/issues/8))
+
+**이후** — M3 계속(장소 공공데이터 수집·지도 화면 — 브레인스토밍부터) → M4 리뷰 → M5 커뮤니티 → M6 사전 & 성분.
 
 ## 시작하기
 
