@@ -1,0 +1,57 @@
+// 상세 화면의 위치 미니 지도 — 조작 잠금, 핀 하나 (스펙 §3)
+"use client";
+
+import { useEffect, useRef } from "react";
+import { PLACE_CATEGORY, type PlaceCategory } from "@/entities/place";
+import { cn } from "@/shared/lib/utils";
+import { Skeleton } from "@/shared/ui/skeleton";
+import { PIN_SIZE, placePinDataUrl } from "../lib/marker-svg";
+import { useKakaoMaps } from "../lib/use-kakao-maps";
+
+type MiniMapProps = {
+  lat: number;
+  lng: number;
+  category: PlaceCategory;
+  className?: string;
+};
+
+export function MiniMap({ lat, lng, category, className }: MiniMapProps) {
+  const { status } = useKakaoMaps();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (status !== "ready" || !containerRef.current) return;
+    const position = new kakao.maps.LatLng(lat, lng);
+    const map = new kakao.maps.Map(containerRef.current, {
+      center: position,
+      level: 4,
+      draggable: false,
+    });
+    map.setZoomable(false);
+    const entry = PLACE_CATEGORY[category];
+    new kakao.maps.Marker({
+      position,
+      image: new kakao.maps.MarkerImage(
+        placePinDataUrl({ color: entry.markerColor, glyph: entry.glyph }),
+        new kakao.maps.Size(PIN_SIZE.base.width, PIN_SIZE.base.height),
+        {
+          offset: new kakao.maps.Point(
+            PIN_SIZE.base.width / 2,
+            PIN_SIZE.base.height,
+          ),
+        },
+      ),
+    }).setMap(map);
+    requestAnimationFrame(() => map.relayout());
+  }, [status, lat, lng, category]);
+
+  // 미니 지도는 보조 시각 정보 — 실패해도 주소 텍스트가 있어 화면은 성립한다.
+  if (status === "error") return null;
+
+  return (
+    <div className={cn("relative overflow-hidden", className)}>
+      {status === "loading" && <Skeleton className="absolute inset-0" />}
+      <div ref={containerRef} className="size-full" aria-hidden />
+    </div>
+  );
+}
