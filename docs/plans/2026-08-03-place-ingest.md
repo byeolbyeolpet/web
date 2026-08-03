@@ -660,7 +660,7 @@ main().catch((error) => {
 - [ ] **Step 2: 타입체크 + 전체 테스트 + 빌드**
 
 Run: `npm run typecheck && npm run test && npm run build`
-Expected: 전부 통과 (유닛 89 + 신규 14)
+Expected: 전부 통과 (유닛 89 + 신규 15 — `it.each` 2건 확장 포함. 실행 결과 104)
 
 - [ ] **Step 3: Commit**
 
@@ -678,7 +678,7 @@ git commit --author="Claude <noreply@anthropic.com>" -m "feat(#44): 수집 CLI �
 - [ ] **Step 1: 시딩 실행**
 
 Run: `npm run ingest:places`
-Expected: 5개 카테고리 리포트. upsert 합계는 실측 기준 약 36,000행(영업+휴업 36,476 − 좌표 결측 ~4%). closed 마커는 첫 실행에선 대부분 no-op.
+Expected: 5개 카테고리 리포트. upsert 합계는 사전 예상 약 35,000행(영업+휴업 36,476 − 좌표 결측 4~5%). closed 마커는 첫 실행에선 대부분 no-op. (실행 결과: **34,832행** — 결측 1,644행=4.5%)
 
 - [ ] **Step 2: 재실행으로 멱등성 확인**
 
