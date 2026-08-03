@@ -31,4 +31,24 @@ export const QUERY_KEYS = {
     detail: (petId?: string) =>
       [...QUERY_KEYS.pet.all, "detail", petId].filter((v) => v !== undefined),
   },
+  place: {
+    all: ["place"] as const,
+    nearby: (params?: {
+      lat: number;
+      lng: number;
+      radiusM: number;
+      category: Enums<"place_category"> | null;
+    }) =>
+      [
+        ...QUERY_KEYS.place.all,
+        "nearby",
+        ...(params
+          ? [params.lat, params.lng, params.radiusM, params.category]
+          : []),
+      ] as const,
+    detail: (placeId?: string) =>
+      [...QUERY_KEYS.place.all, "detail", placeId].filter(
+        (v) => v !== undefined,
+      ),
+  },
 } as const;
