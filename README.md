@@ -112,9 +112,10 @@ shadcn 을 얹을 때 이 규칙이 바로 걸렸다. `radix-nova` 스타일은 
 - [x] 세션 저장소 확정 — 안드로이드 실기 검증(3 저장소 × 재시작·재배포·재부팅) 후 네이티브 Preferences 채택, `@supabase/ssr` 제거 ([ADR-0004](docs/adr/0004-client-side-supabase-auth.md) 미결 해소)
 - [x] Google 네이티브 로그인 — Credential Manager 계정 시트 + `signInWithIdToken`, 마이 탭 프로필 기본(닉네임 수정·로그아웃), 클라 가드. 에뮬레이터 전 과정 실측
 - [ ] 카카오(개인 개발자 비즈앱 가능 확인)·네이버(Supabase 커스텀 프로바이더 조사 필요) 로그인 추가
-- [x] 펫 등록 — 14종 캐릭터 아이콘 그리드(접기), RHF+zod 폼, 이름 길이 DB check 추가. 종 분기 없는 단일 코드 경로(에뮬레이터 실측 잔여, #34)
+- [x] 펫 등록 — 14종 캐릭터 아이콘 그리드(접기), RHF+zod 폼, 이름 길이 DB check 추가. 종 분기 없는 단일 코드 경로 (#34)
 - [x] 펫 수정·삭제 + 마이 화면 완성 — `/pet/edit?id=` 쿼리라우트, ConfirmDialog 확인, 목록 실패 상태, 헤더 ProfileMenu(양쪽 셸)로 로그아웃 이동 (#35·#39)
 - [x] 테스트 기반 확장 — 유닛 85 · E2E 28(세션 주입 storageState, axe 접근성 라이트/다크), E2E 계정 시드 SQL
+- [x] 안드로이드 에뮬레이터 실측으로 M2 등록·수정 화면 마감 — sticky CTA safe-area·키보드 겹침·3열 그리드·다이얼로그/노치 통과, 상태바에 깔리던 토스트는 헤더 아래(safe-area+56px)로 내림 (#34)
 - [ ] 사진 업로드(#36, 후기 Storage 설계와 함께) · 품종(#37, 소비처 생길 때) · 상세 필드(#38)
 
 **이후** — M3 지도 → M4 리뷰 → M5 커뮤니티 → M6 사전 & 성분. 다음 착수는 [#8](https://github.com/byeolbyeolpet/web/issues/8) nearby RPC 재작성(호출부 생기기 전) → 지도/장소 트랙.
