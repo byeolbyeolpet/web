@@ -58,6 +58,9 @@ next-env.d.ts
 .claude/settings.local.json
 .mcp.json
 
+# 브레인스토밍 Visual Companion 세션 산출물 (로컬 전용)
+.superpowers/
+
 # Supabase 로컬
 /supabase/.branches
 /supabase/.temp
