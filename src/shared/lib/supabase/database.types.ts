@@ -636,7 +636,7 @@ export type Database = {
     Enums: {
       ingredient_safety: "safe" | "caution" | "danger" | "unknown"
       pet_sex: "male" | "female" | "unknown"
-      place_category: "animal_hospital" | "grooming" | "boarding"
+      place_category: "animal_hospital" | "grooming" | "boarding" | "pharmacy" | "funeral"
       place_status: "operating" | "suspended" | "closed"
       post_category: "walk_crew" | "missing" | "adoption" | "free"
       species_group: "dog" | "cat" | "exotic"
@@ -769,7 +769,7 @@ export const Constants = {
     Enums: {
       ingredient_safety: ["safe", "caution", "danger", "unknown"],
       pet_sex: ["male", "female", "unknown"],
-      place_category: ["animal_hospital", "grooming", "boarding"],
+      place_category: ["animal_hospital", "grooming", "boarding", "pharmacy", "funeral"],
       place_status: ["operating", "suspended", "closed"],
       post_category: ["walk_crew", "missing", "adoption", "free"],
       species_group: ["dog", "cat", "exotic"],
