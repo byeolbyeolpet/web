@@ -58,6 +58,16 @@
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
 
+  /* ── Place Category (지도 마커·카테고리 태그, 정보/의미 층) ──
+     아이콘 병행 필수. SVG MarkerImage 는 CSS 변수를 못 읽어
+     entities/place/model/category.ts 의 상수와 값을 공유한다 —
+     어긋나면 category.test.ts 가 잡는다(6-1 표). */
+  --color-place-hospital: var(--place-hospital);
+  --color-place-pharmacy: var(--place-pharmacy);
+  --color-place-grooming: var(--place-grooming);
+  --color-place-boarding: var(--place-boarding);
+  --color-place-funeral: var(--place-funeral);
+
   /* ── Charts ──────────────────────────────────────────── */
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -172,6 +182,13 @@
   --info: #2563eb;
   --info-foreground: #ffffff;
 
+  /* 장소 카테고리 — 마커(항상 라이트 지도 위, TS 상수와 동기)·태그 공용 */
+  --place-hospital: #e5484d;
+  --place-pharmacy: #30a46c;
+  --place-grooming: #d6409f;
+  --place-boarding: #0091ff;
+  --place-funeral: #7e808a;
+
   --chart-1: #6e56cf;
   --chart-2: #9b87f5;
   --chart-3: #16a34a;
@@ -254,6 +271,14 @@
   --warning-foreground: #291404;
   --info: #60a5fa;
   --info-foreground: #0a1633;
+
+  /* 장소 카테고리 — 어두운 면 위 "글자·아이콘"용으로 밝힌 값.
+     핀은 항상 라이트 지도 위라 TS 상수(라이트 값)를 그대로 쓴다. */
+  --place-hospital: #ff6369;
+  --place-pharmacy: #3dd68c;
+  --place-grooming: #f65cb6;
+  --place-boarding: #52a9ff;
+  --place-funeral: #a8aab3;
 
   --chart-1: #9b87f5;
   --chart-2: #6e56cf;
