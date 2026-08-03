@@ -11,6 +11,7 @@ export default defineConfig({
     setupFiles: ["./vitest.setup.ts"],
     css: true,
     // 단위/컴포넌트 테스트만. E2E(e2e/*.spec.ts)는 Playwright가 맡는다.
-    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    // scripts/ 는 수집 파이프라인 단위 테스트 — 파일 상단 @vitest-environment node 로 돈다.
+    include: ["src/**/*.{test,spec}.{ts,tsx}", "scripts/**/*.{test,spec}.ts"],
   },
 });
