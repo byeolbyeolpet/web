@@ -15,9 +15,11 @@ export function parseCsvBuffer(buffer: Buffer): Record<string, string>[] {
   const text = isUtf8Bom
     ? buffer.subarray(3).toString("utf-8")
     : decode(buffer, "cp949");
+  // relax_column_count 를 켜지 않는다 — 행 폭 불일치의 조용한 관용(짧은 행 키 생략,
+  // 긴 행 초과 값 폐기)은 소리 없는 데이터 유실이다. 구조 이상은 전부 파일 단위
+  // 중단(스펙 §7). 실측상 5개 파일 34,832행 전부 폭이 일정해 관용이 필요 없다.
   return parse(text, {
     columns: true,
     skip_empty_lines: true,
-    relax_column_count: true,
   }) as Record<string, string>[];
 }
