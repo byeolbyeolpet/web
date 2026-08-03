@@ -5,7 +5,10 @@ export type PlaceCategory = Database["public"]["Enums"]["place_category"];
 export type PlaceStatus = Database["public"]["Enums"]["place_status"];
 
 /** 입력 파일 → 카테고리. data/ 는 gitignore — 파일명은 공공데이터포털 다운로드 원본 그대로. */
-export const SOURCE_FILES: ReadonlyArray<{ file: string; category: PlaceCategory }> = [
+export const SOURCE_FILES: ReadonlyArray<{
+  file: string;
+  category: PlaceCategory;
+}> = [
   { file: "동물_동물병원.csv", category: "animal_hospital" },
   { file: "동물_동물미용업.csv", category: "grooming" },
   { file: "동물_동물위탁관리업.csv", category: "boarding" },
@@ -38,6 +41,11 @@ export const EPSG_5174 =
   "+proj=tmerc +lat_0=38 +lon_0=127.0028902777778 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43";
 
 /** 변환 결과 검증용 한국 상자(스펙 §3-2). 밖이면 변환 오류로 보고 스킵한다. */
-export const KOREA_BOUNDS = { minLat: 33, maxLat: 39, minLng: 124, maxLng: 132 } as const;
+export const KOREA_BOUNDS = {
+  minLat: 33,
+  maxLat: 39,
+  minLng: 124,
+  maxLng: 132,
+} as const;
 
 export const SOURCE = "localdata";

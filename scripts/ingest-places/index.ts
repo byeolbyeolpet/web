@@ -25,7 +25,9 @@ async function main() {
     // 파일 단위 오류는 즉시 중단 — 잘못된 매핑으로 수만 행을 넣는 것이 최악이다(스펙 §7).
     const first = records[0];
     if (!first) throw new Error(`${file}: 빈 파일`);
-    const missing = Object.values(COLUMNS).filter((column) => !(column in first));
+    const missing = Object.values(COLUMNS).filter(
+      (column) => !(column in first),
+    );
     if (missing.length > 0) {
       throw new Error(`${file}: 헤더 불일치 — ${missing.join(", ")} 없음`);
     }
@@ -46,7 +48,11 @@ async function main() {
       const result = transformRow(record, category);
       if (result.kind === "skip") {
         skips[result.reason] += 1;
-      } else if (seen.has(result.kind === "upsert" ? result.row.external_id : result.externalId)) {
+      } else if (
+        seen.has(
+          result.kind === "upsert" ? result.row.external_id : result.externalId,
+        )
+      ) {
         duplicates += 1;
       } else if (result.kind === "upsert") {
         seen.add(result.row.external_id);

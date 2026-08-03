@@ -10,8 +10,11 @@ export function parseCsvFile(path: string): Record<string, string>[] {
 
 export function parseCsvBuffer(buffer: Buffer): Record<string, string>[] {
   // UTF-8 BOM 이면 utf-8, 아니면 cp949(5개 파일 전부 실측 cp949) — 갱신본 대비 안전망.
-  const isUtf8Bom = buffer[0] === 0xef && buffer[1] === 0xbb && buffer[2] === 0xbf;
-  const text = isUtf8Bom ? buffer.subarray(3).toString("utf-8") : decode(buffer, "cp949");
+  const isUtf8Bom =
+    buffer[0] === 0xef && buffer[1] === 0xbb && buffer[2] === 0xbf;
+  const text = isUtf8Bom
+    ? buffer.subarray(3).toString("utf-8")
+    : decode(buffer, "cp949");
   return parse(text, {
     columns: true,
     skip_empty_lines: true,
