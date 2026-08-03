@@ -4,7 +4,9 @@ import { describe, expect, it } from "vitest";
 import { transformRow } from "./transform";
 
 /** 유효한 영업 중 행. 좌표는 EPSG:5174 원점(x_0=200000, y_0=500000) = lat 38 / lng 127.0029 부근. */
-function record(overrides: Record<string, string> = {}): Record<string, string> {
+function record(
+  overrides: Record<string, string> = {},
+): Record<string, string> {
   return {
     관리번호: "3220000-곧은-2026-0001",
     사업장명: "별별동물병원",
@@ -46,12 +48,18 @@ describe("transformRow", () => {
     "%s 는 closed 마커가 된다 — 신규로 넣지 않고 기존 행만 전환(스펙 §4-2)",
     (status) => {
       const result = transformRow(record({ 영업상태명: status }), "pharmacy");
-      expect(result).toEqual({ kind: "closed", externalId: "3220000-곧은-2026-0001" });
+      expect(result).toEqual({
+        kind: "closed",
+        externalId: "3220000-곧은-2026-0001",
+      });
     },
   );
 
   it("미지의 영업상태는 조용히 operating 이 되지 않고 스킵된다", () => {
-    const result = transformRow(record({ 영업상태명: "듣도보도못한상태" }), "funeral");
+    const result = transformRow(
+      record({ 영업상태명: "듣도보도못한상태" }),
+      "funeral",
+    );
     expect(result).toEqual({ kind: "skip", reason: "unknown_status" });
   });
 
@@ -75,7 +83,10 @@ describe("transformRow", () => {
 
   it("변환 결과가 한국 상자 밖이면 변환 오류로 스킵된다", () => {
     // y=2,000,000m 는 원점에서 북쪽으로 1,500km — 위도가 39를 훌쩍 넘는다.
-    const result = transformRow(record({ "좌표정보(Y)": "2000000" }), "boarding");
+    const result = transformRow(
+      record({ "좌표정보(Y)": "2000000" }),
+      "boarding",
+    );
     expect(result).toEqual({ kind: "skip", reason: "coord_out_of_bounds" });
   });
 
@@ -91,7 +102,10 @@ describe("transformRow", () => {
   });
 
   it("빈 주소·전화는 null 로 정규화한다", () => {
-    const result = transformRow(record({ 도로명주소: " ", 전화번호: "" }), "animal_hospital");
+    const result = transformRow(
+      record({ 도로명주소: " ", 전화번호: "" }),
+      "animal_hospital",
+    );
     expect(result.kind).toBe("upsert");
     if (result.kind === "upsert") {
       expect(result.row.road_address).toBeNull();

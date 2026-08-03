@@ -6,10 +6,15 @@ import { parseCsvBuffer } from "./parse";
 
 describe("parseCsvBuffer", () => {
   it("cp949 CSV 를 헤더 키 객체로 파싱한다", () => {
-    const csv = "관리번호,사업장명,영업상태명\r\n3220000-1,별별동물병원,영업/정상\r\n";
+    const csv =
+      "관리번호,사업장명,영업상태명\r\n3220000-1,별별동물병원,영업/정상\r\n";
     const rows = parseCsvBuffer(encode(csv, "cp949"));
     expect(rows).toEqual([
-      { 관리번호: "3220000-1", 사업장명: "별별동물병원", 영업상태명: "영업/정상" },
+      {
+        관리번호: "3220000-1",
+        사업장명: "별별동물병원",
+        영업상태명: "영업/정상",
+      },
     ]);
   });
 
