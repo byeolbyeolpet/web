@@ -132,7 +132,9 @@ export function PlaceMap({
   }
 
   return (
-    <div className={cn("relative", className)}>
+    // isolate — 카카오 내부 레이어의 양수 z-index(실측 z:1 svg)가 바깥 오버레이
+    // (칩·버튼, z-auto) 위로 올라오지 못하게 스태킹 컨텍스트를 가둔다.
+    <div className={cn("relative isolate", className)}>
       {status === "loading" && <Skeleton className="absolute inset-0" />}
       {/* 지도 자체는 스크린리더에 소음이라 숨긴다 — 동등한 접근 경로는 바텀시트 리스트다(스펙 §6) */}
       <div ref={containerRef} className="size-full" aria-hidden />

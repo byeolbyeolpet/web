@@ -25,10 +25,14 @@ import { PlaceMap, type MapViewport } from "@/widgets/place-map";
 import { CategoryChips } from "./category-chips";
 import { PlaceRow } from "./place-row";
 import { SEOUL_CITY_HALL, useCurrentPosition } from "./use-current-position";
+import { useNonmodalPointerFix } from "./use-nonmodal-pointer-fix";
 
 const INITIAL_RADIUS_M = 3000;
 
 function MapContent() {
+  // vaul 비모달 시트의 body pointer-events 경합 보정 — 훅 파일 주석 참고.
+  useNonmodalPointerFix();
+
   // 상세의 "지도에서 보기" 가 /map?place=<id> 로 들어온다 — 그 장소를 포커스한다.
   const focusPlaceId = useSearchParams().get("place") ?? undefined;
   const focusPlace = useQueryPlace(focusPlaceId);
@@ -119,7 +123,7 @@ function MapContent() {
         className="absolute inset-0"
       />
 
-      <div className="absolute inset-x-0 top-0 pt-safe-top">
+      <div className="absolute inset-x-0 top-0 z-10 pt-safe-top">
         <CategoryChips value={category} onChange={handleCategoryChange} />
         {moved && (
           <div className="flex justify-center">
@@ -137,7 +141,13 @@ function MapContent() {
       </div>
 
       <Drawer open modal={false} dismissible={false} snapPoints={[0.22, 0.8]}>
-        <DrawerContent aria-label="주변 장소 목록">
+        {/* vaul 의 스냅 오프셋은 화면 높이 기준이라(0.78×vh 실측) 콘텐츠도 화면
+            높이(h-dvh)여야 한다 — 기본 max-h-[80vh]면 시트가 화면 밖으로 밀린다.
+            bottom-14 는 하단 탭바(56px) 위에 얹기 위한 오프셋. */}
+        <DrawerContent
+          aria-label="주변 장소 목록"
+          className="h-dvh data-[vaul-drawer-direction=bottom]:mt-0 data-[vaul-drawer-direction=bottom]:max-h-none data-[vaul-drawer-direction=bottom]:bottom-14"
+        >
           <DrawerHeader className="py-2">
             {/* aria-live — 재검색 결과 수 변화를 보조기기에 알린다(스펙 §6) */}
             <DrawerTitle
@@ -168,7 +178,7 @@ function MapContent() {
           ) : selected ? (
             <PlaceRow place={selected} />
           ) : (
-            <ul className="overflow-y-auto">
+            <ul className="min-h-0 flex-1 overflow-y-auto pb-4">
               {list.map((place) => (
                 <li key={place.id}>
                   <PlaceRow place={place} />
@@ -183,7 +193,7 @@ function MapContent() {
         size="icon"
         variant="secondary"
         aria-label="현재 위치로"
-        className="absolute right-4 bottom-40 rounded-full shadow-md"
+        className="absolute right-4 bottom-60 z-10 rounded-full shadow-md"
         onClick={refreshPosition}
       >
         <LuLocateFixed aria-hidden />
