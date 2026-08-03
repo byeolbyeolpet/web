@@ -51,7 +51,10 @@ export function MiniMap({ lat, lng, category, className }: MiniMapProps) {
   return (
     <div className={cn("relative overflow-hidden", className)}>
       {status === "loading" && <Skeleton className="absolute inset-0" />}
-      <div ref={containerRef} className="size-full" aria-hidden />
+      {/* 장식용 잠금 지도 — inert 로 카카오 내부 포커스까지 막는다(aria-hidden 만
+          쓰면 안의 포커스 가능한 링크가 aria-hidden-focus 위반, axe 실측).
+          탭 동작은 이 컴포넌트를 감싸는 바깥 Link 가 맡는다. */}
+      <div ref={containerRef} className="size-full" aria-hidden inert />
     </div>
   );
 }

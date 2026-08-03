@@ -1,29 +1,34 @@
-// 현위치 1회 획득 — 거부·실패 시 서울시청 폴백 + 토스트 (스펙 §1·§7)
+// 현위치 1회 획득 — 거부·실패 시 서울시청 폴백 (스펙 §1·§7)
+//
+// 폴백 안내는 토스트가 아니라 화면 내 배너다 — 상단 토스트가 칩 열을 4초간
+// 덮어 포인터를 가로챈다(E2E 실측). 상태 정보는 상주 UI 가 맞다.
 // Capacitor WebView 의 권한 동작은 에뮬레이터에서 실측한다(#48 완료 조건).
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { LatLng } from "@/entities/place";
-import { APP_MESSAGE_CODE } from "@/shared/config/app-message";
-import { toastAppError } from "@/shared/lib/app-toast";
 
 export const SEOUL_CITY_HALL: LatLng = { lat: 37.5665, lng: 126.978 };
 
 export function useCurrentPosition() {
   const [position, setPosition] = useState<LatLng | null>(null);
+  const [isFallback, setIsFallback] = useState(false);
 
   // 현위치 버튼이 재호출한다 — 처음 거부했다가 허용한 사용자를 위해 매번 다시 묻는다.
   const refresh = useCallback(() => {
     if (!navigator.geolocation) {
-      toastAppError(APP_MESSAGE_CODE.place.locationFallback);
+      setIsFallback(true);
       setPosition({ ...SEOUL_CITY_HALL });
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      ({ coords }) =>
-        setPosition({ lat: coords.latitude, lng: coords.longitude }),
+      ({ coords }) => {
+        setIsFallback(false);
+        setPosition({ lat: coords.latitude, lng: coords.longitude });
+      },
       (error) => {
-        toastAppError(APP_MESSAGE_CODE.place.locationFallback, error);
+        console.error("[place] 현위치 획득 실패", error);
+        setIsFallback(true);
         setPosition({ ...SEOUL_CITY_HALL }); // 새 객체 — flyTo 재트리거용
       },
       { timeout: 5000, maximumAge: 60_000 },
@@ -37,5 +42,5 @@ export function useCurrentPosition() {
     refresh();
   }, [refresh]);
 
-  return { position, refresh }; // position null = 아직 확인 중
+  return { position, refresh, isFallback }; // position null = 아직 확인 중
 }

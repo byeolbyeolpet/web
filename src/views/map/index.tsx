@@ -11,33 +11,28 @@ import {
   type NearbySearchParams,
   type PlaceCategory,
 } from "@/entities/place";
-import { APP_MESSAGE_CODE } from "@/shared/config/app-message";
+import { APP_MESSAGE, APP_MESSAGE_CODE } from "@/shared/config/app-message";
 import { Button } from "@/shared/ui/button";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/shared/ui/drawer";
 import { ErrorState } from "@/shared/ui/error-state";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { PlaceMap, type MapViewport } from "@/widgets/place-map";
 import { CategoryChips } from "./category-chips";
+import { PlaceBottomSheet } from "./place-bottom-sheet";
 import { PlaceRow } from "./place-row";
 import { SEOUL_CITY_HALL, useCurrentPosition } from "./use-current-position";
-import { useNonmodalPointerFix } from "./use-nonmodal-pointer-fix";
 
 const INITIAL_RADIUS_M = 3000;
 
 function MapContent() {
-  // vaul 비모달 시트의 body pointer-events 경합 보정 — 훅 파일 주석 참고.
-  useNonmodalPointerFix();
-
   // 상세의 "지도에서 보기" 가 /map?place=<id> 로 들어온다 — 그 장소를 포커스한다.
   const focusPlaceId = useSearchParams().get("place") ?? undefined;
   const focusPlace = useQueryPlace(focusPlaceId);
 
-  const { position: origin, refresh: refreshPosition } = useCurrentPosition();
+  const {
+    position: origin,
+    refresh: refreshPosition,
+    isFallback,
+  } = useCurrentPosition();
   const [category, setCategory] = useState<PlaceCategory | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // 검색 기준(쿼리 파라미터)과 지도의 현재 뷰포트는 분리 — 재검색 버튼이 잇는다.
@@ -104,27 +99,36 @@ function MapContent() {
     [searchHere],
   );
 
-  if (!start) {
-    return <Skeleton className="m-4 h-96" />;
-  }
-
   const list = places.data ?? [];
   const selected = list.find((p) => p.id === selectedId) ?? null;
 
   return (
     <div className="relative flex-1">
-      <PlaceMap
-        initialCenter={start}
-        flyTo={flyTo}
-        places={list}
-        selectedId={selectedId}
-        onSelectPlace={setSelectedId}
-        onViewportChange={handleViewportChange}
-        className="absolute inset-0"
-      />
+      {/* 칩·시트는 위치 확정에 인질 잡히지 않는다 — 지도 슬롯만 기다린다
+          (Playwright 실측: 위치 폴백은 5초 타임아웃 뒤에야 온다). */}
+      {start ? (
+        <PlaceMap
+          initialCenter={start}
+          flyTo={flyTo}
+          places={list}
+          selectedId={selectedId}
+          onSelectPlace={setSelectedId}
+          onViewportChange={handleViewportChange}
+          className="absolute inset-0"
+        />
+      ) : (
+        <Skeleton className="absolute inset-0" />
+      )}
 
       <div className="absolute inset-x-0 top-0 z-10 pt-safe-top">
         <CategoryChips value={category} onChange={handleCategoryChange} />
+        {/* 위치 폴백 안내 — 토스트는 칩을 4초간 덮어 포인터를 가로챈다(E2E 실측).
+            상태 정보라 상주 배너가 맞고, 현위치 버튼으로 재시도하면 사라진다. */}
+        {isFallback && (
+          <p className="mx-4 mt-1 w-fit rounded-lg bg-card/95 px-3 py-1.5 text-xs text-muted-foreground shadow-sm">
+            {APP_MESSAGE[APP_MESSAGE_CODE.place.locationFallback].description}
+          </p>
+        )}
         {moved && (
           <div className="flex justify-center">
             <Button
@@ -140,60 +144,47 @@ function MapContent() {
         )}
       </div>
 
-      <Drawer open modal={false} dismissible={false} snapPoints={[0.22, 0.8]}>
-        {/* vaul 의 스냅 오프셋은 화면 높이 기준이라(0.78×vh 실측) 콘텐츠도 화면
-            높이(h-dvh)여야 한다 — 기본 max-h-[80vh]면 시트가 화면 밖으로 밀린다.
-            bottom-14 는 하단 탭바(56px) 위에 얹기 위한 오프셋. */}
-        <DrawerContent
-          aria-label="주변 장소 목록"
-          className="h-dvh data-[vaul-drawer-direction=bottom]:mt-0 data-[vaul-drawer-direction=bottom]:max-h-none data-[vaul-drawer-direction=bottom]:bottom-14"
-        >
-          <DrawerHeader className="py-2">
-            {/* aria-live — 재검색 결과 수 변화를 보조기기에 알린다(스펙 §6) */}
-            <DrawerTitle
-              aria-live="polite"
-              className="text-sm text-muted-foreground"
-            >
-              {places.isError
-                ? "주변 장소"
-                : selected
-                  ? selected.name
-                  : `근처 ${list.length}곳`}
-            </DrawerTitle>
-          </DrawerHeader>
-          {places.isError ? (
-            <ErrorState
-              code={APP_MESSAGE_CODE.place.nearbyFailed}
-              onRetry={() => places.refetch()}
-            />
-          ) : places.isPending ? (
-            <div className="flex flex-col gap-2 p-4">
-              <Skeleton className="h-12" />
-              <Skeleton className="h-12" />
-            </div>
-          ) : list.length === 0 ? (
-            <p className="p-6 text-center text-sm text-muted-foreground">
-              이 지역에는 아직 등록된 곳이 없어요
-            </p>
-          ) : selected ? (
-            <PlaceRow place={selected} />
-          ) : (
-            <ul className="min-h-0 flex-1 overflow-y-auto pb-4">
-              {list.map((place) => (
-                <li key={place.id}>
-                  <PlaceRow place={place} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </DrawerContent>
-      </Drawer>
+      <PlaceBottomSheet
+        title={
+          places.isError
+            ? "주변 장소"
+            : selected
+              ? selected.name
+              : `근처 ${list.length}곳`
+        }
+      >
+        {places.isError ? (
+          <ErrorState
+            code={APP_MESSAGE_CODE.place.nearbyFailed}
+            onRetry={() => places.refetch()}
+          />
+        ) : places.isPending ? (
+          <div className="flex flex-col gap-2 p-4">
+            <Skeleton className="h-12" />
+            <Skeleton className="h-12" />
+          </div>
+        ) : list.length === 0 ? (
+          <p className="p-6 text-center text-sm text-muted-foreground">
+            이 지역에는 아직 등록된 곳이 없어요
+          </p>
+        ) : selected ? (
+          <PlaceRow place={selected} />
+        ) : (
+          <ul className="pb-4">
+            {list.map((place) => (
+              <li key={place.id}>
+                <PlaceRow place={place} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </PlaceBottomSheet>
 
       <Button
         size="icon"
         variant="secondary"
         aria-label="현재 위치로"
-        className="absolute right-4 bottom-60 z-10 rounded-full shadow-md"
+        className="absolute right-4 bottom-52 z-10 rounded-full shadow-md"
         onClick={refreshPosition}
       >
         <LuLocateFixed aria-hidden />
