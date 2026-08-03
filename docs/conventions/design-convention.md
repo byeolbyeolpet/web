@@ -87,6 +87,7 @@ node -e "const s=require('sharp'),f=require('fs');f.mkdirSync('docs/brand',{recu
 | `field.tsx` | 설명 링크 hover 를 `text-primary-emphasis` 로 |
 | `dropdown-menu.tsx` | `destructive` 아이템의 글자를 `text-destructive-emphasis` 로. `Item`·`CheckboxItem`·`RadioItem` 에 기본 `min-h-11`(터치 44px), `min-w-[96px]` → `min-w-24` |
 | `avatar.tsx` | Fallback 이니셜에 광학 보정 — children 을 `translate-y-[0.5px]` span 으로 감쌈. 우리 폰트 스택(Nunito·Noto Sans KR)은 메트릭이 위가 무거워 flex 정중앙에서도 글자 잉크가 0.5~1px 위에 그려진다(캔버스 실측) |
+| `drawer.tsx` | 원본 그대로 + 헤더 주석만. 지도 바텀시트(#48)가 vaul `snapPoints`·`modal={false}` 를 Root 로 통과시켜 쓴다 |
 
 **AlertDialog 를 직접 쓰지 않는다 — `ConfirmDialog`(shared/ui)를 쓴다.** 원본은 데스크톱 밀도(max-w-xs·32px 버튼·footer 회색 띠)라 모바일 확인창으로 어색하다. ConfirmDialog 가 폭·라운드·44px 버튼·tint 아이콘을 갖추고, 문구는 APP_MESSAGE 코드로만 받는다.
 
