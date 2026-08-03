@@ -121,6 +121,8 @@ shadcn 을 얹을 때 이 규칙이 바로 걸렸다. `radix-nova` 스타일은 
 **M3 · 지도 & 장소** — 시작
 
 - [x] `nearby_places` 재작성 — `p_statuses`(기본 operating만, null=전체) + 반경 clamp(1m~20km). 호출부 0줄일 때 drop 후 재생성으로 시그니처 확정 ([#8](https://github.com/byeolbyeolpet/web/issues/8))
+- [x] 장소 원장 시딩 — 공공데이터 인허가 5업종(병원·미용·위탁·약국·장묘) 전국 **34,832행**. cp949→EPSG:5174 변환 파이프라인(`scripts/ingest-places`, 재실행=갱신), 폐업은 신규 제외·기존 행만 closed 전환(리뷰 보존), GIST 인덱스 실측 63ms ([#44](https://github.com/byeolbyeolpet/web/issues/44))
+- [x] 지도 라이브러리 카카오맵 확정 — 무료 쿼터(일 30만 vs 월 1만)·한국 지도 품질. 2026-07 쿼터 정책 변경(첫 활성화 앱 조건) 근거 기록, 다크모드는 지도 면만 라이트로 수용
 
 **이후** — M3 계속(장소 공공데이터 수집·지도 화면 — 브레인스토밍부터) → M4 리뷰 → M5 커뮤니티 → M6 사전 & 성분.
 
