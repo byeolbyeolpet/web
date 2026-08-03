@@ -40,6 +40,9 @@ jobs:
     env:
       NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+      # 카카오 JS 키 — 도메인 등록으로 보호되는 공개 설계값. E2E 가 localhost:3000
+      # (등록 도메인)에서 SDK 실로드를 검증한다(#48).
+      NEXT_PUBLIC_KAKAO_MAP_KEY: ${{ vars.NEXT_PUBLIC_KAKAO_MAP_KEY }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
