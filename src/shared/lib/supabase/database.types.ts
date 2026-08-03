@@ -616,6 +616,7 @@ export type Database = {
           p_lng: number
           p_radius_m?: number
           p_species_code?: string
+          p_statuses?: Database["public"]["Enums"]["place_status"][]
         }
         Returns: {
           category: Database["public"]["Enums"]["place_category"]
