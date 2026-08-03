@@ -94,8 +94,9 @@ LOCALDATA 인허가 파일은 폐업 이력 전체를 포함한다(폐업 행이
 | `parse.ts` | CSV 읽기 + 인코딩(EUC-KR→UTF-8) + 행 파싱 |
 | `transform.ts` | 컬럼 매핑·좌표 변환·범위 검증·status 매핑. **순수 함수 — 테스트 대상** |
 | `load.ts` | Supabase `service_role`로 배치 upsert |
-| `index.ts` | CLI 진입점(파일 경로 인자) + 처리/스킵 사유별 카운트 리포트 |
-| `fixtures/` | 샘플 몇 행(개인정보 없는 행) — 커밋 대상 |
+| `index.ts` | CLI 진입점 + 처리/스킵 사유별 카운트 리포트 |
+
+샘플 픽스처는 파일로 커밋하지 않는다 — cp949 바이너리는 리뷰가 불가능해서, **테스트 안에서 iconv 로 cp949 버퍼를 만들어** 실제 인코딩 경로를 검증한다. "구조 샘플 공개"의 의도는 테스트 코드가 문서 역할로 대신한다.
 
 - 키: `.env.local`의 `SUPABASE_SERVICE_ROLE_KEY`. **`NEXT_PUBLIC_` 접두사 금지, 앱 코드에서 import 금지** — scripts 전용.
 - 테스트: vitest — `transform` 단위 테스트(알려진 좌표쌍 변환값, status 매핑, 한국 상자 밖 스킵, 결측 스킵).
