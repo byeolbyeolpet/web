@@ -30,4 +30,28 @@ describe("parseCsvBuffer", () => {
     const rows = parseCsvBuffer(encode(csv, "cp949"));
     expect(rows[0]?.["사업장명"]).toBe("별별펫, 토탈케어");
   });
+
+  // 아래 셋은 구조 오류 행의 처리 계약을 고정한다(스펙 §7, CodeRabbit #45 지적).
+  // 짧은/긴 행은 위치가 밀리지 않고(헤더 이름 매핑) 뒤 컬럼만 비거나 잘린다 —
+  // 필수(관리번호·사업장명)·좌표 검사가 transform 에서 걸러낸다.
+  it("짧은 행은 뒤 컬럼이 빈 채로 나온다 — transform 의 결측 검사가 거른다", () => {
+    const csv = "관리번호,사업장명,영업상태명\r\n3220000-4\r\n";
+    const rows = parseCsvBuffer(encode(csv, "cp949"));
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.["관리번호"]).toBe("3220000-4");
+    expect(rows[0]?.["사업장명"] ?? "").toBe("");
+  });
+
+  it("긴 행은 초과 값이 잘려 나온다 — 우리 컬럼 값은 밀리지 않는다", () => {
+    const csv = "관리번호,사업장명\r\n3220000-5,별별펫,넘치는값\r\n";
+    const rows = parseCsvBuffer(encode(csv, "cp949"));
+    expect(rows[0]?.["관리번호"]).toBe("3220000-5");
+    expect(rows[0]?.["사업장명"]).toBe("별별펫");
+  });
+
+  it("닫히지 않은 따옴표는 예외를 던진다 — 파일 단위 중단(스펙 §7)", () => {
+    // 구조가 깨진 파일에서 행 복구를 시도하는 것은 잘못된 적재보다 위험하다.
+    const csv = '관리번호,사업장명\r\n3220000-6,"안닫힌따옴표\r\n';
+    expect(() => parseCsvBuffer(encode(csv, "cp949"))).toThrow();
+  });
 });
