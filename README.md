@@ -123,6 +123,7 @@ shadcn 을 얹을 때 이 규칙이 바로 걸렸다. `radix-nova` 스타일은 
 - [x] `nearby_places` 재작성 — `p_statuses`(기본 operating만, null=전체) + 반경 clamp(1m~20km). 호출부 0줄일 때 drop 후 재생성으로 시그니처 확정 ([#8](https://github.com/byeolbyeolpet/web/issues/8))
 - [x] 장소 원장 시딩 — 공공데이터 인허가 5업종(병원·미용·위탁·약국·장묘) 전국 **34,832행**. cp949→EPSG:5174 변환 파이프라인(`scripts/ingest-places`, 재실행=갱신), 폐업은 신규 제외·기존 행만 closed 전환(리뷰 보존), GIST 인덱스 실측 63ms ([#44](https://github.com/byeolbyeolpet/web/issues/44))
 - [x] 지도 라이브러리 카카오맵 확정 — 무료 쿼터(일 30만 vs 월 1만)·한국 지도 품질. 2026-07 쿼터 정책 변경(첫 활성화 앱 조건) 근거 기록, 다크모드는 지도 면만 라이트로 수용
+- [x] 지도 화면 + 장소 상세 — 카카오 SDK 직결(`widgets/place-map` 캡슐화), 물방울 핀 5색+클러스터러, 카테고리 칩 단일 선택, "이 지역 재검색", **커스텀 바텀시트**(vaul 은 modal 을 Radix 에 전달하지 않아 상시 비모달 시트에서 앱 전체 aria-hidden — 소스 실측 후 배제), `/place?id=` 상세(미니 지도·tel: 링크·후기 그릇). E2E 6건(SDK 실로드·axe 라이트/다크) ([#48](https://github.com/byeolbyeolpet/web/issues/48))
 
 **이후** — M3 계속(장소 공공데이터 수집·지도 화면 — 브레인스토밍부터) → M4 리뷰 → M5 커뮤니티 → M6 사전 & 성분.
 

@@ -77,8 +77,8 @@ function MapContent() {
 
   const searchHere = useCallback(
     (nextCategory: PlaceCategory | null) => {
-      const base =
-        viewport ?? search ?? { ...SEOUL_CITY_HALL, radiusM: INITIAL_RADIUS_M };
+      const base = viewport ??
+        search ?? { ...SEOUL_CITY_HALL, radiusM: INITIAL_RADIUS_M };
       setSearch({
         lat: base.lat,
         lng: base.lng,

@@ -28,7 +28,9 @@ describe("PLACE_CATEGORY", () => {
     );
     for (const [code, entry] of Object.entries(PLACE_CATEGORY)) {
       const token = code === "animal_hospital" ? "hospital" : code;
-      const match = css.match(new RegExp(`--place-${token}:\\s*(#[0-9a-f]{6})`));
+      const match = css.match(
+        new RegExp(`--place-${token}:\\s*(#[0-9a-f]{6})`),
+      );
       expect(match?.[1], `--place-${token} 토큰 누락`).toBe(entry.markerColor);
     }
   });

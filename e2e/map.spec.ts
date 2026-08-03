@@ -89,9 +89,9 @@ test.describe("장소 상세", () => {
     }>;
 
     await page.goto(`/place?id=${row.id}`);
-    await expect(
-      page.getByRole("heading", { name: row.name }),
-    ).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("heading", { name: row.name })).toBeVisible({
+      timeout: 15_000,
+    });
     await expect(
       page.getByRole("link", { name: new RegExp(row.phone) }),
     ).toHaveAttribute("href", `tel:${row.phone}`);
