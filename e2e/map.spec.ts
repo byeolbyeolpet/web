@@ -50,6 +50,27 @@ test.describe("지도 화면", () => {
     await expect(hospital).toHaveAttribute("aria-checked", "false");
   });
 
+  // 지도는 SDK·RPC·측위가 얽혀 "화면은 나오는데 뭔가 실패한" 상태가 생기기 쉽다.
+  // networkidle 은 타일이 계속 붙는 지도에서 불안정해 쓰지 않고, 위 테스트들이
+  // 검증한 대기 신호(타일 + 근처 N곳)를 그대로 재사용한다.
+  test("콘솔 에러가 없다 — 위치 거부 폴백 경로 포함", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "error") errors.push(msg.text());
+    });
+    page.on("pageerror", (error) => errors.push(`pageerror: ${error.message}`));
+
+    await page.goto("/map");
+    await waitForNearbyCount(page);
+    await expect
+      .poll(() => page.locator("img[src*='daumcdn']").count(), {
+        timeout: 20_000,
+      })
+      .toBeGreaterThan(0);
+
+    expect(errors).toEqual([]);
+  });
+
   test("접근성 — 지도 화면 WCAG (라이트)", async ({ page }) => {
     await page.goto("/map");
     await waitForNearbyCount(page);

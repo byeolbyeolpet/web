@@ -27,7 +27,11 @@ export function useCurrentPosition() {
         setPosition({ lat: coords.latitude, lng: coords.longitude });
       },
       (error) => {
-        console.error("[place] 현위치 획득 실패", error);
+        // 권한 거부는 사용자의 정상적인 선택이라 오류가 아니다. error 로 찍으면
+        // dev 오버레이·콘솔 감시가 실패로 센다. 측위 실패(2·3)만 오류로 남긴다.
+        const log =
+          error.code === error.PERMISSION_DENIED ? console.info : console.error;
+        log("[place] 현위치 미획득 — 서울시청 폴백", error.code, error.message);
         setIsFallback(true);
         setPosition({ ...SEOUL_CITY_HALL }); // 새 객체 — flyTo 재트리거용
       },
