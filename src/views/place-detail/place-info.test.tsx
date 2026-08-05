@@ -37,7 +37,10 @@ describe("PlaceInfo", () => {
 
   it("전화 결측이면 전화 행 자체가 없다", () => {
     render(<PlaceInfo place={{ ...place, phone: null }} />);
-    expect(screen.queryByRole("link", { name: /전화/ })).toBeNull();
+    // 링크의 접근 가능한 이름은 전화번호 그 자체다. /전화/ 로 찾으면 전화 행이
+    // 되살아나도 이 테스트는 통과해 버린다 — 실제 이름으로 부재를 확인한다.
+    expect(screen.queryByRole("link", { name: /02-000-0000/ })).toBeNull();
+    expect(document.querySelector('a[href^="tel:"]')).toBeNull();
   });
 
   it("휴업은 경고 톤으로 표기한다", () => {

@@ -4,13 +4,22 @@
 
 **Goal:** 카카오맵 위에 장소 원장 34,832행을 띄우는 지도 화면(바텀시트·카테고리 칩·재검색)과 장소 상세(`/place?id=`)를 완성한다.
 
-**Architecture:** 카카오 JS SDK를 래퍼 없이 `widgets/place-map`에 캡슐화(Context7 실측 — react-kakao-maps-sdk는 신뢰할 문서가 없어 배제). 물방울 핀은 SVG data URI `MarkerImage` + SDK 클러스터러. 데이터는 `entities/place`의 쿼리 훅이 `nearby_places` RPC·단건 select를 감싼다. 바텀시트는 vaul(shadcn drawer).
+**Architecture:** 카카오 JS SDK를 래퍼 없이 `widgets/place-map`에 캡슐화(Context7 실측 — react-kakao-maps-sdk는 신뢰할 문서가 없어 배제). 물방울 핀은 SVG data URI `MarkerImage` + SDK 클러스터러. 데이터는 `entities/place`의 쿼리 훅이 `nearby_places` RPC·단건 select를 감싼다. 바텀시트는 **커스텀 비모달 시트**(아래 "구현 중 뒤집힌 결정" 참조).
 
-**Tech Stack:** Kakao Maps JS SDK v2(autoload=false, libraries=clusterer), vaul, TanStack Query, react-icons/lu.
+**Tech Stack:** Kakao Maps JS SDK v2(autoload=false, libraries=clusterer), TanStack Query, react-icons/lu.
 
 **전제:** `.env.local`에 `NEXT_PUBLIC_KAKAO_MAP_KEY`(JS 키, 32-hex 실측 확인) + SDK 도메인 `http://localhost:3000`·`https://localhost` 등록 완료. 스펙: [docs/specs/2026-08-03-map-place-detail-design.md](../specs/2026-08-03-map-place-detail-design.md).
 
+## 구현 중 뒤집힌 결정 — 아래 본문보다 이 절이 우선한다
+
+이 계획은 실행 **전에** 쓴 것이고, 실행 중 브라우저 실측으로 두 결정이 뒤집혔다. 본문(Task 3·Task 8 등)에는 뒤집히기 전의 `Drawer`·`toast` 코드가 그대로 남아 있다. **다시 실행할 일이 있으면 아래를 따르고 본문의 해당 부분은 무시한다.**
+
+1. **바텀시트는 vaul(shadcn drawer)이 아니라 커스텀 시트다.** vaul 1.1.2 는 `modal` prop 을 Radix `Dialog.Root` 에 전달하지 않아(소스 실측) 항상 모달로 동작한다 — 상시 노출 비모달 시트에서 앱 전체 `aria-hidden` + `body { pointer-events: none }` 이 걸린다. 실물은 `src/views/map/place-bottom-sheet.tsx`(포털 없는 순수 `div`). 금지 근거는 [design-convention](../conventions/design-convention.md).
+2. **위치 폴백 안내는 toast 가 아니라 상주 배너다.** 상단 토스트가 카테고리 칩 열을 4초간 덮어 포인터를 가로챈다(E2E 실측). 상태 정보라 상주 UI 가 맞고, `useCurrentPosition` 의 `isFallback` 으로 표시한다.
+
 ---
+
+## 작업
 
 ### Task 1: 카테고리 색 토큰 + 상수 (단일 진실 공유 검증)
 
@@ -1798,4 +1807,4 @@ git commit --author="Claude <noreply@anthropic.com>" -m "test(#48): 지도·상�
 Run: `npm run typecheck && npm run format:check && npm run lint && npm run build && npm run test && npm run test:e2e`
 Expected: 전부 통과
 
-- [ ] **Step 4: `/pr` 플로우** — 이슈 #48 완료 코멘트(스크린샷 포함), push, `gh pr create --base dev`(Closes #48), CI·CodeRabbit 감시. 에뮬레이터 실측(WebView 도메인·현위치 권한)은 머지 전 지호님과 함께.
+- [ ] **Step 4: `/pr` 플로우** — 이슈 #48 완료 코멘트(스크린샷 포함), **지호님이 명시적으로 요청하면** push, `gh pr create --base dev`(Closes #48), CI·CodeRabbit 감시. 푸시는 승인 없이 하지 않는다([git-convention](../conventions/git-convention.md)). 에뮬레이터 실측(WebView 도메인·현위치 권한)은 머지 전 지호님과 함께.

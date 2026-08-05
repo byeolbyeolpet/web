@@ -69,7 +69,7 @@ export function PlaceMap({
       averageCenter: true,
       minLevel: 7, // 가까운 줌에선 개별 핀, 넓은 줌에서만 묶는다
     });
-    kakao.maps.event.addListener(map, "idle", () => {
+    const handleIdle = () => {
       const center = map.getCenter();
       const ne = map.getBounds().getNorthEast();
       const c = { lat: center.getLat(), lng: center.getLng() };
@@ -77,17 +77,31 @@ export function PlaceMap({
         ...c,
         radiusM: haversineMeters(c, { lat: ne.getLat(), lng: ne.getLng() }),
       });
-    });
+    };
+    kakao.maps.event.addListener(map, "idle", handleIdle);
     // 생성 직후 컨테이너 크기 반영(탭 전환 직후 0 크기 문제 방지)
     requestAnimationFrame(() => map.relayout());
+
+    // 카카오는 컨테이너 안에 자체 DOM·리스너를 주입한다. 언마운트 때 놓아주지
+    // 않으면 탭을 오갈 때마다 쌓인다 — WebView 는 메모리 여유가 적다.
+    const container = containerRef.current;
+    return () => {
+      kakao.maps.event.removeListener(map, "idle", handleIdle);
+      clustererRef.current?.clear();
+      clustererRef.current = null;
+      mapRef.current = null;
+      container.replaceChildren();
+    };
   }, [status]);
 
-  // flyTo — 같은 좌표로도 다시 이동할 수 있게 key 로 변화를 식별한다
+  // flyTo — 같은 좌표로도 다시 이동할 수 있게 key 로 변화를 식별한다.
+  // status 도 본다 — SDK 로딩 중에 도착한 flyTo 는 지도가 없어 그냥 버려지고,
+  // key 가 그대로라 다시 시도되지 않는다(지도 생성 후 한 번 더 평가되게 한다).
   useEffect(() => {
     if (!mapRef.current || !flyTo) return;
     mapRef.current.setCenter(new kakao.maps.LatLng(flyTo.lat, flyTo.lng));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- key 가 변화의 전부다
-  }, [flyTo?.key]);
+  }, [flyTo?.key, status]);
 
   // 마커 동기화 — places·selectedId 가 바뀌면 다시 그린다
   useEffect(() => {

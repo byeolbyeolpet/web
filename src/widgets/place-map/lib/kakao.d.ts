@@ -76,6 +76,11 @@ declare namespace kakao.maps {
       type: string,
       handler: () => void,
     ): void;
+    function removeListener(
+      target: Map | Marker,
+      type: string,
+      handler: () => void,
+    ): void;
   }
 }
 

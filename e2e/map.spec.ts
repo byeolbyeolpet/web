@@ -12,6 +12,28 @@ async function waitForNearbyCount(page: import("@playwright/test").Page) {
   return title;
 }
 
+/** 원장에서 전화 있는 영업 중 장소 한 건 — order 고정으로 실행마다 같은 행을 쓴다. */
+async function pickSeededPlace(
+  request: import("@playwright/test").APIRequestContext,
+) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
+  const response = await request.get(
+    `${url}/rest/v1/places?select=id,name,phone&status=eq.operating&phone=not.is.null&order=id.asc&limit=1`,
+    { headers: { apikey: key, Authorization: `Bearer ${key}` } },
+  );
+  // 시딩 누락·요청 실패를 앱 버그와 구분한다 — 그냥 두면 호출부에서
+  // "Cannot read properties of undefined" 로 죽어 원인을 못 짚는다.
+  expect(response.ok(), `원장 조회 실패: ${response.status()}`).toBe(true);
+  const rows = (await response.json()) as Array<{
+    id: string;
+    name: string;
+    phone: string;
+  }>;
+  expect(rows, "전화 있는 영업 중 장소가 원장에 없다").not.toHaveLength(0);
+  return rows[0];
+}
+
 test.describe("지도 화면", () => {
   test("게스트도 지도·칩·바텀시트를 본다 — SDK 실로드 검증", async ({
     page,
@@ -71,6 +93,44 @@ test.describe("지도 화면", () => {
     expect(errors).toEqual([]);
   });
 
+  // 상세 → "지도에서 보기" 가 /map?place=<id> 로 들어온다. 이 경로의 회귀 2건.
+  test("포커스 진입은 현위치가 도착해도 그 장소를 지킨다", async ({
+    page,
+    request,
+  }) => {
+    const row = await pickSeededPlace(request);
+    await page.goto(`/map?place=${row.id}`);
+
+    // 포커스 장소가 검색 기준이라 그 장소가 목록에 있고, 시트 제목이 그 이름이다.
+    // 시트 안으로 범위를 좁힌다 — 목록 행에도 같은 이름이 있고, sonner Toaster 도
+    // aria-live="polite" 라 전역 셀렉터는 strict mode 위반이 된다(실측).
+    const title = page.locator(
+      'section[aria-label="주변 장소 목록"] [aria-live="polite"]',
+    );
+    await expect(title).toHaveText(row.name, { timeout: 20_000 });
+
+    // 측위(여기선 거부→폴백)가 끝난 뒤에도 서울로 끌려가면 안 된다. 끌려가면
+    // 그 장소가 목록에서 빠져 제목이 "근처 N곳" 으로 바뀐다.
+    await page.waitForTimeout(3_000);
+    await expect(title).toHaveText(row.name);
+    // 그 장소를 보여주면서 "서울 시청 기준" 이라고 하면 거짓말이다.
+    await expect(page.getByText("서울 시청 기준")).toBeHidden();
+  });
+
+  test("없는 id 로 포커스해도 지도가 열린다 — 영구 스켈레톤 금지", async ({
+    page,
+  }) => {
+    await page.goto("/map?place=00000000-0000-0000-0000-000000000000");
+    // 조회가 null 로 끝나면 현위치로 내려와야 한다. 안 그러면 start 가 영영
+    // null 이라 지도는 스켈레톤, 검색은 enabled:false 로 멈춘다.
+    //
+    // 0곳이 아니라 "1곳 이상" 을 본다 — 검색이 멈춘 상태에서도 제목은 "근처 0곳"
+    // 이라 /근처 \d+곳/ 만으로는 깨진 화면도 통과한다(역검증에서 실제로 통과했다).
+    await expect(
+      page.locator('section[aria-label="주변 장소 목록"] [aria-live="polite"]'),
+    ).toHaveText(/근처 [1-9]\d*곳/, { timeout: 20_000 });
+  });
+
   test("접근성 — 지도 화면 WCAG (라이트)", async ({ page }) => {
     await page.goto("/map");
     await waitForNearbyCount(page);
@@ -96,27 +156,18 @@ test.describe("장소 상세", () => {
   });
 
   test("실데이터 상세 — 정보·tel 링크·접근성", async ({ page, request }) => {
-    // 원장에서 전화 있는 영업 중 장소 하나를 anon REST 로 집는다(공개 읽기).
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
-    // order 를 빼면 어떤 행이 오는지 보장되지 않아 실행마다 업종이 바뀐다.
-    // 그러면 칩 색 대비 같은 업종별 검사가 우연히 통과한다(CI 가 그렇게 잡았다).
-    const response = await request.get(
-      `${url}/rest/v1/places?select=id,name,phone&status=eq.operating&phone=not.is.null&order=id.asc&limit=1`,
-      { headers: { apikey: key, Authorization: `Bearer ${key}` } },
-    );
-    const [row] = (await response.json()) as Array<{
-      id: string;
-      name: string;
-      phone: string;
-    }>;
+    const row = await pickSeededPlace(request);
 
     await page.goto(`/place?id=${row.id}`);
     await expect(page.getByRole("heading", { name: row.name })).toBeVisible({
       timeout: 15_000,
     });
+    // DB 값을 정규식 소스로 그대로 쓰면 +·( 같은 표기가 메타문자로 해석된다.
+    const phonePattern = new RegExp(
+      row.phone.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+    );
     await expect(
-      page.getByRole("link", { name: new RegExp(row.phone) }),
+      page.getByRole("link", { name: phonePattern }),
     ).toHaveAttribute("href", `tel:${row.phone}`);
     expect(await scanWcag(page)).toEqual([]);
   });

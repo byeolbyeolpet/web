@@ -60,9 +60,11 @@ export function PlaceBottomSheet({
   const dragging = dragDelta !== null;
   const delta = Math.round(dragDelta ?? 0);
   // 접힘: 위로 끌면(-delta) 커지고 아래로는 안 줄어든다. 펼침: 아래로 끌면 줄어든다.
+  // 접힘에서 위로 계속 끌면 -delta 가 무한정 커진다. 상한을 안 걸면 드래그 중
+  // 시트가 지도를 넘어 상단 칩 열까지 덮는다(손을 떼면 스냅으로 복구되긴 한다).
   const height = expanded
     ? `calc(${EXPANDED_RATIO * 100}% - ${Math.max(0, delta)}px)`
-    : `${Math.max(COLLAPSED_PX, COLLAPSED_PX - delta)}px`;
+    : `min(${EXPANDED_RATIO * 100}%, ${Math.max(COLLAPSED_PX, COLLAPSED_PX - delta)}px)`;
 
   return (
     <section

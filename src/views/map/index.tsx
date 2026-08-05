@@ -41,11 +41,16 @@ function MapContent() {
   const [moved, setMoved] = useState(false);
   const [flyTo, setFlyTo] = useState<(LatLng & { key: number }) | null>(null);
 
-  // 시작 기준점: 포커스 장소 > 현위치. 포커스 파라미터가 있으면 그 좌표를 기다린다.
+  // 시작 기준점: 포커스 장소 > 현위치. 포커스 파라미터가 있으면 그 좌표를 기다리되,
+  // 조회가 끝났는데 좌표가 없으면(에러·없는 id) 현위치로 내려온다 — 안 그러면
+  // start 가 영영 null 이라 지도는 스켈레톤, 검색은 enabled:false 로 멈춘다.
+  const focusResolved = focusPlace.isSuccess || focusPlace.isError;
   const start = focusPlaceId
     ? focusPlace.data
       ? { lat: focusPlace.data.lat, lng: focusPlace.data.lng }
-      : null
+      : focusResolved
+        ? origin
+        : null
     : origin;
 
   // 기준점 확정 시 최초 검색 1회 — 렌더 중 파생 상태 갱신 패턴.
@@ -61,11 +66,24 @@ function MapContent() {
     setMoved(true);
   }, []);
 
-  // 현위치 버튼 — 재측위 결과가 오면 지도 이동 + 그 자리 재검색
+  // 현위치 버튼 — 재측위 결과가 오면 지도 이동 + 그 자리 재검색.
+  // 마운트 시의 자동 측위는 여기서 제외한다. /map?place=<id> 로 들어온 사용자는
+  // 그 장소를 보러 온 것인데, 측위가 성공하든 5초 뒤 폴백이 오든 origin 이 채워져
+  // 지도를 현위치로 끌고 가 버린다(포커스 이탈). 버튼을 눌렀을 때만 따라간다.
+  const followsPosition = useRef(!focusPlaceId);
+  // 배너는 렌더에 영향을 주므로 state 로 따로 둔다(ref 는 리렌더를 일으키지 않는다).
+  const [showsFallbackNotice, setShowsFallbackNotice] = useState(!focusPlaceId);
+  const handleLocate = useCallback(() => {
+    followsPosition.current = true;
+    setShowsFallbackNotice(true);
+    refreshPosition();
+  }, [refreshPosition]);
+
   const previousOrigin = useRef(origin);
   useEffect(() => {
     if (!origin || previousOrigin.current === origin) return;
     previousOrigin.current = origin;
+    if (!followsPosition.current) return;
     setFlyTo({ ...origin, key: Date.now() });
     setSearch((prev) => ({
       ...origin,
@@ -123,8 +141,10 @@ function MapContent() {
       <div className="absolute inset-x-0 top-0 z-10 pt-safe-top">
         <CategoryChips value={category} onChange={handleCategoryChange} />
         {/* 위치 폴백 안내 — 토스트는 칩을 4초간 덮어 포인터를 가로챈다(E2E 실측).
-            상태 정보라 상주 배너가 맞고, 현위치 버튼으로 재시도하면 사라진다. */}
-        {isFallback && (
+            상태 정보라 상주 배너가 맞고, 현위치 버튼으로 재시도하면 사라진다.
+            포커스 진입(/map?place=)에는 안 띄운다 — 화면은 그 장소를 보여주고
+            있는데 "서울 시청 기준" 이라고 하면 거짓말이다(스냅샷 실측). */}
+        {isFallback && showsFallbackNotice && (
           <p className="mx-4 mt-1 w-fit rounded-lg bg-card/95 px-3 py-1.5 text-xs text-muted-foreground shadow-sm">
             {APP_MESSAGE[APP_MESSAGE_CODE.place.locationFallback].description}
           </p>
@@ -185,7 +205,7 @@ function MapContent() {
         variant="secondary"
         aria-label="현재 위치로"
         className="absolute right-4 bottom-52 z-10 rounded-full shadow-md"
-        onClick={refreshPosition}
+        onClick={handleLocate}
       >
         <LuLocateFixed aria-hidden />
       </Button>

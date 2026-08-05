@@ -18,7 +18,19 @@ function loadSdk(): Promise<void> {
     const script = document.createElement("script");
     script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${appKey}&autoload=false&libraries=clusterer`;
     script.async = true;
-    script.onload = () => window.kakao.maps.load(resolve);
+    script.onload = () => {
+      // 도메인 미등록 등에서 카카오는 스크립트를 200 으로 주고 내부에서만 실패한다.
+      // 그러면 onerror 가 안 뜨고 window.kakao 도 없어서, 여기서 막지 않으면
+      // 이 Promise 밖에서 TypeError 가 나 reject 가 안 불리고 status 가 loading 에
+      // 고착된다 — 재시도 버튼조차 안 나온다.
+      if (!window.kakao?.maps?.load) {
+        script.remove();
+        sdkPromise = null;
+        reject(new Error("카카오맵 SDK 초기화 실패 — kakao 전역이 없다"));
+        return;
+      }
+      window.kakao.maps.load(resolve);
+    };
     script.onerror = () => {
       script.remove();
       sdkPromise = null; // 실패는 캐시하지 않는다 — 재시도 가능해야 한다

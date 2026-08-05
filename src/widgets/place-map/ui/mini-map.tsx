@@ -20,9 +20,10 @@ export function MiniMap({ lat, lng, category, className }: MiniMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (status !== "ready" || !containerRef.current) return;
+    const container = containerRef.current;
+    if (status !== "ready" || !container) return;
     const position = new kakao.maps.LatLng(lat, lng);
-    const map = new kakao.maps.Map(containerRef.current, {
+    const map = new kakao.maps.Map(container, {
       center: position,
       level: 4,
       draggable: false,
@@ -43,6 +44,10 @@ export function MiniMap({ lat, lng, category, className }: MiniMapProps) {
       ),
     }).setMap(map);
     requestAnimationFrame(() => map.relayout());
+
+    // deps 가 바뀌면 지도를 새로 만든다. 카카오가 주입한 이전 DOM 을 비우지 않으면
+    // 컨테이너 안에 지도가 겹쳐 쌓인다.
+    return () => container.replaceChildren();
   }, [status, lat, lng, category]);
 
   // 미니 지도는 보조 시각 정보 — 실패해도 주소 텍스트가 있어 화면은 성립한다.
