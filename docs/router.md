@@ -66,6 +66,8 @@ place/page.tsx → useSearchParams()로 id 취득 → useQuery(['place', id], fe
 
 `/pet/edit`도 같은 이유로 쿼리파라미터다. 펫은 사용자가 런타임에 만드는 것이라 빌드 시점에 id를 알 수 없다.
 
+`/place?id=`(#48)가 이 패턴의 두 번째 실전이다 — 장소 상세가 단건을 클라이언트에서 fetch 하고, 지도 포커스 복귀는 `/map?place=<id>` 쿼리로 전달한다(둘 다 Suspense 경계 필수).
+
 ## 4-1. `next/link`의 prefetch는 끈다 (`prefetch={false}`)
 
 **Static Export + App Router에서 세그먼트 prefetch가 동작하지 않는다.** 클라이언트가 요청하는 파일명에 세그먼트가 한 번 더 붙어 빌드 산출물과 어긋난다:

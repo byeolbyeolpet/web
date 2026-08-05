@@ -613,6 +613,7 @@ export type Database = {
         Args: {
           p_category?: Database["public"]["Enums"]["place_category"]
           p_lat: number
+          p_limit?: number
           p_lng: number
           p_radius_m?: number
           p_species_code?: string

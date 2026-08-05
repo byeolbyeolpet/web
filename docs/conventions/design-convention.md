@@ -7,6 +7,7 @@
 - **HEX 하드코딩 금지.** `bg-primary`, `bg-primary-tint`, `text-muted-foreground`, `border-destructive` 같은 시맨틱 토큰을 쓴다.
 - **브랜드 색은 CTA·활성 탭에만.** 종 태그는 `bg-primary-tint`(Badge 의 `variant="tint"`)로 한 단계 올린다 — 특수동물 진료 태깅이 해자인데 무채색으로 두면 차별점이 안 보인다. 그 외는 전부 중립.
 - 모든 컴포넌트는 **라이트/다크 모드**를 반드시 함께 설계한다.
+- **색을 "글자"로 쓸 때는 `*-emphasis` 토큰을 쓴다.** `--primary`·`--destructive`·`--success`·`--warning`은 전부 **흰 글씨를 받는 면(面)** 기준으로 잡힌 값이라, 그대로 글자로 쓰면 배경과의 거리가 좁아 AA(4.5:1)에 걸린다. 실측: 라이트에서 `text-success` 3.30:1 / `text-warning` 3.19:1(장소 상세 영업 상태 배지, CI e2e axe), 다크에서 `text-primary` 3.34:1(활성 탭). `bg-*`는 그대로 쓰고 `text-*`만 `text-success-emphasis`처럼 바꾼다. **tint 면 위 글자는 흰 배경보다 더 어두워야 한다** — `--destructive-emphasis`가 그 경우다.
 - 기존 `shared/ui`의 스타일 패턴을 계승해 일관성을 유지한다.
 
 ### 1-1. HEX 리터럴 명시적 예외 — CSS 변수가 닿지 않는 렌더링 경로
@@ -87,6 +88,8 @@ node -e "const s=require('sharp'),f=require('fs');f.mkdirSync('docs/brand',{recu
 | `field.tsx` | 설명 링크 hover 를 `text-primary-emphasis` 로 |
 | `dropdown-menu.tsx` | `destructive` 아이템의 글자를 `text-destructive-emphasis` 로. `Item`·`CheckboxItem`·`RadioItem` 에 기본 `min-h-11`(터치 44px), `min-w-[96px]` → `min-w-24` |
 | `avatar.tsx` | Fallback 이니셜에 광학 보정 — children 을 `translate-y-[0.5px]` span 으로 감쌈. 우리 폰트 스택(Nunito·Noto Sans KR)은 메트릭이 위가 무거워 flex 정중앙에서도 글자 잉크가 0.5~1px 위에 그려진다(캔버스 실측) |
+
+**상시 노출 비모달 바텀시트에 shadcn drawer(vaul)를 쓰지 않는다.** vaul 은 `modal` 을 Radix Root 에 전달하지 않아(1.1.2 소스 실측) 항상 모달로 동작한다 — 열려 있는 동안 앱 전체가 `aria-hidden` 되고 body 가 `pointer-events:none` 이 된다. 지도 바텀시트(#48)는 그래서 `views/map/place-bottom-sheet.tsx` 커스텀이다. 닫히는 일반 모달 드로어가 필요해지면 그때 drawer 를 설치한다.
 
 **AlertDialog 를 직접 쓰지 않는다 — `ConfirmDialog`(shared/ui)를 쓴다.** 원본은 데스크톱 밀도(max-w-xs·32px 버튼·footer 회색 띠)라 모바일 확인창으로 어색하다. ConfirmDialog 가 폭·라운드·44px 버튼·tint 아이콘을 갖추고, 문구는 APP_MESSAGE 코드로만 받는다.
 

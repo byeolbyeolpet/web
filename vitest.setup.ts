@@ -10,6 +10,16 @@ globalThis.ResizeObserver ??= class {
   disconnect() {}
 };
 
+// jsdom 은 Pointer Capture API 를 구현하지 않는다(Element 프로토타입에 아예 없음).
+// 바텀시트 드래그가 setPointerCapture 를 부르므로 pointerdown 핸들러가 그대로 터지고,
+// 테스트는 통과해도 vitest 가 unhandled error 로 exit 1 을 낸다. 캡처 대상은 실제
+// 드래그 동작이라 브라우저(E2E)에서 검증하고, 여기서는 빈 구현으로 충분하다.
+if (typeof Element !== "undefined") {
+  Element.prototype.setPointerCapture ??= () => {};
+  Element.prototype.releasePointerCapture ??= () => {};
+  Element.prototype.hasPointerCapture ??= () => false;
+}
+
 // jsdom 은 이미지를 실제로 내려받지 않아 load 이벤트가 영원히 안 온다.
 // Radix Avatar 는 로드가 확인된 뒤에만 <img> 를 그리므로(useImageLoadingStatus)
 // AvatarImage 가 테스트에서 아예 렌더되지 않는다. Radix 의 판정식이

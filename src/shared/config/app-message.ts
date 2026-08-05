@@ -69,6 +69,27 @@ export const APP_MESSAGE = {
     title: "종류 목록 불러오기 실패",
     description: "종류를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
   },
+  "place.nearbyFailed": {
+    title: "주변 장소 불러오기 실패",
+    description: "잠시 후 다시 시도해 주세요.",
+  },
+  "place.detailLoadFailed": {
+    title: "장소 정보 불러오기 실패",
+    description: "장소 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+  },
+  // 잘못된 주소와 없는 장소를 같은 문구로 묶는다(pet.notFound 와 같은 원칙).
+  "place.notFound": {
+    title: "장소를 찾을 수 없어요",
+    description: "삭제됐거나 잘못된 주소예요.",
+  },
+  "place.mapLoadFailed": {
+    title: "지도 불러오기 실패",
+    description: "지도를 불러오지 못했어요. 네트워크를 확인해 주세요.",
+  },
+  "place.locationFallback": {
+    title: "현재 위치를 확인할 수 없어요",
+    description: "서울 시청 기준으로 주변을 보여드려요.",
+  },
 } as const satisfies Record<string, AppMessage>;
 
 export type AppMessageCode = keyof typeof APP_MESSAGE;
@@ -101,5 +122,12 @@ export const APP_MESSAGE_CODE = {
   },
   species: {
     loadFailed: "species.loadFailed",
+  },
+  place: {
+    nearbyFailed: "place.nearbyFailed",
+    detailLoadFailed: "place.detailLoadFailed",
+    notFound: "place.notFound",
+    mapLoadFailed: "place.mapLoadFailed",
+    locationFallback: "place.locationFallback",
   },
 } as const satisfies Record<string, Record<string, AppMessageCode>>;
