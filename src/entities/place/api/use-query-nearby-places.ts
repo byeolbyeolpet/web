@@ -14,6 +14,13 @@ export type NearbySearchParams = {
   category: PlaceCategory | null;
 };
 
+/**
+ * 한 번에 받아오는 최대 건수. RPC 가 거리순으로 자르고, 500 을 넘기면 다시 clamp 한다.
+ * 상한이 없으면 반경 20km 에서 8,529행이 그대로 내려온다(서울시청 실측).
+ * 호출부는 결과 길이가 이 값과 같으면 "더 있다"로 읽는다.
+ */
+export const NEARBY_LIMIT = 200;
+
 export function useQueryNearbyPlaces(params: NearbySearchParams | null) {
   return useQuery({
     queryKey: QUERY_KEYS.place.nearby(params ?? undefined),
@@ -23,6 +30,7 @@ export function useQueryNearbyPlaces(params: NearbySearchParams | null) {
         p_lat: params!.lat,
         p_lng: params!.lng,
         p_radius_m: Math.round(params!.radiusM),
+        p_limit: NEARBY_LIMIT,
         ...(params!.category ? { p_category: params!.category } : {}),
       });
       if (error) {

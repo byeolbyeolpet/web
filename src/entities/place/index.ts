@@ -5,8 +5,10 @@ export {
   type PlaceCategory,
 } from "./model/category";
 export { formatDistance, haversineMeters, type LatLng } from "./model/geo";
+export { formatPhone } from "./model/phone";
 export type { NearbyPlace, PlaceDetail } from "./model/types";
 export {
+  NEARBY_LIMIT,
   useQueryNearbyPlaces,
   type NearbySearchParams,
 } from "./api/use-query-nearby-places";

@@ -20,6 +20,8 @@ const COLLAPSED_PX = 176;
 const EXPANDED_RATIO = 0.78;
 /** 이만큼 끌면 스냅이 넘어간다 */
 const DRAG_THRESHOLD_PX = 60;
+/** 이만큼 움직여야 "탭"이 아니라 "드래그"로 본다 */
+const DRAG_START_PX = 4;
 
 type PlaceBottomSheetProps = {
   title: ReactNode;
@@ -36,15 +38,28 @@ export function PlaceBottomSheet({
   const [dragDelta, setDragDelta] = useState<number | null>(null);
   const startRef = useRef<{ y: number; expanded: boolean } | null>(null);
 
+  // 포인터 캡처는 "실제로 끌기 시작한 뒤"에만 잡는다.
+  // pointerdown 에서 바로 잡으면 캡처 대상이 이 div 가 되어 안쪽 button 의 click 이
+  // 발생하지 않는다 — 탭으로 펼치기가 죽는다(브라우저 실측. jsdom 은 이 API 가
+  // 없어 setup 의 빈 구현으로 대체되므로 유닛 테스트로는 절대 안 잡힌다).
+  const capturing = useRef(false);
+
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     startRef.current = { y: event.clientY, expanded };
-    event.currentTarget.setPointerCapture(event.pointerId);
+    capturing.current = false;
   };
   const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (!startRef.current) return;
-    setDragDelta(event.clientY - startRef.current.y);
+    const delta = event.clientY - startRef.current.y;
+    if (!capturing.current) {
+      if (Math.abs(delta) < DRAG_START_PX) return; // 탭의 미세한 흔들림은 무시
+      event.currentTarget.setPointerCapture(event.pointerId);
+      capturing.current = true;
+    }
+    setDragDelta(delta);
   };
   const onPointerEnd = () => {
+    capturing.current = false;
     if (!startRef.current) return;
     const delta = dragDelta ?? 0;
     // 위로 끌면(음수) 펼치고, 아래로 끌면 접는다. 문턱 미만이면 원래 상태 유지.
@@ -97,7 +112,9 @@ export function PlaceBottomSheet({
           </span>
         </button>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+      {/* 스크롤은 내용이 가져간다 — 목록은 가상 스크롤이라 자기 스크롤 컨테이너가
+          필요하고, 여기서 한 번 더 스크롤하면 컨테이너가 중첩된다. */}
+      <div className="min-h-0 flex-1 overflow-hidden">{children}</div>
     </section>
   );
 }

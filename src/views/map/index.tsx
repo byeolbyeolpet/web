@@ -3,8 +3,9 @@
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { LuLocateFixed, LuRotateCw } from "react-icons/lu";
+import { LuLocateFixed, LuMinus, LuPlus, LuRotateCw } from "react-icons/lu";
 import {
+  NEARBY_LIMIT,
   useQueryNearbyPlaces,
   useQueryPlace,
   type LatLng,
@@ -15,9 +16,14 @@ import { APP_MESSAGE, APP_MESSAGE_CODE } from "@/shared/config/app-message";
 import { Button } from "@/shared/ui/button";
 import { ErrorState } from "@/shared/ui/error-state";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { PlaceMap, type MapViewport } from "@/widgets/place-map";
+import {
+  PlaceMap,
+  type MapViewport,
+  type PlaceMapHandle,
+} from "@/widgets/place-map";
 import { CategoryChips } from "./category-chips";
 import { PlaceBottomSheet } from "./place-bottom-sheet";
+import { PlaceList } from "./place-list";
 import { PlaceRow } from "./place-row";
 import { SEOUL_CITY_HALL, useCurrentPosition } from "./use-current-position";
 
@@ -40,6 +46,7 @@ function MapContent() {
   const [viewport, setViewport] = useState<MapViewport | null>(null);
   const [moved, setMoved] = useState(false);
   const [flyTo, setFlyTo] = useState<(LatLng & { key: number }) | null>(null);
+  const mapHandle = useRef<PlaceMapHandle | null>(null);
 
   // 시작 기준점: 포커스 장소 > 현위치. 포커스 파라미터가 있으면 그 좌표를 기다리되,
   // 조회가 끝났는데 좌표가 없으면(에러·없는 id) 현위치로 내려온다 — 안 그러면
@@ -126,6 +133,7 @@ function MapContent() {
           (Playwright 실측: 위치 폴백은 5초 타임아웃 뒤에야 온다). */}
       {start ? (
         <PlaceMap
+          handleRef={mapHandle}
           initialCenter={start}
           flyTo={flyTo}
           places={list}
@@ -170,7 +178,8 @@ function MapContent() {
             ? "주변 장소"
             : selected
               ? selected.name
-              : `근처 ${list.length}곳`
+              : // 상한에 걸리면 "+" 를 붙인다 — 200곳이라고만 하면 그게 전부라는 거짓말이다.
+                `근처 ${list.length}곳${list.length >= NEARBY_LIMIT ? "+" : ""}`
         }
       >
         {places.isError ? (
@@ -190,25 +199,40 @@ function MapContent() {
         ) : selected ? (
           <PlaceRow place={selected} />
         ) : (
-          <ul className="pb-4">
-            {list.map((place) => (
-              <li key={place.id}>
-                <PlaceRow place={place} />
-              </li>
-            ))}
-          </ul>
+          <PlaceList places={list} />
         )}
       </PlaceBottomSheet>
 
-      <Button
-        size="icon"
-        variant="secondary"
-        aria-label="현재 위치로"
-        className="absolute right-4 bottom-52 z-10 rounded-full shadow-md"
-        onClick={handleLocate}
-      >
-        <LuLocateFixed aria-hidden />
-      </Button>
+      {/* 지도 조작 묶음 — 시트(접힘 176px) 위로 띄운다 */}
+      <div className="absolute right-4 bottom-52 z-10 flex flex-col gap-2">
+        <Button
+          size="icon"
+          variant="secondary"
+          aria-label="지도 확대"
+          className="rounded-full shadow-md"
+          onClick={() => mapHandle.current?.zoomIn()}
+        >
+          <LuPlus aria-hidden />
+        </Button>
+        <Button
+          size="icon"
+          variant="secondary"
+          aria-label="지도 축소"
+          className="rounded-full shadow-md"
+          onClick={() => mapHandle.current?.zoomOut()}
+        >
+          <LuMinus aria-hidden />
+        </Button>
+        <Button
+          size="icon"
+          variant="secondary"
+          aria-label="현재 위치로"
+          className="rounded-full shadow-md"
+          onClick={handleLocate}
+        >
+          <LuLocateFixed aria-hidden />
+        </Button>
+      </div>
     </div>
   );
 }

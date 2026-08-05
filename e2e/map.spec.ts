@@ -1,14 +1,22 @@
 // 지도 화면·장소 상세 E2E — SDK 실로드(키·도메인 검증), 칩 토글, 접근성, tel 링크.
 //
 // 위치 권한은 부여하지 않는다 — 서울시청 폴백 경로가 결정적(deterministic)이라
-// 테스트 기준점으로 쓴다. 시딩 실측(서울시청 3km 전체 221·병원 27)이 상한선.
+// 테스트 기준점으로 쓴다. 시딩 실측: 서울시청 3km 에 전체 221·병원 27건이 있고,
+// RPC 상한(200)에 걸려 전체는 "근처 200곳+" 로 표시된다.
 import { expect, test } from "@playwright/test";
 import { scanContrast, scanWcag } from "./a11y";
 
-/** 시트 헤더의 "근처 N곳" 이 뜰 때까지 — SDK 로드 + RPC 응답의 합성 신호다. */
+/**
+ * 시트 헤더에 "근처 N곳"(N ≥ 1)이 뜰 때까지 — SDK 로드 + RPC 응답의 합성 신호다.
+ *
+ * 0곳을 허용하면 안 된다. 검색이 아예 시작되지 않은 상태의 제목도 "근처 0곳" 이라
+ * `/근처 \d+곳/` 만으로는 멈춘 화면이 통과한다(실측으로 걸렸다).
+ */
 async function waitForNearbyCount(page: import("@playwright/test").Page) {
-  const title = page.getByText(/근처 \d+곳/);
-  await expect(title).toBeVisible({ timeout: 20_000 });
+  const title = page.locator(
+    'section[aria-label="주변 장소 목록"] [aria-live="polite"]',
+  );
+  await expect(title).toHaveText(/근처 [1-9]\d*곳/, { timeout: 20_000 });
   return title;
 }
 
@@ -63,7 +71,7 @@ test.describe("지도 화면", () => {
     const hospital = page.getByRole("radio", { name: "병원" });
     await hospital.click();
     await expect(hospital).toHaveAttribute("aria-checked", "true");
-    // 병원만 남아 개수가 줄어든다(서울시청 3km: 전체 221 → 병원 27 실측).
+    // 병원만 남아 개수가 줄어든다(서울시청 3km: 전체 200+ → 병원 27 실측).
     await expect(page.getByText(/근처 \d+곳/)).not.toHaveText(before!, {
       timeout: 15_000,
     });
@@ -91,6 +99,52 @@ test.describe("지도 화면", () => {
       .toBeGreaterThan(0);
 
     expect(errors).toEqual([]);
+  });
+
+  // 유닛 테스트로는 못 잡는다 — jsdom 에 Pointer Capture API 가 없어 setup 의 빈
+  // 구현으로 대체되고, 실제 브라우저에서만 캡처가 click 을 삼킨다. 실측으로 걸렸다.
+  test("시트 핸들을 탭하면 펼쳐지고 다시 탭하면 접힌다", async ({ page }) => {
+    await page.goto("/map");
+    await waitForNearbyCount(page);
+
+    const sheet = page.locator('section[aria-label="주변 장소 목록"]');
+    const height = async () => (await sheet.boundingBox())!.height;
+    const collapsed = await height();
+
+    await page.getByRole("button", { name: "목록 펼치기" }).click();
+    await expect
+      .poll(height, { timeout: 5_000 })
+      .toBeGreaterThan(collapsed * 1.5);
+
+    await page.getByRole("button", { name: "목록 접기" }).click();
+    await expect.poll(height, { timeout: 5_000 }).toBeCloseTo(collapsed, 0);
+  });
+
+  // 목록은 가상 스크롤이라 결과 200건이 그대로 DOM 에 쌓이면 안 된다.
+  test("목록이 가상 스크롤로 그려진다 — DOM 행이 결과 수보다 훨씬 적다", async ({
+    page,
+  }) => {
+    await page.goto("/map");
+    const title = await waitForNearbyCount(page);
+    // 서울시청 3km 는 상한(200)에 걸려 "근처 200곳+" 이 된다.
+    await expect(title).toHaveText(/근처 200곳\+/);
+
+    await page.getByRole("button", { name: "목록 펼치기" }).click();
+    const rows = page.locator('section[aria-label="주변 장소 목록"] li');
+    await expect
+      .poll(() => rows.count(), { timeout: 5_000 })
+      .toBeGreaterThan(0);
+    expect(await rows.count()).toBeLessThan(40);
+
+    // 주소 길이와 무관하게 행 높이가 하나여야 터치 영역이 일정하다.
+    const heights = await rows
+      .locator("a")
+      .evaluateAll((els) => [
+        ...new Set(
+          els.map((el) => Math.round(el.getBoundingClientRect().height)),
+        ),
+      ]);
+    expect(heights).toEqual([64]);
   });
 
   // 상세 → "지도에서 보기" 가 /map?place=<id> 로 들어온다. 이 경로의 회귀 2건.
@@ -162,13 +216,10 @@ test.describe("장소 상세", () => {
     await expect(page.getByRole("heading", { name: row.name })).toBeVisible({
       timeout: 15_000,
     });
-    // DB 값을 정규식 소스로 그대로 쓰면 +·( 같은 표기가 메타문자로 해석된다.
-    const phonePattern = new RegExp(
-      row.phone.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-    );
-    await expect(
-      page.getByRole("link", { name: phonePattern }),
-    ).toHaveAttribute("href", `tel:${row.phone}`);
+    // 화면에는 사람이 읽는 형태로, href 에는 원본 숫자열로 나가야 한다.
+    const telLink = page.locator(`a[href="tel:${row.phone}"]`);
+    await expect(telLink).toBeVisible();
+    await expect(telLink).toHaveText(/^\d{2,4}-\d{3,4}-\d{4}$/);
     expect(await scanWcag(page)).toEqual([]);
   });
 });

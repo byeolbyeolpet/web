@@ -1,7 +1,11 @@
 // 상세 정보 블록 — 이름·태그·상태·정보 행·후기 그릇 (스펙 §3). 순수 표시 컴포넌트.
 import Link from "next/link";
 import { LuMapPin, LuPhone } from "react-icons/lu";
-import { PLACE_CATEGORY, type PlaceDetail } from "@/entities/place";
+import {
+  PLACE_CATEGORY,
+  formatPhone,
+  type PlaceDetail,
+} from "@/entities/place";
 import { cn } from "@/shared/lib/utils";
 
 // 상태 색은 배경 위 "글자"라 면 색(--success/--warning)이 아니라 emphasis 를 쓴다.
@@ -15,6 +19,8 @@ const STATUS_BADGE = {
 export function PlaceInfo({ place }: { place: PlaceDetail }) {
   const category = PLACE_CATEGORY[place.category];
   const status = STATUS_BADGE[place.status];
+  // 표시는 사람이 읽는 형태로, tel: 은 원본 숫자열로 — 다이얼러는 구분자가 필요 없다.
+  const phone = formatPhone(place.phone);
   const mapHref = `/map?place=${place.id}`; // 지도 탭에서 이 장소 포커스(스펙 §3)
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -53,7 +59,7 @@ export function PlaceInfo({ place }: { place: PlaceDetail }) {
             )}
           </div>
         </div>
-        {place.phone && (
+        {phone && (
           <a
             href={`tel:${place.phone}`}
             className="flex min-h-11 items-center gap-3 border-b border-border p-3"
@@ -63,7 +69,7 @@ export function PlaceInfo({ place }: { place: PlaceDetail }) {
               className="size-4 shrink-0 text-muted-foreground"
             />
             <span className="text-sm font-medium text-primary-emphasis">
-              {place.phone}
+              {phone}
             </span>
           </a>
         )}

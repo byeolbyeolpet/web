@@ -2,7 +2,7 @@
 // 데이터는 밖(views/map)이 주고, 이 컴포넌트는 그리기와 이벤트 중계만 한다.
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useImperativeHandle, useRef, type Ref } from "react";
 import {
   PLACE_CATEGORY,
   haversineMeters,
@@ -18,6 +18,16 @@ import { useKakaoMaps } from "../lib/use-kakao-maps";
 
 export type MapViewport = GeoLatLng & { radiusM: number };
 
+/** 지도를 소유한 쪽은 이 위젯이라 조작은 여기서 열어 준다. 버튼 배치는 화면이 정한다. */
+export type PlaceMapHandle = {
+  zoomIn: () => void;
+  zoomOut: () => void;
+};
+
+/** 카카오 줌 레벨 범위 — 숫자가 클수록 넓게 본다 */
+const MIN_LEVEL = 1;
+const MAX_LEVEL = 14;
+
 type PlaceMapProps = {
   /** 최초 중심. 이후 이동은 지도가 스스로 관리한다(비제어). */
   initialCenter: GeoLatLng;
@@ -28,8 +38,18 @@ type PlaceMapProps = {
   onSelectPlace: (id: string) => void;
   /** 사용자가 지도를 움직여 멈출 때(idle) — 재검색 버튼 노출·좌표 갱신용 */
   onViewportChange?: (viewport: MapViewport) => void;
+  /** 줌 조작 핸들 — 버튼은 화면(views/map)이 다른 컨트롤과 함께 배치한다 */
+  handleRef?: Ref<PlaceMapHandle | null>;
   className?: string;
 };
+
+/** 레벨을 한 칸 옮긴다. 범위를 벗어난 값은 카카오가 무시하지만 명시적으로 막는다. */
+function step(map: kakao.maps.Map | null, delta: number) {
+  if (!map) return;
+  const next = map.getLevel() + delta;
+  if (next < MIN_LEVEL || next > MAX_LEVEL) return;
+  map.setLevel(next, { animate: true });
+}
 
 export function PlaceMap({
   initialCenter,
@@ -38,12 +58,19 @@ export function PlaceMap({
   selectedId,
   onSelectPlace,
   onViewportChange,
+  handleRef,
   className,
 }: PlaceMapProps) {
   const { status, retry } = useKakaoMaps();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<kakao.maps.Map | null>(null);
   const clustererRef = useRef<kakao.maps.MarkerClusterer | null>(null);
+
+  // 줌은 지도 인스턴스를 직접 만져야 해서 상태로 표현할 게 없다 — 명령형으로 연다.
+  useImperativeHandle(handleRef, () => ({
+    zoomIn: () => step(mapRef.current, -1),
+    zoomOut: () => step(mapRef.current, 1),
+  }));
 
   // 콜백 최신값 참조 — 지도 이벤트 리스너는 한 번만 등록한다.
   // 렌더 중 ref 쓰기는 금지(react-hooks/refs) — 무의존 effect 로 매 렌더 후 갱신.

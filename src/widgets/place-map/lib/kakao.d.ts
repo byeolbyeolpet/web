@@ -32,6 +32,9 @@ declare namespace kakao.maps {
     setCenter(latlng: LatLng): void;
     getCenter(): LatLng;
     getBounds(): LatLngBounds;
+    /** 숫자가 클수록 넓게 본다(축소). 카카오 기준 1~14. */
+    getLevel(): number;
+    setLevel(level: number, options?: { animate?: boolean }): void;
     setDraggable(draggable: boolean): void;
     setZoomable(zoomable: boolean): void;
     relayout(): void;
