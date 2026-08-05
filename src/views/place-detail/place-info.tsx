@@ -4,9 +4,11 @@ import { LuMapPin, LuPhone } from "react-icons/lu";
 import { PLACE_CATEGORY, type PlaceDetail } from "@/entities/place";
 import { cn } from "@/shared/lib/utils";
 
+// 상태 색은 배경 위 "글자"라 면 색(--success/--warning)이 아니라 emphasis 를 쓴다.
+// 면 값은 흰 배경에서 3.30:1 / 3.19:1 로 AA 미달이다(CI e2e axe 실측).
 const STATUS_BADGE = {
-  operating: { label: "영업 중", className: "text-success" },
-  suspended: { label: "휴업", className: "text-warning" },
+  operating: { label: "영업 중", className: "text-success-emphasis" },
+  suspended: { label: "휴업", className: "text-warning-emphasis" },
   closed: { label: "폐업", className: "text-muted-foreground" },
 } as const;
 

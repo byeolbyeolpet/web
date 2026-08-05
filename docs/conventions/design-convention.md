@@ -7,6 +7,7 @@
 - **HEX 하드코딩 금지.** `bg-primary`, `bg-primary-tint`, `text-muted-foreground`, `border-destructive` 같은 시맨틱 토큰을 쓴다.
 - **브랜드 색은 CTA·활성 탭에만.** 종 태그는 `bg-primary-tint`(Badge 의 `variant="tint"`)로 한 단계 올린다 — 특수동물 진료 태깅이 해자인데 무채색으로 두면 차별점이 안 보인다. 그 외는 전부 중립.
 - 모든 컴포넌트는 **라이트/다크 모드**를 반드시 함께 설계한다.
+- **색을 "글자"로 쓸 때는 `*-emphasis` 토큰을 쓴다.** `--primary`·`--destructive`·`--success`·`--warning`은 전부 **흰 글씨를 받는 면(面)** 기준으로 잡힌 값이라, 그대로 글자로 쓰면 배경과의 거리가 좁아 AA(4.5:1)에 걸린다. 실측: 라이트에서 `text-success` 3.30:1 / `text-warning` 3.19:1(장소 상세 영업 상태 배지, CI e2e axe), 다크에서 `text-primary` 3.34:1(활성 탭). `bg-*`는 그대로 쓰고 `text-*`만 `text-success-emphasis`처럼 바꾼다. **tint 면 위 글자는 흰 배경보다 더 어두워야 한다** — `--destructive-emphasis`가 그 경우다.
 - 기존 `shared/ui`의 스타일 패턴을 계승해 일관성을 유지한다.
 
 ### 1-1. HEX 리터럴 명시적 예외 — CSS 변수가 닿지 않는 렌더링 경로

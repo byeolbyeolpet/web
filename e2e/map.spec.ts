@@ -78,8 +78,10 @@ test.describe("장소 상세", () => {
     // 원장에서 전화 있는 영업 중 장소 하나를 anon REST 로 집는다(공개 읽기).
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
+    // order 를 빼면 어떤 행이 오는지 보장되지 않아 실행마다 업종이 바뀐다.
+    // 그러면 칩 색 대비 같은 업종별 검사가 우연히 통과한다(CI 가 그렇게 잡았다).
     const response = await request.get(
-      `${url}/rest/v1/places?select=id,name,phone&status=eq.operating&phone=not.is.null&limit=1`,
+      `${url}/rest/v1/places?select=id,name,phone&status=eq.operating&phone=not.is.null&order=id.asc&limit=1`,
       { headers: { apikey: key, Authorization: `Bearer ${key}` } },
     );
     const [row] = (await response.json()) as Array<{

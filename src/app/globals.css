@@ -58,6 +58,14 @@
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
 
+  /* ── Status Emphasis — 상태 색을 배경 위 "글자"로 쓸 때 ──────
+     primary/destructive 와 같은 이유다. --success(#16a34a)·--warning(#d97706)은
+     흰 면을 받는 값이라 흰 배경 위 글자로는 3.30:1 / 3.19:1 로 AA 미달이다
+     (장소 상세의 영업 상태 배지에서 axe 실측 — CI e2e 가 잡았다).
+     면(bg-success)은 그대로 두고, 글자만 이 값을 쓴다. */
+  --color-success-emphasis: var(--success-emphasis);
+  --color-warning-emphasis: var(--warning-emphasis);
+
   /* ── Place Category (지도 마커·카테고리 태그, 정보/의미 층) ──
      아이콘 병행 필수. SVG MarkerImage 는 CSS 변수를 못 읽어
      entities/place/model/category.ts 의 상수와 값을 공유한다 —
@@ -67,6 +75,15 @@
   --color-place-grooming: var(--place-grooming);
   --color-place-boarding: var(--place-boarding);
   --color-place-funeral: var(--place-funeral);
+
+  /* 칩의 "글자"용. 위 값들은 지도 핀의 면(面)을 채우려고 고른 선명한 색이라
+     같은 색 10% tint 면 위 글자로는 라이트에서 2.85~3.62:1 로 전부 AA 미달이다.
+     색조·채도는 두고 명도만 낮춰 4.6:1 이상으로 맞췄다. 면(bg-place-*)은 그대로. */
+  --color-place-hospital-emphasis: var(--place-hospital-emphasis);
+  --color-place-pharmacy-emphasis: var(--place-pharmacy-emphasis);
+  --color-place-grooming-emphasis: var(--place-grooming-emphasis);
+  --color-place-boarding-emphasis: var(--place-boarding-emphasis);
+  --color-place-funeral-emphasis: var(--place-funeral-emphasis);
 
   /* ── Charts ──────────────────────────────────────────── */
   --color-chart-1: var(--chart-1);
@@ -181,6 +198,9 @@
   --warning-foreground: #ffffff;
   --info: #2563eb;
   --info-foreground: #ffffff;
+  /* 흰 배경 위 글자용. 위 면 색은 3.30:1 / 3.19:1 로 미달 → 각각 5.02:1. */
+  --success-emphasis: #15803d;
+  --warning-emphasis: #b45309;
 
   /* 장소 카테고리 — 마커(항상 라이트 지도 위, TS 상수와 동기)·태그 공용 */
   --place-hospital: #e5484d;
@@ -188,6 +208,13 @@
   --place-grooming: #d6409f;
   --place-boarding: #0091ff;
   --place-funeral: #7e808a;
+  /* 칩 글자용 — 색조·채도 유지, 명도만 하향. 위 면색 그대로는 같은 색 10% tint
+     위에서 2.85~3.62:1 로 미달 → 4.61~4.63:1(흰 배경에서도 5.1 이상). */
+  --place-hospital-emphasis: #d41e24;
+  --place-pharmacy-emphasis: #247d52;
+  --place-grooming-emphasis: #c22a8a;
+  --place-boarding-emphasis: #006fc3;
+  --place-funeral-emphasis: #6b6d76;
 
   --chart-1: #6e56cf;
   --chart-2: #9b87f5;
@@ -271,6 +298,10 @@
   --warning-foreground: #291404;
   --info: #60a5fa;
   --info-foreground: #0a1633;
+  /* 다크는 배경(#0d0d0f) 위에서 11.14:1 / 11.63:1 로 이미 통과라 같은 값을 쓴다 —
+     라이트와 참조 구조를 맞추기 위해서만 존재한다. */
+  --success-emphasis: #4ade80;
+  --warning-emphasis: #fbbf24;
 
   /* 장소 카테고리 — 어두운 면 위 "글자·아이콘"용으로 밝힌 값.
      핀은 항상 라이트 지도 위라 TS 상수(라이트 값)를 그대로 쓴다. */
@@ -279,6 +310,13 @@
   --place-grooming: #f65cb6;
   --place-boarding: #52a9ff;
   --place-funeral: #a8aab3;
+  /* 다크는 tint 면 위에서 5.92~8.89:1 로 이미 통과라 같은 값을 쓴다 —
+     라이트와 참조 구조를 맞추기 위해서만 존재한다. */
+  --place-hospital-emphasis: #ff6369;
+  --place-pharmacy-emphasis: #3dd68c;
+  --place-grooming-emphasis: #f65cb6;
+  --place-boarding-emphasis: #52a9ff;
+  --place-funeral-emphasis: #a8aab3;
 
   --chart-1: #9b87f5;
   --chart-2: #6e56cf;
